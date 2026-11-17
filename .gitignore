@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ML / dados locais
+data/raw/*
+!data/raw/.gitkeep
+data/reference/*
+!data/reference/.gitkeep
+!data/reference/credit_reference.csv
+data/production/*
+!data/production/.gitkeep
+!data/production/credit_production.csv
+data/invalid/*
+!data/invalid/.gitkeep
+!data/invalid/credit_invalid.csv
+models/artifacts/*
+!models/artifacts/.gitkeep
+!models/artifacts/metrics.json
+!models/artifacts/drift_summary.json
+*.pkl
+*.joblib
+
+# Reports gerados (versionar resumo; HTML grandes opcionais)
+reports/drift/*
+!reports/drift/.gitkeep
+!reports/drift/drift_report.html
+reports/monitoring/*
+!reports/monitoring/.gitkeep
+!reports/monitoring/index.html
+
+# Logs e MLflow local
+logs/*
+!logs/.gitkeep
+mlruns/
+mlflow.db
+
+# Ambiente
+.venv/
+venv/
+.env
+*.env.local
+
+# SO / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# PDFs das disciplinas (extracts txt ficam versionados)
+disciplinas/**/pdfs/
+*.pdf
+!docs/**/*.pdf

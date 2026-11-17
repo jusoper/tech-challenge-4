@@ -1,0 +1,40 @@
+dataset:
+  n_samples: 6000
+  random_seed: 42
+  reference_path: data/reference/credit_reference.csv
+  production_path: data/production/credit_production.csv
+  invalid_path: data/invalid/credit_invalid.csv
+
+model:
+  target: default
+  test_size: 0.2
+  random_seed: 42
+  n_estimators: 100
+  max_depth: 8
+  artifact_dir: models/artifacts
+
+validation:
+  # Alinhado às dimensões de qualidade (Validação A01/A05)
+  min_age: 18
+  max_age: 90
+  min_income: 0
+  max_income: 500000
+  min_loan_amount: 500
+  max_loan_amount: 500000
+
+drift:
+  # Features deslocadas na simulação (Data Drift A06/A08)
+  shifted_features:
+    - income
+    - employment_years
+  income_multiplier: 1.45
+  employment_years_shift: -2.5
+  # Limiar PSI da Aula 07 (Data Drift)
+  psi_threshold: 0.25
+  report_dir: reports/drift
+
+monitoring:
+  experiment_name: credit-scoring-fase4
+  tracking_uri: mlruns
+  log_dir: logs
+  dashboard_path: reports/monitoring/index.html
