@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Monitoramento — Credit Scoring Fase 4</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 2rem; background: #f7f4ef; color: #1c1a17; }
+    h1, h2 { font-weight: 600; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; background: #fff; }
+    th, td { border: 1px solid #d9d2c5; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #ebe4d7; }
+    .success { color: #1b6b3a; font-weight: 600; }
+    .failed, .ALERTA { color: #9b1c1c; font-weight: 600; }
+    .card { background: #fff; border: 1px solid #d9d2c5; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    code { background: #efe8dc; padding: 0.1rem 0.35rem; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard de Observabilidade — Credit Scoring</h1>
+  <p>Pipeline de validação, treino e detecção de drift (Fase 4). Limiar PSI = <code>0.25</code>.</p>
+
+  <div class="card">
+    <h2>Saúde do modelo (baseline)</h2>
+    <ul>
+      <li>ROC-AUC: <strong>0.7197358955914088</strong></li>
+      <li>F1: <strong>0.324582338902148</strong></li>
+      <li>Accuracy: <strong>0.7641666666666667</strong></li>
+      <li>Amostras treino/teste: 4800 / 1200</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Alertas de drift</h2>
+    <p>Features com drift: <strong>income, employment_years, debt_ratio</strong>
+       (3 alertas)</p>
+    <table>
+      <thead><tr><th>Feature</th><th>PSI</th><th>KS p-value</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>age</td><td>0.0000</td><td>1</td><td class='success'>OK</td></tr><tr><td>income</td><td>0.6372</td><td>9.432e-283</td><td class='failed'>ALERTA</td></tr><tr><td>employment_years</td><td>0.1201</td><td>2.501e-17</td><td class='failed'>ALERTA</td></tr><tr><td>loan_amount</td><td>0.0000</td><td>1</td><td class='success'>OK</td></tr><tr><td>credit_history_score</td><td>0.0000</td><td>1</td><td class='success'>OK</td></tr><tr><td>num_credit_lines</td><td>0.0000</td><td>1</td><td class='success'>OK</td></tr><tr><td>debt_ratio</td><td>1.6809</td><td>0</td><td class='failed'>ALERTA</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Eventos do pipeline (logs)</h2>
+    <table>
+      <thead><tr><th>Timestamp</th><th>Stage</th><th>Status</th><th>Message</th></tr></thead>
+      <tbody>
+        <tr><td>2026-11-17T00:30:19.722400+00:00</td><td>detect_drift</td><td class='success'>success</td><td>Drift em 3 features; HTML=/Users/jusope/Desktop/fiap/tech-challenge-4/reports/drift/drift_report.html</td></tr><tr><td>2026-11-17T00:31:02.162547+00:00</td><td>detect_drift</td><td class='success'>success</td><td>Drift em 3 features; HTML=/Users/jusope/Desktop/fiap/tech-challenge-4/reports/drift/drift_report.html</td></tr><tr><td>2026-11-17T00:30:08.998231+00:00</td><td>simulate_drift</td><td class='success'>success</td><td>Dataset de produção com drift gerado</td></tr><tr><td>2026-11-17T00:30:43.885839+00:00</td><td>simulate_drift</td><td class='success'>success</td><td>Dataset de produção com drift gerado</td></tr><tr><td>2026-11-17T00:30:05.004654+00:00</td><td>train</td><td class='success'>success</td><td>Baseline treinado</td></tr><tr><td>2026-11-17T00:30:39.578895+00:00</td><td>train</td><td class='success'>success</td><td>Baseline treinado</td></tr><tr><td>2026-11-17T00:29:58.518465+00:00</td><td>validation</td><td class='success'>success</td><td>Contrato OK para credit_reference.csv</td></tr><tr><td>2026-11-17T00:30:00.337753+00:00</td><td>validation</td><td class='failed'>failed</td><td>Contrato violado — ingestão bloqueada (credit_invalid.csv)</td></tr><tr><td>2026-11-17T00:30:34.955229+00:00</td><td>validation</td><td class='success'>success</td><td>Contrato OK para credit_reference.csv</td></tr><tr><td>2026-11-17T00:31:04.636716+00:00</td><td>validation</td><td class='failed'>failed</td><td>Contrato violado — ingestão bloqueada (credit_invalid.csv)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><small>Gerado automaticamente — alinhado a Monitoramento A05/A06 e Data Drift A07.</small></p>
+</body>
+</html>
