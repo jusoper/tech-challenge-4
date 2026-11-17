@@ -1,0 +1,179 @@
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+## | Aula 05 - Machine Learning Engineering
+
+## Fase 4 Logs, Métricas E Traces:
+
+### Observabilidade De Sistemas De
+ML
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+### O Que Vem Por Aí?
+São 3h da manhã e seu celular toca: o alerta diz que a latência do endpoint de inferência subiu 500%. Você abre o dashboard e confirma — as predições estão demorando 5 segundos em vez de 1 segundo. Mas por quê?
+Sem logs estruturados, você não sabe qual etapa está lenta. Sem métricas granulares, você não sabe se é CPU, memória ou I/O. Sem traces, você não sabe se o gargalo está no pré -processamento, no modelo, ou na serialização da resposta.
+Observabilidade é a capacidade de responder perguntas que você não sabia que precisaria fazer. Nesta aula, vamos mergulhar nos três pilares da observabilidade
+— logs, métricas e traces — aplicados especificamente a sistemas de ML, e entender como conectá -los para ter visibilidade end -to-end.
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+### Hands On
+Nessa aula, estudaremos temas como logs estruturados para ML, o que logar em cada et apa do pipeline, níveis de log, centralização de logs e OpenTelemetry e traces distribuídos.
+Também veremos como instrumentar um pipeline de ML, observabilidade como código e como conectar logs, métricas e traces.
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+### Saiba Mais
+Logs são registros de eventos discretos que ocorrem no sistema. A diferença entre logs úteis e logs inúteis está na estrutura.
+Logs não estruturados (ruim):
+2026 -01-15 03:00:01 INFO Model prediction completed in 1.2s
+Logs estruturados (bons):
+{
+ "timestamp": " 2026 -01-15T03:00:01Z",
+ "level": "INFO",
+ "event": "prediction_completed",
+ "model_name": "fraud -detector",
+ "model_version": "v2.3.1",
+ "latency_ms": 1200,
+ "input_features_count": 45,
+ "prediction_score": 0.87,
+ "request_id": "req -abc123",
+ "trace_id": "trace -xyz789"
+}
+O log estruturado permite filtrar por qualquer campo ( ex.: todas as predições com latência > 2s) , agregar métricas a partir de logs ( ex.: latência média por modelo) ,
+correlacionar com traces (via trace_id) e buscar padrões ( ex.: predições com score alto que foram lentas) .
+O que logar em cada etapa do pipeline
+Ingestão de Dados : volume de dados recebidos (registros, bytes) , fonte dos dados e timestamp , erros de parsing ou validação e latência de ingestão .
+Feature Engineering: features calculadas e suas estatísticas (min, max, mean,
+nulls) , tempo de cálculo por feature , features que falharam ou foram substituídas por defaults e versão do pipeline de features .
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+Treino: hiperparâmetros utilizados , métricas de treino por época (loss,
+accuracy) , tempo total de treino e por etapa , tamanho do dataset de treino e hardware utilizado (GPU, memória) .
+Inferência: input recebido (ou hash do input para privacidade) , predição retornada , confiança/score da predição , latência de inferência e versão do modelo utilizado .
+Níveis de Log
+A escolha do nível de log é importante para balancear informação com volume:
+• DEBUG: Informações detalhadas para diagnóstico. Exemplo: valores intermediários de features. Usar apenas em desenvolvimento ou troubleshooting .
+• INFO: Eventos normais do sistema. Exemplo: "Modelo carregado com sucesso", "Predição realizada".
+• WARNING: Situações inesperadas que não impedem o funcionamento.
+Exemplo: "Feature X tem 10% de valores nulos, usando default".
+• ERROR: Erros que impedem uma operação específica. Exemplo: "Falha ao calcular feature Y, usando fallback".
+• CRITICAL: Erros que comprometem o sistema. Exemplo: "Modelo não encontrado, endpoint indisponível".
+Centralização de Logs
+Em sistemas distribuídos, logs precisam ser centralizados para serem úteis. As principais opções são:
+ELK Stack (Elasticsearch + Logstash + Kibana):
+• Elasticsearch: Armazena e indexa logs para busca rápida .
+• Logstash: Coleta, transforma e envia logs .
+• Kibana: Interface de visualização e busca .
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+Alternativas Cloud -Native:
+• AWS CloudWatch Logs + Logs Insights .
+• Google Cloud Logging .
+• Azure Monitor Logs .
+Loki (Grafana): Alternativa leve ao ELK, indexa apenas labels (não o conteúdo completo), reduzi ndo custos de armazenamento.
+Métricas de Negócio para ML
+Nandamuri (2025) destaca que métricas técnicas sozinhas não contam a história completa. Precisamos correlacionar métricas técnicas com métricas de negócio .
+Algumas m étricas de negócio relevantes incluem r evenue impact (quanto o modelo contribui para a receita ), conversion rate (taxa de conversão influenciada pelo modelo ), user engagement (tempo de sessão, cliques, interações ), customer satisfaction (NPS, CSAT, taxa de reclamações ) e o perational efficiency (redução de trabalho manual, tempo economizado ).
+Correlações importantes:
+• Latência de inferência ↔ Taxa de abandono (usuários desistem se demora) .
+• Acurácia do modelo ↔ Receita (predições melhores = mais conversões) .
+• Disponibilidade ↔ Satisfação do cliente .
+• Freshness do modelo ↔ Relevância das recomendações .
+Construi ndo Dashboards Efetivos
+A seguir, alguns p rincípios de design para dashboards de ML .
+Hierarquia de Informação:
+• Nível 1 (Overview): Saúde geral do sistema — verde/amarelo/vermelho .
+• Nível 2 (Drill -down): Métricas por componente — pipeline, modelo, infra .
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+• Nível 3 (Detail): Métricas granulares para investigação .
+Boas práticas :
+• Usar cores consistentes (verde = ok, amarelo = warning, vermelho = critical) .
+• Mostrar tendências, não apenas valores instantâneos .
+• Incluir comparação com baseline ( ex.: semana anterior ).
+• Limitar a 5 -7 painéis por dashboard para evitar sobrecarga cognitiva .
+OpenTelemetry e Traces Distribuídos
+OpenTelemetry (OTel) é o padrão aberto para instrumentação de observabilidade, mantido pela Cloud Native Computing Foundation (CNCF). Ele unifica a coleta de traces, métricas e logs.
+Um trace representa o caminho completo de uma requisição pelo sistema. É composto por spans:
+Trace: predict_request (total: 1200ms)
+├── Span: receive_request (5ms)
+├── Span: preprocess_input (150ms)
+│ ├── Span: validate_schema (10ms)
+│ ├── Span: normalize_features (80ms)
+│ └── Span: encode_categoricals (60ms)
+├── Span: model_inference (800ms)
+│ ├── Span: load_model (50ms)
+│ └── Span: predict (750ms)
+├── Span: postprocess_output (200ms)
+│ ├ ── Span: apply_business_rules (100ms)
+│ └── Span: format_response (100ms)
+└── Span: send_response (45ms)
+Cada span contém nome (identificador da operação ), timestamps (início e fim ),
+atributos (metadados , como model_version, input_size) , eventos (ocorrê ncias dentro
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML do span , como cache_hit, fallback_used) , status (OK, ERROR ou UNSET ) e contexto
+(trace_id e span_id para correlação ).
+Instrumentando um Pipeline de ML
+Para instrumentar um pipeline de ML com OpenTelemetry:
+from opentelemetry import trace trace r = trace.get_tracer("ml -pipeline")
+def predict(input_data):
+ with tracer.start_as_current_span("predict") as span:
+ span.set_attribute("model.name", "fraud -detector")
+ span.set_attribute("model.version", "v2.3.1")
+ with tracer. start_as_current_span("preprocess"):
+ features = preprocess(input_data)
+ span.set_attribute("features.count", len(features))
+ with tracer.start_as_current_span("inference"):
+ prediction = model.predict(featu res)
+ span.set_attribute("prediction.score", float(prediction))
+ return prediction
+A instrumentação permite identificar gargalos, entender o fluxo de dados, e correlacionar problemas entre componentes.
+Conectando Logs, Métricas e Traces
+O verdadeiro poder da observabilidade está na correlação entre os três pilares:
+• Alerta de métrica: "Latência p99 > 5s" .
+• Investigar traces: Filtrar traces com latência > 5s, identificar span mais lento .
+• Analisar logs: Buscar logs do span problemático para entender a causa raiz .
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+Essa correlação é habilitada por IDs compartilhados:
+• trace_id: Presente em traces e logs .
+• span_id: Identifica operações específicas .
+• request_id: Correlaciona com métricas de negócio .
+Observabilidade como Código
+Uma tendência crescente é tratar a configuração de observabilidade como código (Observability as Code), versionando dashboards, alertas e instrumentação junto com o código da aplicação. Ferramentas como Grafana (com provisioning) e
+Terraform (para C loudWatch) permitem essa abordagem.
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+### Mercado, Cases E Tendências
+O OpenTelemetry se consolidou como o padrão da indústria para instrumentação, com adoção por todos os principais vendors de observabilidade
+(Datadog, New Relic, Dynatrace, Grafana). A convergê ncia para um padrão único simplifica a instrumentação e reduz vendor lock -in.
+A tendência de "observabilidade generativa" — usar LLMs para analisar logs,
+sugerir causas raiz e gerar runbooks automaticamente — está emergindo como a próxima fronteira. Ferram entas como o Datadog Bits AI e o New Relic AI já oferecem capacidades nessa direção.
+Para sistemas de ML especificamente, a integração entre observabilidade de infraestrutura e observabilidade de modelo está se tornando mais fluida, com plataformas oferece ndo visão unificada de saúde do sistema e qualidade das predições.
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+## O Que Você Viu Nesta Aula?
+Nessa aula, vimos como l ogs estruturados (JSON) são fundamentais para busca, agregação e correlação em sistemas de ML , como c ada etapa do pipeline
+(ingestão, fea tures, treino, inferência) requer logging específico e como m étricas de negócio complementam métricas técnicas e são essenciais para demonstrar valor.
+Também analisamos como d ashboards efetivos seguem hierarquia de informação e princípios de design visua , OpenTelemetry é o padrão aberto para traces distribuídos, permitindo seguir requisições end -to-end e a correlação entre logs,
+métricas e traces é o que transforma dados em observabilidade real.
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+### Referências
+BEYER, B.; JONES, C.; PETOFF, J.; MURPHY, N. R. Site Reliability Engineering:
+How Google Runs Production Systems. Sebastopol: O'Reilly Media, 2016.
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO/IEC
+33001:2015: Information technology: Process assessment: Concepts and terminology. Geneva: ISO, 2015 . Disponível em:
+https://www.iso.org/standard/54175.html . Acesso em: 27 ago. 2026.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps): Overview, Definition, and Architecture. IEEE Access, v. 11, p. 31866 –
+31879, 2023.
+NANDAMURI, S. Monitoring and Observability in Machine Learning
+Infrastructure: Metrics, Logs, and Traces. World Journal of Advanced Research and
+Reviews (WJARR), 2025.
+PWC. Experience is everything: H ere’s how to get it right. 2018. Disponível em:
+https://www.pwc.com/us/en/advisory -services/publi cations/consumer -intelligence -
+series/pwc -consumer -intelligence -series -customer -experience.pdf . Acesso em: 27 ago. 2026.
+RICCIARDI, G. GapAnalysis_IT4IT_Value Stream Flows: Gianni Ricciardi: para fins didáticos. 2023. Disponível em:
+https://1drv.ms/x/s!AteDfZdQAPwHhuovcPYjiNE_2x8CPA?e=U2hevf . Acesso em: 27 ago. 2026.
+SHANKAR, S.; PARAMESWARAN, A. G. Towards Observability for Production
+Machine Learning Pipelines. arXiv preprint arXiv:2108.13557, 2022.
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML
+### Palavras -Chave
+Logs Estruturados . Métricas de Negócio . Traces Distribuídos . OpenTelemetry . ELK
+Stack . Grafana . Dashboards . Spans . Observabilidade . Correlação.
+Logs, Métricas e Traces: Observabilidade de Sistemas de ML

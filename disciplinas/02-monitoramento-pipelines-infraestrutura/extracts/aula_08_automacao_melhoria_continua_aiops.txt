@@ -1,0 +1,150 @@
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+## | Aula 08 - Machine Learning Engineering
+
+## Fase 4 Automação E Melhoria
+
+### Contínua (Retraining Automático E Aiops)
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula ? Referências
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+### O Que Vem Por Aí?
+Ao longo desta discip lina, aprendemos a monitorar pipelines, detectar drift,
+configurar alertas e instrumentar sistemas com observabilidade. Mas até agora, a resposta a problemas era majoritariamente manual — um humano recebe o alerta,
+investiga, e toma uma ação.
+E se o sistem a pudesse se auto -corrigir? E se, ao detectar drift, o pipeline automaticamente retreinasse o modelo com dados recentes, validasse a nova versão,
+e fizesse o deploy — tudo sem intervenção humana?
+Nesta aula, vamos fechar o ciclo de MLOps explorando Continu ous Training
+(CT), CI/CD para ML, e o conceito de AIOps — usar inteligência artificial para operar sistemas de inteligência artificial. Vamos entender como construir pipelines que se auto-ajustam e se auto -reparam.
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+### Hands On
+Nessa aula, estudaremos continu ous training, triggers de retreino, arquitetura de pipeline de retreino automático, CI para ML e CD para ML. Também veremos um versionamento completo, AIOps, self -healing pipelines, LLMs para AIOps e observabilidade generativa.
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+### Saiba Mais
+Continuous Training: O Terceiro Pilar
+Em DevOps tradicional, falamos de CI/CD — Continuous Integration e
+Continuous Delivery. Em MLOps, adicionamos um terceiro pilar: CT — Continuous
+Training.
+Kreuzberger et al. (2023) definem CT como o processo de retreinar modelos automaticamente em resposta a triggers específicos, garantindo que modelos em produção permaneçam relevantes à medida que dados e contextos mudam.
+Os três pilares de MLOps:
+• CI (Continuous Integration): Testar código, dados e modelos automaticamente a cada mudança .
+• CD (Continuous Delivery): Deployar modelos validados automaticamente em produção .
+• CT (Continuous Training): Retreinar modelos automaticamente quando necessário .
+Triggers de retreino
+A decisão de quando retreinar um modelo pode ser baseada em difer entes triggers . Schedule -based: retreino em intervalos fixos (diário, semanal, mensal).
+Vantagem: simples de implementar, previsível ; desvantagem: pode retreinar desnecessariamente ou não retreinar quando necessário
+Performance -based: retreino quando métri cas de performance caem abaixo de um threshold. Vantagem: retreina apenas quando necessário ; desvantagem: requer ground truth para calcular métricas (nem sempre disponível rapidamente) .
+Drift-based: retreino quando drift significativo é detectado nos dados de entrada. Vantagem: proativo — detecta problemas antes que afetem performance ;
+desvantagem: drift nem sempre implica em degradação de performance .
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+Event -based: retreino em resposta a eventos específicos : nova fonte de dados disponível , mudança de política de negócio , feedback de usuários indicando problemas e atualização de dependências (nova versão de biblioteca) .
+Arquitetura de Pipeline de Retreino Automático
+Um pipeline de retreino automático segue o fluxo:
+Trigger → Coleta de Dados → Validação de Dados → Feature Engineering
+ → Treino → Avaliação → Validação → Registro → Deploy
+Guardrails (quality gates): cada etapa tem validações que impedem a propagação de problemas:
+• Validação de dados: Schema correto? Volume suficiente? Qualidade aceitável?
+• Validação de treino: Modelo convergiu? Métricas dentro do esperado?
+• Validação de modelo: Performance superior ao modelo atual? Sem regressões em subgrupos?
+• Validação de deploy: Smoke tests passam? Latência aceitável? Sem erros?
+Se qualquer guardrail falha, o pipeline para e alerta a equipe — o modelo atual em produção permanece inalterado.
+CI para Machine Learning
+CI para ML vai além de testes de código — inclui testes de dados e testes de modelo:
+Testes de Dados: Schema validation (dados seguem o schema esperado? ),
+distribution tests (distribuição dos dados é consistente com o esperado? ),
+completeness tests (campos obrigatórios estão preenchidos? ) e f reshness tests
+(dados são recentes o suficiente? ).
+Testes de Modelo: performance mínima (métricas acima de thresholds definidos ), regression tests (não piorou em subgrupos específicos ), fairness tests (não
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+introduziu bias em grupos protegidos ), latency tests (inferência dentro do SLO de latência ) e size tests (modelo não e xcede limites de tamanho para deploy ).
+Testes de Integração: end-to-end (pipeline completo funciona com dados de teste ), API contract (endpoint retorna respostas no formato esperado ) e compatibility
+(modelo funciona com a versão atual do serving infrastruc ture).
+CD para Machine Learning
+Pulicharla (2019) destaca que o deploy de modelos requer estratégias específicas para minimizar risco:
+Canary Deployment: Direcionar uma pequena porcentagem do tráfego (ex: 5%)
+para o novo modelo, monitorar métricas, e gradu almente aumentar se tudo estiver bem.
+Tráfego → Load Balancer → 95% → Modelo v1 (champion) → 5% → Modelo v2 (canary)
+Blue-Green Deployment: Manter dois ambientes idênticos. O "blue" serve tráfego atual, o "green" recebe o novo modelo. Após validação, troca r o tráfego de blue para green.
+Progressive Rollout: Combinação de canary com automação — o sistema automaticamente aumenta o tráfego para o novo modelo se métricas estão saudáveis,
+ou faz rollback se detecta problemas.
+Shadow Mode: O novo modelo recebe o mesmo tráfego que o modelo atual,
+mas suas predições não são servidas aos usuários. Permite comparar performance sem risco.
+Versionamento Completo
+Para reprodutibilidade e auditabilidade, todo o contexto deve ser versionado:
+• Código: Git (branches, tags, commits) .
+• Dados: DVC (Data Version Control) — versiona datasets grandes sem armazená -los no Git .
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+• Modelo: MLflow Model Registry — versiona modelos com metadados .
+• Infraestrutura: Terraform/CloudFormation — infraestrutura como código .
+• Configuração: Arquivos de configuração versionados no Git .
+• Ambiente: Docker images com versões fixas de dependências .
+AIOps: Usando IA para Operar IA
+AIOps (Artificial Intelligence for IT Operations) aplica técnicas de ML para automatizar e melhorar operaç ões de TI. Notaro, Cardoso e Gerndt (2021)
+categorizam AIOps em três capacidades principais:
+Anomaly Detection: Detectar comportamentos anômalos em métricas, logs e traces automaticamente, sem regras manuais.
+• Algoritmos: Isolation Forest, Autoencoders, LST M para séries temporais
+• Aplicação: Detectar spikes de latência, padrões incomuns de erro, uso anômalo de recursos
+Root Cause Analysis (RCA): Identificar automaticamente a causa raiz de um problema a partir de múltiplos sinais.
+• Técnicas: Correlação temporal , grafos de causalidade, análise de propagação
+• Aplicação: "A latência subiu porque o disco está cheio porque o job de limpeza falhou"
+Auto-Remediation: Executar ações corretivas automaticamente quando problemas são detectados.
+• Exemplos: Restart de serviços , scale up de recursos, rollback de deploy
+• Requer: Playbooks automatizados, guardrails de segurança, limites de ação
+Self-Healing Pipelines
+Pipelines self -healing combinam monitoramento, detecção de anomalias e auto-remediação : auto-retry (tasks que falham são automaticamente reexecutadas
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+com backoff exponencial , resolve falhas transientes - timeout de rede,
+indisponibilidade temporária) ; auto-scaling (infraestrutura escala automaticamente baseada em demanda , resolve problemas de capacidade sem intervenção manual );
+auto-rollback (se um novo modelo causa degradação de métricas, o sistema automaticamente reverte para a versão anterior ) e a uto-retraining (quando drift é detectado, o pipeline de retreino é acionado automaticamente, com guardrails para garantir q ualidade ).
+LLMs para AIOps
+A fronteira mais recente de AIOps é o uso de Large Language Models para análise de logs (LLMs podem interpretar logs em linguagem natural e identificar padrões que regras tradicionais não capturam ), geração de runbooks (dado um a lerta,
+gerar automaticamente passos de investigação e mitigação ), c hat-based troubleshooting (engenheiros podem "conversar" com o sistema de observabilidade para investigar problemas ) e s umarização de incidentes (gerar post -mortems automaticamente a partir de dados do incidente ).
+Observabilidade Generativa
+O conceito de "observabilidade generativa" propõe que sistemas de observabilidade não apenas coletem e exibam dados, mas gerem insights proativamente — identificando tendências, p revendo problemas futuros e sugerindo otimizações antes que humanos percebam a necessidade.
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+### Mercado, Cases E Tendências
+O mercado de AIOps está em rápida expansão, com players como Datadog
+(Bits AI), New Relic (AI), Dynatrace (Davis AI) e PagerDuty (AIOps) integrando capacidades de IA em suas plataformas de observabilidade.
+A tendência de "closed -loop MLOps" — onde o monitoramento alimenta automaticamente o retreino, que alimenta o deploy, que alimenta o monitoramento —
+está se tornando o padrão para organi zações maduras em ML. Isso reduz o tempo entre a detecção de um problema e sua resolução de dias para horas ou minutos.
+Regulamentações como a EU AI Act estão impulsionando a necessidade de auditabilidade e rastreabilidade em sistemas de ML automatizados, exigindo que organizações demonstrem controle sobre pipelines de retreino automático e decisões de deploy.
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+## O Que Você Viu Nesta Aula?
+Nesta aula, vimos Continuous Training (CT) é o terceiro pilar de MLOps,
+complementando CI e CD para manter modelos atualizados . triggers de retreino podem ser baseados em schedule, performance, drift ou eventos específicos ,
+guardrails em cada etapa do pipeline impedem a propagação de problemas para produção e CI/CD para ML inclui testes de dados, modelo e integração al ém dos testes de código tradicionais.
+Também estudamos como e stratégias de deploy como canary, blue -green e progressive rollout minimizam risco , AIOps aplica ML para automatizar operações:
+anomaly detection, root cause analysis e auto -remediation e self-healing pipelines combinam auto -retry, auto -scaling, auto -rollback e auto -retraining.
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+### Referências
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO/IEC
+33001:2015: Information technology: Process assessment: Concepts and terminology. Geneva: ISO, 2015. Di sponível em:
+https://www.iso.org/standard/54175.html . Acesso em: 27 ago. 2026.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps): Overview, Definition, and Architecture. IEEE Access, v. 11, p. 31866 –
+31879, 2023.
+NOTARO, P.; CARDOSO, J.; GERNDT, M. A Survey of AIOps Methods for Failure
+Management. ACM Transactions on Intelligent Systems and Technology, v. 12, n. 6,
+p. 1–45, 2021.
+PULICHARLA, M. R. Detecting an d Addressing Model Drift: Automated
+Monitoring and Real -Time Retraining in ML Pipelines. World Journal of Advanced
+Research and Reviews (WJARR), 2019.
+PWC. Experience is everything: Here’s how to get it right. 2018. Disponível em:
+https://www.pwc.com/us/en/advisory -services/publications/consumer -intelligence -
+series/pwc -consumer -intelligence -series -customer -experience.pdf . Acesso em: 27 ago. 2026.
+RICCIARDI, G. GapAnalysis_IT4IT_Value Stream Flows: Gianni Ricciardi: para fins didáticos. 2023. Disponível em:
+https://1drv.ms/x/s!A teDfZdQAPwHhuovcPYjiNE_2x8CPA?e=U2hevf . Acesso em: 27 ago. 2026.
+SCULLEY, D. et al. Hidden Technical Debt in Machine Learning Systems. In:
+ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS (NeurIPS), v. 28,
+2015.
+Automação e Melhoria Contínua (Retraining Automático e AIOps)
+### Palavras -Chave
+Continuous Training . CI/CD para ML . AIOps . Self-Healing . Auto-Retraining .
+Canary Deployment . Blue-Green . Guardrails . Anomaly Detection . Root Cause
+Analysis.
+Automação e Melhoria Contínua (Retraining Automático e AIOps)

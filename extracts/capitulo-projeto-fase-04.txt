@@ -1,0 +1,36 @@
+Model monitoring and security
+Machine Learning Engineering   1
+### Machine Learning Engineering
+
+## Fase  4
+### Model Monitoring And
+
+### Security
+Model monitoring and security
+Machine Learning Engineering   2
+### Welcome To Machine Learning Engineering
+Olá, estudante!
+Seja muito bem -vindo(a) à Fase 4 d a PosTech em Machine Learning
+Engineering ! Na fase anterior, focamos na engenharia de deploy, pipelines automatizados de CI/CD, orquestração e infraestrutura de nuvem. Agora, entramos no momento mais crítico do ciclo de vida de qualquer sistema inteligente: a sustentação, a observabilidade contín ua e a governança em produção . Colocar um modelo no ar é apenas o primeiro passo; mantê -lo confiável, preciso, seguro e gerando impacto real de negócio em um mundo dinâmico é o que define um (a)
+Engenheiro (a) de Machine Learning sênior.
+Nesta fase, você apr enderá a lidar com a certeza de que o mundo muda e os dados se degradam. Abordaremos profundamente Data Drift , Concept Drift e Label
+Drift, capacitando você a diagnosticar porquê  e como as d istribuições mudam ao longo do tempo. Você dominará testes estatís ticos e métricas avançadas (como
+Kolmogorov -Smirnov, PSI, Wasserstein, KL/JS divergence e detecção de mudança de regime com ADWIN e CUSUM), aplicando essas técnicas em dados tabulares e em embeddings de texto, imagem e áudio. Além disso, você estruturará p ipelines contínuos de detecção e mitigação integrando ferramentas líderes de mercado, como
+Evidently AI, WhyLabs, Arize e Great Expectations.
+A confiabilidade começa na base: na Validação de Dados e Bibliotecas de
+Qualidade . Você construirá contratos de da dos rigorosos para interceptar duplicatas,
+anomalias e valores nulos críticos antes mesmo que eles cheguem aos modelos.
+Para dar visibilidade operacional a esse ecossistema, mergulharemos em
+Ferramentas de Monitoramento de Modelos . Você  entenderá os motivos fundamentais para monitorar modelos em tempo real, implementando uma verdadeira cultura de observabilidade em ML por meio de logs estruturados e telemetria.
+Aprenderá a extrair métricas de inferência e criar dashboards analíticos e op eracionais com Prometheus e Grafana . Essa visão se complementa com o Monitoramento de
+Pipelines e Infraestrutura , integrando o acompanhamento de esteiras no Apache
+Airflow e ferramentas como Datadog para configurar alertas preventivos contra falhas de inge stão, gargalos de transformação e degradação de recursos computacionais.
+Model monitoring and security
+Machine Learning Engineering   3
+ Por fim, c om a inteligência artificial cada ve z mais presente em decisões críticas, a responsabilidade técnica exige Boas Práticas de Governança e
+Compliance (LGPD e GDPR) . Você aprenderá a arquitetar soluções que garantam catalogação, linhagem de dados (data lineage), versionamento estrito, auditoria contínua e proteção à privacidade, blindando modelos contra vazamento de dados sensíveis e riscos regulatórios.
+O projeto prático desta fase consolidará essas competências: você construirá uma stack de observabilidade, qualidade de dados, monitoramento de  drift e governança para garantir que modelos em produção permaneçam robustos,
+auditáveis e resilientes ao longo do tempo.
+Prepare -se para dominar a disciplina que separa os modelos que quebram em silêncio daqueles que sustentam operações críticas de alta escala. Bons estudos!
+Model monitoring and security
+Machine Learning Engineering   4

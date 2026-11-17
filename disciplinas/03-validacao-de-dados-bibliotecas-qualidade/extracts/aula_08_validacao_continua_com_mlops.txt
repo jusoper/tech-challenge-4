@@ -1,0 +1,171 @@
+Validação Contínua com MLOps, MLflow, AWS e Azure
+## | Aula 08 - Machine Learning Engineering
+
+## Fase 4 Validação
+
+### Contínua Com Mlops, Mlflow, Aws E Azure
+Validação Contínua com MLOps, MLflow, AWS e Azure
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Validação Contínua com MLOps, MLflow, AWS e Azure
+### O Que Vem Por Aí?
+Você treinou um modelo de machine learning impecável — métricas excelentes, dados bem preparados, código limpo. O deploy é feito, mas no dia seguinte, dados corrompidos chegam ao pipeline sem que ninguém perceba, o modelo começa a produzir previsões absurdas, e o erro só é descoberto quando o prejuízo já está feito. Esse é um cenário real, e mais comum do que gostaríamos de admitir. A pergunta que nos move nesta aula é: como garantir que esse cenário nunca aconteça com você? A resposta está na Validação Contínua com MLOps — uma abordagem que une princípios de engenharia de software com as especificidades do universo de machine learning.
+Nesta aula, vamos explorar como construir pipelines de CI/CD (Integração
+Contínua e Entrega Contínua) voltados para dados e modelos, utilizando duas das ferramentas mais poderosas do mercado: o MLflow e o Databricks. Você aprenderá como registrar experimentos, rastrear artefatos, monitorar a saúde dos seus dados em produção, implementar lineage tracking e criar alertas automáticos para desvios de qualidade. Prepare -se para uma jornada que vai transformar a forma como você pensa sobre a confiabilid ade de sistemas de ML em produção — e que vai conectar todas as técnicas de validação de dados que você estudou ao longo desta disciplina com a realidade industrial.
+Validação Contínua com MLOps, MLflow, AWS e Azure
+### Hands On
+Nesta s videoaula s, você acompanhará na prática a construção de um pipeline comp leto de MLOps utilizando o Databricks MLOps Stacks — um template production -
+ready que implementa todas as etapas do ciclo de vida de um modelo: configuração do ambiente, análise exploratória, treinamento, validação automática, deploy e inferência em batch —, com dados sintéticos de corridas de táxi criados para fins didáticos.
+Começamos pelo setup dos dados: o notebook DataSetup.py cria três tabelas
+Delta no Unity Catalog — taxi_fares_train, taxi_fares_val e taxi_scoring (sem o target)
+—, inspiradas no dat aset yellow -taxi-trip-data, com 7 features e o target fare_amount calculado de forma determinística com ruído gaussiano. Em seguida, fazemos o deploy de todos os recursos com databricks bundle validate e databricks bundle deploy --target dev : o databricks. yml do DABs (Declarative Automation Bundles)
+define declarativamente os jobs de treinamento, inferência em batch e monitoramento e os artefatos do MLflow (experimento e modelo no Unity Catalog) — lembre -se de preencher a variável host com o endereço do seu workspace; no repositório adaptado usamos tokens PAT via Secrets and variables do GitHub apenas por facilidade didática (em produção, prefira Service Principals com escopo reduzido).
+O EDA.py verifica nulos, duplicatas, estatísticas e correlações (trip_d istance ≈
+0,85 com fare_amount), evidenciando os picos de tarifa de 7 –9h e 17 –19h e o efeito do mau tempo (weather_score < 3 eleva a corrida em até R$ 3,00). Train.py treina uma regressão LightGBM com mlflow.lightgbm.autolog() , após criar as features deriv adas is_rush_hour, is_weekend, is_bad_weather e distance_x_passengers, e registra o modelo no Unity Catalog Model Registry, passando seu URI como task value; ModelValidation.py roda mlflow.evaluate() com os thresholds de validation/validation.py (RMSE ≤ 4, 00; MAE ≤ 3,00; R² ≥ 0,85; MAPE ≤ 25%) e, se todos passam, dá ao modelo o alias 'challenger' — em um pipeline real, é aqui que entrariam também constraints de schema, data quality e data drift (como as do Great
+Expectations, vistas em aulas anteriores), co mplementadas pelas expectations nativas dos pipelines Databricks (ações warn, drop ou fail).
+Validação Contínua com MLOps, MLflow, AWS e Azure
+ModelDeployment.py promove o 'challenger' a 'champion' — o alias que os jobs de produção usam para carregar sempre a versão aprovada, no lugar dos antigos estágio s Staging/Production/Archived; a inferência em batch aplica o modelo à tabela taxi_scoring com mlflow.pyfunc.spark_udf() , salvando as predições em uma tabela
+Delta com versão do modelo e timestamp; e MonitoredMetricViolationCheck.py consulta via SQL a tabe la _profile_metrics do Databricks Lakehouse Monitoring e, se o RMSE ultrapassa o threshold em pelo menos 2 das últimas 5 janelas, dispara um novo ciclo de treinamento — o Continuous Training que fecha o ciclo de MLOps.
+Todo o código está disponível no repo sitório da disciplina, com a estrutura gerada por databricks bundle init mlops -stacks e adaptações nos notebooks de cada etapa — preste atenção especial à relação entre os arquivos YAML do DABs e os notebooks, pois essa separação entre infraestrutura e lóg ica de negócio é um dos pilares do MLOps moderno. Para executar, instale e configure a Databricks CLI ( pip install databricks -cli e databricks configure --token ), crie uma conta gratuita no
+Databricks Free Edition (https://www.databricks.com/learn/free -edition) para usar o workspace como base do projeto e faça o git clone do repositório dentro do Workspace
+(veja na videoaula os detalhes de acesso); os notebooks são executados na ordem do pipeline pelos jobs declarados no bundle.
+Validação Contínua com MLOps, MLflow, AWS e Azure
+### Saiba Mais
+Do DevOps ao MLOp s: A Evolução das Práticas de Engenharia
+O movimento DevOps emergiu na segunda metade dos anos 2000 como resposta ao abismo entre desenvolvimento de software e operações de infraestrutura:
+ao unir cultura, automação, medição e compartilhamento, reduziu drasticamente o tempo entre escrever código e entregar valor, e práticas como integração contínua
+(CI), entrega contínua (CD) e infraestrutura como código (IaC) viraram pilares da engenharia moderna. Ao aplicá -los ao machine learn ing, surge um problema fundamental: modelos de ML não são apenas código — são a interseção de três artefatos que evoluem de forma independente (código, dados e hiperparâmetros), e uma mudança em qualquer um deles pode alterar o comportamento do sistema em produção mesmo com os testes de software passando. Esse insight, formalizado por
+Sculley et al. (2015) em "Hidden Technical Debt in Machine Learning Systems",
+explica por que o ML exige uma extensão especializada do DevOps: o MLOps.
+O MLOps (Machine Learni ng Operations) é o conjunto de práticas, ferramentas e princípios culturais que automatizam e monitoram todas as etapas de sistemas de
+ML, da preparação dos dados ao monitoramento em produção. Segundo Kreuzberger et al. (2022), há três níveis de maturidade : o nível 0, com processos manuais e modelos estáticos; o nível 1, com pipelines de treinamento automatizados e retreinamento contínuo; e o nível 2, com CI/CD totalmente automatizado para ML —
+e é na transição do nível 1 para o 2 que a validação contínua s e torna essencial. Uma analogia útil é a manufatura: o código é a máquina, os dados a matéria -prima e o modelo o produto — e uma fábrica moderna não testa só o produto: monitora a matéria -prima e a máquina em cada etapa.
+CI/CD para Dados: Fundamentos e Pri ncípios
+A Integração Contínua (CI) para dados vai além de rodar testes de unidade a cada commit: envolve validar automaticamente, a cada chegada de novos dados
+(batch ou streaming), a integridade do schema, as distribuições estatísticas (os dados de hoje s ão semelhantes aos de ontem?), a completude e a consistência das
+Validação Contínua com MLOps, MLflow, AWS e Azure transformações de feature engineering. A Entrega Contínua (CD) automatiza o fluxo da validação dos dados à promoção do modelo: testes de qualidade, retreinamento com os dados validados, compa ração de métricas com o modelo em produção
+(estratégia champion -challenger) e deploy automático — ou com aprovação humana
+— do vencedor.
+Um conceito exclusivo do ML que emerge daí é o Treinamento Contínuo (CT
+— Continuous Training): quando as distribuições de produção se desviam significativamente das de treinamento — o data drift visto em aulas anteriores —, o pipeline deve disparar automaticamente um novo ciclo de treinamento com dados recentes. Segundo Chen et al. (2021), a falta de CT é uma das principa is causas de degradação silenciosa de modelos em produção — o modelo continua funcionando tecnicamente, mas suas previsões ficam progressivamente menos precisas à medida que o mundo evolui e os dados de treino envelhecem.
+Prática Integração Contínua (CI) Entrega Contínua (CD) Treinamento Contínuo (CT)
+Gatilho Novo commit de código ou dados Validação bem -sucedida no CI Drift detectado ou novos dados
+Objetivo Validar integridade de dados e código Automatizar deploy de modelos Manter modelo atualizado
+Ferramentas GitHub, Gitlab MLflow , Azure DevOps Lakeflow Jobs, DABs,
+Kubeflow
+Frequência A cada push/PR A cada merge aprovado Contínua, baseada em drift
+Tabela 1 – Comparação entre CI, CD e CT no contexto de MLOps
+Fonte: Elaborado pelo autor (2026)
+MLflow: A Plataforma de Rastreamento e Ciclo de Vida de Modelos
+O MLflow é uma plataforma open -source criada pela Databricks em 2018 para o gerenciamento do ciclo de vida de experimentos e modelos, organizada em quatro componentes: MLflow Trac king (registro de experimentos), MLflow Projects
+(empacotamento de código reproduzível), MLflow Models (formato de modelo agnóstico a frameworks) e MLflow Model Registry (governança do ciclo de vida). Para a validação contínua, os pilares são o Tracking e o Registry.
+MLflow Tracking: Data Logging e Experiment Management
+O MLflow Tracking é um sistema de logging distribuído para registrar, consultar e comparar execuções (runs): cada run registra parâmetros, métricas, tags, artefatos
+(modelos, gráficos, datas ets) e dados de entrada — na hierarquia Tracking Server →
+Validação Contínua com MLOps, MLflow, AWS e Azure
+Experiments → Runs → (Params, Metrics, Artifacts) . Um aspecto subestimado é o data logging: a partir do MLflow 2.4, mlflow.log_input() associa um dataset a uma run,
+registrando nome, hash SHA256 (para verificar se o mesmo dataset é usado em diferentes runs), fonte e contexto de uso — o primeiro passo para um pipeline de validação contínua rastreável. O autolog (mlflow.autolog()) captura automaticamente parâmetros, métricas e artefatos de ma is de 15 frameworks (scikit -learn, XGBoost,
+LightGBM, TensorFlow, PyTorch) e pode ser combinado com logging manual de métricas de validação de dados do domínio.
+MLflow Artifact Tracking e Model Registry
+O sistema de artefatos transforma runs isoladas em experimentos rastreáveis:
+qualquer arquivo — modelos serializados, gráficos, relatórios de validação, datasets,
+checkpoints — pode ser registrado como artefato de uma run, em um backend configurável (local, S3, GCS, Azure Blob ou o storage do D atabricks), associado permanentemente a ela. Um padrão importante para validação contínua é usar artefatos como "contrato de qualidade" entre etapas: a ingestão registra o relatório de validação do Great Expectations e a etapa seguinte só prossegue se o ar tefato existir e "validation_passed" for True — os artifact -driven pipeline gates, que impedem que dados inválidos avancem e criam uma cadeia auditável. Já o Model Registry cuida da governança dos modelos promovidos à produção (o Tracking cuida da descober ta): a versão clássica define os estágios Staging, Production e Archived, e a partir do MLflow
+2.9 aliases customizáveis — "champion", "challenger", "baseline" — substituem os estágios fixos, permitindo fluxos de promoção mais flexíveis.
+Databricks e Unity Catalog: Governança Unificada de Dados e Modelos
+O Databricks é uma plataforma de dados e IA construída sobre o Apache Spark,
+fundada em 2013 pelos criadores do Spark, com ambiente unificado para engenharia de dados, ciência de dados e MLOps em escala — e o MLflow gerenciado como componente nativo. O Unity Catalog, lançado em 2022, é seu sistema de governança:
+um metastore centralizado para tabelas e views SQL, volumes (dados não estruturados), modelos do MLflow, features do Feature Store e arquivos em sto rage cloud, com controle de acesso granular (RBAC), auditoria completa e lineage
+Validação Contínua com MLOps, MLflow, AWS e Azure automático. Para a validação contínua, oferece dois recursos críticos: a integração nativa com o Model Registry ("Models in Unity Catalog") — histórico de versões, runs e data sets de treinamento, cadeia de rastreabilidade fundamental para auditorias de
+LGPD, GDPR e EU AI Act — e as Data Quality Constraints impostas diretamente nas tabelas Delta Lake.
+Data Observability e Lineage Tracking
+Data observability adapta os princípios de observabilidade de sistemas — logs,
+métricas e traces — aos dados. Segundo Barr Moses, co -fundadora da Monte Carlo
+Data, seus cinco pilares são freshness (os dados estão atualizados?), distribution (as distribuições estão dentro do esperado?), volume, s chema (a estrutura não mudou inesperadamente?) e lineage (conseguimos rastrear origem e caminho?), cada um ligado a um tipo de falha e a uma estratégia de monitoramento. O Databricks a implementa combinando o Delta Lake — formato com transações ACID cujo transaction log detalhado permite auditoria e rollback para qualquer versão anterior
+(time travel) —, o Lakeflow (orquestrador nativo) e integrações como o Great
+Expectations.
+O lineage tracking documenta automaticamente a origem de um dado e seu caminho co mpleto da fonte ao destino, respondendo perguntas críticas para auditoria e debugging: "qual modelo foi treinado com esse dataset?", "se este dado estiver errado, quais modelos em produção foram impactados?". O Unity Catalog o captura em três níveis — column-level, table -level (grafo de dependências entre tabelas, views e modelos) e model lineage (modelos conectados aos dados de treinamento) — a partir das queries executadas, sem anotações manuais no código.
+Monitoramento Contínuo
+Um pipeline de validação c ontínua sem alertas é como um alarme de incêndio sem sirene. O sistema de alertas em MLOps deve ser proativo (disparar antes de o problema chegar ao usuário), informativo (contexto suficiente para diagnóstico rápido)
+e acionável (direcionar a pessoa certa à ação certa) — um alerta que apenas diz "algo deu errado" é quase tão inútil quanto nenhum. O Databricks oferece alertas nativos
+Validação Contínua com MLOps, MLflow, AWS e Azure por e -mail e webhooks (falha de job, duração acima de um threshold, métricas de qualidade fora dos limites); para alertas mais sofisticados — data drift com limites adaptativos —, integra -se a PagerDuty, Slack ou Microsoft Teams via webhooks
+HTTP. O padrão recomendado é logar as métricas de qualidade no MLflow e acionar as notificações pelo Lakeflow.
+Databricks Asset Bundles: Inf raestrutura como Código para MLOps
+O Declarative Automation Bundles (DABs) — também conhecido como
+Databricks Asset Bundles — é a solução nativa para definir, versionar e implantar recursos do workspace como código declarativo: em vez de criar jobs, pipeli nes e configurações pela interface gráfica, descreve -se toda a infraestrutura em YAML versionado no Git, no princípio de Infrastructure as Code popularizado por Terraform e Ansible — um único repositório contém o código dos modelos e a definição de jobs,
+schedules, permissões e artefatos MLflow, reproduzindo todo o ambiente em qualquer workspace com um comando. O coração do bundle é o databricks.yml , que define nome, variáveis, arquivos de recursos e targets (ambientes de deploy): cada target corresponde a um workspace e pode sobrescrever variáveis, permitindo o mesmo código em dev, staging e prod sem duplicação. Os recursos ficam em YAML na pasta resources/ — jobs multi -task, pipelines, modelos, experimentos e monitores do
+Lakehouse Monitoring —, e a interp olação de variáveis (${var.catalog_name},
+${bundle.target}) garante consistência entre ambientes.
+O ciclo de vida é operado pela Databricks CLI — validate verifica sintaxe e referências sem deploy (útil em CI), deploy cria ou atualiza os recursos, run disp ara
+um job e destroy remove tudo o que o bundle criou; no modo development, os jobs recebem o prefixo do usuário e os schedules ficam pausados:
+databricks bundle validate databricks bundle deploy --target dev databricks bundle run model_training_job --target dev databricks bundle destroy --target dev
+Código -fonte 1 - Comandos para validação, implantação e execução de recursos com Databricks
+Asset Bundles (Shell)
+Fonte: Elaborado pelo autor (202 6)
+Validação Contínua com MLOps, MLflow, AWS e Azure
+A integração nativa com CI/CD como o GitHub Actions é o que torna o MLOps verdadeiramente automatizado: o repositório gerado pelo mlops -stacks
+(https://github.com/databricks/mlops -stacks) inclui workflows que executam databricks bundle validate e testes unitários a cada pull request e datab ricks bundle deploy ao mergear nas branches main (staging) e release (prod) — qualquer alteração é refletida nos ambientes de forma rastreável e reversível, preenchendo a lacuna entre a agilidade dos notebooks e o rigor das operações de ML em escala.
+Compl iance e Governance em Pipelines de ML
+A conformidade regulatória é frequentemente subestimada no desenvolvimento, mas torna -se crítica em saúde, finanças, seguros e crédito: GDPR,
+LGPD e o EU AI Act (em vigor desde 2024) impõem obrigações sobre como sistemas automatizados de decisão devem ser documentados, auditados e explicados aos afetados. O MLflow e o Databricks facilitam essa conformidade: o Unity Catalog mantém um audit log detalhado de acessos e transformações, o Model Registry registra quem pr omoveu cada versão, quando e com qual justificativa — um trail de aprovações essencial em ambientes regulados — e, conforme anunciado em junho de 2025, o MLflow no Databricks passou a suportar todos os compliance profiles da plataforma, incluindo HIPAA, PC I-DSS e FedRAMP Moderate (Databricks, 2025).
+Um conceito prático nesse contexto é o Model Card — documento estruturado que descreve um modelo de forma padronizada (dados de treinamento, métricas por subgrupo, limitações, considerações éticas), no formato e stabelecido pelo Google AI
+(Mitchell et al., 2019) e registrável no Model Registry; integrá -lo ao CI/CD garante que cada versão em produção tenha sua documentação de compliance atualizada automaticamente.
+Integrando GitHub, MLflow e Databricks: Um Pipeline CI/CD Completo
+Chegamos à síntese: um único pipeline de CI/CD para dados e modelos, com o GitHub como repositório e gatilho, o GitHub Actions como orquestrador de CI, o
+MLflow como rastreamento central e o Databricks como plataforma de processamento e dep loyment — padrão de equipes de alta maturidade, alinhado às práticas
+Validação Contínua com MLOps, MLflow, AWS e Azure recomendadas por Kreuzberger et al. (2022). O fluxo: ao abrir um pull request com mudanças no código do pipeline de dados ou de treinamento, o GitHub Actions dispara testes unitários e um treino em ambiente de testes; aprovado e mergeado na branch main, um segundo workflow dispara o pipeline completo no Databricks — treinamento,
+registro no MLflow e promoção automática ao alias "challenger" no Model Registry.
+É a implementação prática do " pipeline as code": o pipeline de CI/CD é código de primeira classe, versionado junto com o modelo e os testes — qualquer mudança é revisada em pull request, testada e documentada no histórico do Git. Na videoaula,
+você verá como configurar os secrets do Gi tHub e as permissões do Databricks para que ele funcione de ponta a ponta.
+Validação Contínua com MLOps, MLflow, AWS e Azure
+### Mercado, Cases E Tendências
+A adoção de MLOps atingiu maturidade acelerada nos últimos anos. De acordo com a Fortune Business Insights, o mercado global de MLOps foi avaliado em USD
+2.98 bilhões em 2025 e deve crescer para USD 89.91 bilhões até 2034. Esta expansão é impulsionada pela crescente regulamentação de sistemas de IA, pelo aumento da complexidade dos pipelines de ML em produção e pela maturidade das ferramentas disponíveis. O Nubank, fintech brasileira referência global em uso de ML para crédito e personalização financeira para mais de 100 milhões de clientes em três países,
+opera um ambiente Databricks com uma ampla base de usuários e grande volume de notebooks e jobs em pro dução (Databricks, 2024). A capacidade de rastrear o lineage de dados — saber exatamente com quais dados cada modelo foi treinado — é fundamental para atender às exigências do Banco Central do Brasil relacionadas à explicabilidade de decisões de crédito au tomatizadas.
+O Airbnb, por sua vez, desenvolveu internamente o Zipline — uma plataforma declarativa de engenharia e gerenciamento de features para ML que serve como fonte única de verdade para todas as features utilizadas pelos modelos em produção da empresa. O Zipline garante consistência entre treino e inferência por meio de computações point -in-time corretas, evitando data leakage e assegurando que os modelos utilizem exatamente os mesmos dados tanto no treinamento offline quanto no serving online em tempo real. Com essa abordagem, o Airbnb reduziu de meses para dias o tempo necessário para criar novas features de ML, além de incorporar monitoramento automático de qualidade de dados às próprias definições de features
+(Zanoyan; Shapiro, 2019).
+Conforme já vimos em out ras aulas, uma tendência crescente e complementar ao MLOps é a adoção de Data Contracts — acordos formais que definem o esquema,
+a semântica e as garantias de qualidade dos dados trocados entre produtores e consumidores. Segundo levantamento da Monte Carlo Data, a combinação de arquitetura data mesh com data contracts e plataformas modernas de observabilidade reduz drasticamente os gargalos dos times centrais de dados, melhorando simultaneamente qualidade, freshness e descoberta de dados entre domínios ao eliminar silos (Monte Carlo Data, 2026). O MLflow 3.0, lançado em 2025, trouxe capacidades de observabilidade nativas para aplicações de IA generativa —
+Validação Contínua com MLOps, MLflow, AWS e Azure permitindo rastrear chamadas a LLMs com os mesmos princípios que rastreamos modelos tradicionais. O conc eito de "LLMOps" está rapidamente convergindo com
+MLOps clássico, e ferramentas como o MLflow Tracing já permitem instrumentar aplicações baseadas em LangChain, LlamaIndex e APIs da OpenAI com um nível de observabilidade comparável ao de modelos de ML supe rvisionado.
+Validação Contínua com MLOps, MLflow, AWS e Azure
+## O Que Você Viu Nesta Aula?
+Nesta aula, você explorou como construir sistemas de machine learning verdadeiramente confiáveis em produção, utilizando práticas de MLOps e as ferramentas MLflow e Databricks. Partimos dos fundamentos do DevOps e entendemos por que o ML exige uma extensão especializada dessas práticas — o
+MLOps —, que trata dados, código e configurações como cidadãos de primeira classe.
+Você aprendeu sobre CI/CD para dados, compreendendo as diferenças entre
+Integração Contínua (CI), Entrega Contínua (CD) e o conceito exclusivo de
+Treinamento Contínuo (CT), que só existe no mundo de ML.
+Em relação às ferramentas, você viu como o MLflow organiza experimentos em runs e como logar dados, parâmetros, métricas e artefatos com rastreabilida de completa. Conheceu o MLflow Model Registry e o sistema de aliases para gerenciar o ciclo de vida de modelos em produção. No Databricks, descobriu o Unity Catalog como plataforma de governança unificada, os cinco pilares de data observability aplicados a o Delta Lake, o poder do lineage tracking automático e as estratégias de alerting para detecção proativa de problemas. Por fim, você viu como integrar tudo isso em um pipeline completo de CI/CD utilizando GitHub Actions e Databricks
+Workflows.
+O conhecimen to desta aula é o elo que une todas as técnicas de validação de dados estudadas ao longo da disciplina com a realidade da produção industrial.
+Lembre -se: um modelo que não pode ser monitorado, auditado e melhorado de forma contínua é um modelo que, cedo ou tarde, vai falhar silenciosamente. Revisit os códigos desta aula quantas vezes precisar — eles estão disponíveis no repositório da disciplina — e não deixe de praticar com o Databricks Community Edition, que oferece um ambiente gratuito para experimentar todos os conceitos aqui apresentados!
+Validação Contínua com MLOps, MLflow, AWS e Azure
+### Referências
+CHEN, C. et al. Reliable Machine Learning: Applying SRE Principles to ML in
+Production . Sebastopol: O'Reilly Media, 2021. ISBN: 9781098106225.
+GIFT, N.; DEZA, A. Practical MLOps: Operationalizing Machine Learning Models .
+Sebastopol: O'Reilly Media, 2021. ISBN: 9781098103002.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps): Overview, Definition, and Architecture . arXiv:2205.02302, 2022. DOI:
+### 10.1109/Access.2023.3262138.
+MITCHELL, M. et al. Model Cards for Model Reporting . In: PROCEEDINGS OF THE
+CONFERENCE ON FAIRNESS, ACCOUNTABILITY, AND TRANSPARENCY
+(FAccT), 2., 2019, Atlanta. Proceedings... New York: ACM, 2019. p. 220 -229. DOI:
+10.1145/3287560.3287596.
+MONTE CARLO DATA. 9 Trends Shaping The Future Of Data Management In
+2026 . Monte Carlo Blog, 2026. Disponível em: https://www.montecarlodata.com/blog -
+data-management -trends . Acesso em: abr. 2026.
+MOSES, B. Introducing the 5 Pillars of Data Observability . Medium (Towards Data
+Science), 2020. Disponível em: https://medium.com/data -science/introducing -the-five-
+pillars -of-data-observability -e73734b263d5 . Acesso em: abr. 2026.
+ZANOYAN, V.; SHAPIRO, E. Zipline: Airbnb's Declarative Feature Engineering
+Framework . Apresentação de conferência. Spark + AI Summit, São Francisco, CA,
+2019.
+Validação Contínua com MLOps, MLflow, AWS e Azure
+### Palavras -Chave
+MLOps. Validação Contínua. MLflow.
+Validação Contínua com MLOps, MLflow, AWS e Azure

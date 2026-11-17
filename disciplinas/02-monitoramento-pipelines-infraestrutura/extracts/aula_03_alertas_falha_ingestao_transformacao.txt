@@ -1,0 +1,162 @@
+Alertas de Falha em Ingestão/Transformação de Dados
+## | Aula 03 - Machine Learning Engineering
+
+## Fase 4 Alertas De Falha Em
+
+### Ingestão/Transformação De Dados
+Alertas de Falha em Ingestão/Transformação de Dados
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Alertas de Falha em Ingestão/Transformação de Dados
+### O Que Vem Por Aí?
+Seu pipeline de ML roda todas as noites. Os dados são ingeridos de múltiplas fontes, transformados, e usados para atualizar features e retreinar modelos. Uma noite, uma das fontes de dados muda o schema — um campo que era inteiro agora vem como string. O pipeline não falha — ele simplesmente converte o campo silenciosamente, gerando features incorretas. O modelo é retreinado com dados corrompidos, e as predições em pr odução degradam gradualmente.
+Esse cenário ilustra por que alertas proativos em pipelines de dados são críticos. Não basta monitorar se o pipeline executou — precisamos monitorar se os dados estão corretos, completos e dentro das expectativas.
+Nesta aula, vamos explorar os tipos de falhas em pipelines de dados, como configurar alertas que realmente ajudam (sem gerar alert fatigue), e como estruturar planos de contingência para quando as coisas dão errado.
+Alertas de Falha em Ingestão/Transformação de Dados
+### Hands On
+Nessa aula, veremos temas como taxonomia d e falhas em pipelines de dados,
+data contracts e ferramentas de validação de dados.
+Também abordaremos teoria de alertas, incident management para pipelines de ML, circuit breakers e fallback strategies, além de design de políticas de alerta.
+Alertas de Falha em Ingestão/Transformação de Dados
+### Saiba Mais
+Taxonomia de Falhas em Pipelines de Dados
+As falhas em pipelines de dados podem ser classificadas em duas grandes categorias .
+Falhas Ruidosas (Loud Failures): O pipeline quebra visivelmente — uma task falha, uma exceção é lançada, o processo termina com erro . Essas são as falhas
+"fáceis" porque são detectadas imediatamente.
+Falhas Silenciosas (Silent Failures): O pipeline completa com sucesso, mas os dados estão incorretos. Sculley et al. (2015) identificam essas como as mais perigosas em sistemas de ML, pois podem passar despercebidas por semanas ou meses.
+Tipos específicos de falhas incluem:
+Schema Drift: Mudanças na estrutura dos dados de entrada — novos campos,
+campos removidos, mudanças de tipo. Pode ser causado por atualizações em sistemas upstream sem c omunicação adequada.
+Data Quality Issues: Dados que estão estruturalmente corretos mas semanticamente incorretos — valores fora do range esperado, distribuições anômalas, inconsistências entre campos relacionados.
+Missing Data: Dados que deveriam estar pre sentes mas não estão — partições vazias, campos nulos inesperados, registros faltantes.
+Duplicatas: Registros duplicados que inflam contagens e distorcem distribuições. Particularmente problemáticos em pipelines de streaming com garantias at-least -once.
+Latência Excessiva: Dados que chegam, mas com atraso significativo. Em sistemas de ML que dependem de features em tempo real, latência pode ser tão prejudicial quanto dados ausentes.
+Alertas de Falha em Ingestão/Transformação de Dados
+Data contracts
+Data contracts são acordos formais entre produtores e con sumidores de dados que especificam:
+• Schema: Estrutura esperada dos dados (campos, tipos, constraints)
+• SLAs: Expectativas de tempo (freshness, latência máxima)
+• Qualidade: Regras de validação (completude, unicidade, ranges)
+• Semântica: Significado dos campos e regras de negócio
+Vuppu e Achanta (2025) argumentam que data contracts são fundamentais para pipelines robustos, pois tornam explícitas as expectativas que antes eram implícitas, permitindo detecção automática de violações.
+Ferramentas de Validaçã o de Dados
+Great Expectations: Framework Python para definir, documentar e validar expectativas sobre dados. Permite criar "suites" de expectativas que são executadas automaticamente:
+# Exemplo conceitual
+expect_column_values_to_be_between("age", min_value =0, max_value=150)
+expect_column_values_to_not_be_null("customer_id")
+expect_column_values_to_be_unique("transaction_id")
+expect_column_mean_to_be_between("purchase_amount", min_value=10,
+max_value=500)
+Deequ: Biblioteca da Amazon para validação de dados e m escala, integrada com Apache Spark. Permite definir constraints e calcular métricas de qualidade sobre datasets grandes.
+Pandera: Framework de validação de dados para Pandas DataFrames, com tipagem forte e integração com type hints do Python.
+Alertas de Falha em Ingestão/Transformação de Dados
+Teoria de Alertas
+Um sistema de alertas efetivo precisa equilibrar sensibilidade (detectar problemas reais) com especificidade (evitar falsos positivos). Beyer et al. (2016)
+estabelecem princípios fundamentais:
+Severidade: Classificação do impacto do problema:
+• Critical: Impacto imediato em produção, requer ação urgente .
+• Warning: Potencial problema, requer investigação .
+• Info: Informativo, para awareness .
+Prioridade: Urgência da resposta:
+• P1: Resposta em minutos ( ex.: pipeline de produção parado) .
+• P2: Resposta em horas (ex.: degradação de performance) .
+• P3: Resposta em dias ( ex.: otimização necessária) .
+Routing: Quem recebe o alerta:
+• Alertas de infraestrutura → equipe de SRE/DevOps .
+• Alertas de qualidade de dados → equipe de data engineering .
+• Alertas de performance de modelo → equipe de ML engineering .
+Escalation: O que acontece se o alerta não é respondido:
+• Após 15 min sem resposta → escalar para líder técnico .
+• Após 30 min → escalar para gerente .
+• Após 1h → escalar para diretor .
+Alertas no CloudWatch
+O Am azon CloudWatch oferece diferentes tipos de alertas:
+Metric Alarms: Baseados em thresholds estáticos ou bandas de anomalia:
+• SE avg(pipeline_duration) > 3600 POR 2 períodos consecutivos .
+• ENTÃO enviar notificação SNS .
+Alertas de Falha em Ingestão/Transformação de Dados
+Composite Alarms: Combinam múltiplos al armes com lógica booleana:
+• SE (data_volume_low AND model_accuracy_degraded) .
+• ENTÃO acionar incident response .
+Anomaly Detection: O CloudWatch pode aprender o padrão normal de uma métrica e alertar quando há desvios significativos, sem necessidade de definir thresholds manualmente.
+Boas Práticas para Alertas
+Todo alerta deve ter uma ação clara associada. Se não há nada que alguém possa fazer ao receber o alerta, ele não deveria existir. Cada alerta deve ter um link para um runbook que de screve o que o alerta significa , como investigar a causa raiz ,
+passos de mitigação e quando escalar .
+Redução de Falsos Positivos: técnicas incluem usar múltiplos períodos de avaliação antes de disparar , combinar múltiplas métricas (composite alarms) , ajustar thresholds baseado em dados históricos e usar anomaly detection em vez de thresholds estáticos
+Incident Management para Pipelines de ML
+O processo de resposta a incidentes em pipelines de ML segue um fluxo estruturado .
+Detecção: Alerta é disparado (auto mático) ou problema é reportado (manual).
+Triagem: Avaliar severidade e impacto. Perguntas -chave:
+• O modelo em produção está afetado?
+• Dados corrompidos já foram usados para treino?
+• Qual o blast radius (quantos sistemas/usuários afetados)?
+Mitigação: Ações imediatas para reduzir o impacto:
+• Reverter para o último modelo válido .
+Alertas de Falha em Ingestão/Transformação de Dados
+• Pausar o pipeline para evitar propagação de dados corrompidos .
+• Ativar fallback (cache de features, modelo de backup) .
+Resolução: Corrigir a causa raiz do problema.
+Post-mortem: Documentar o incidente, identificar melhorias, e implementar ações preventivas.
+Circuit Breakers e Fallback Strategies
+Inspirados no padrão de design de software, circuit breakers em pipelines de dados interrompem o processamento quando detectam condições anômalas : se a taxa de registros inválidos excede 5%, parar a ingestão ; se o schema mudou inesperadamente, pausar o pipeline ; se a latência de uma dependência excede o timeout, usar cache .
+Fallback Strategies para ML incluem :
+• Último modelo válido : Manter o modelo anterior em standby para rollback rápido .
+• Cache de features: Usar features calculadas anteriormente quando o pipeline de features falha .
+• Degradação graceful: Servir predições com menor confiança ou usar regras de negócio como fallback .
+• Default predictions: Retornar valores padrão quando o modelo não está disponível .
+Design de Políticas de Alerta
+Uma política de alerta bem desenhada considera não apenas o "quê" alertar,
+mas o "como" .
+Canais de notificação incluem PagerDuty/OpsGenie (para alertas críticos que requerem resposta imediata ), Slack/Teams (para alertas de warning e informativos ),
+e-mail (para relatórios e tendências ) e dashboard (para visibilidade contínua ).
+Alertas de Falha em Ingestão/Transformação de Dados
+Horários e Rotação:
+• Alertas críticos: 24/7 com rotação de on -call.
+• Alertas de warning: horário comercial .
+• Relatórios: diários ou semanais .
+Agrupamento e deduplicação incluem a grupar alertas relacionados para evitar flood , suprimir alertas duplicados dentro de uma janela de tempo e correlacionar alertas de diferentes sistemas que indicam o mesmo problema .
+Alertas de Falha em Ingestão/Transformação de Dados
+### Mercado, Cases E Tendências
+A área de data quality e data observability tem crescido rapidamente.
+Ferramentas como Monte Carlo, Bigeye e Anomalo oferecem plataformas dedicadas à detecção de problemas em dados, complementando o monitoramento de infraestrutura tradicional.
+A tendência de "shift left" na qualidade de dados — detectar problemas o mais cedo possível no pipeline — está ganhando tração. Em vez de validar dados apenas no final do pipeline, organ izações estão implementando validações em cada etapa,
+criando "quality gates" que impedem a propagação de dados corrompidos.
+Outra tendência é o uso de ML para monitorar ML — algoritmos de anomaly detection que aprendem o comportamento normal dos dados e a lertam automaticamente quando algo muda, sem necessidade de regras manuais.
+Alertas de Falha em Ingestão/Transformação de Dados
+## O Que Você Viu Nesta Aula?
+Vimos como f alhas silenciosas em pipelines de dados são mais perigosas que falhas ruidosas, pois podem degradar modelos de ML sem serem detectadas ; data contracts formalizam expectativas entre produtores e consumidores de dados,
+habilitando validação automática e ferramentas como Great Expectations, Deequ e
+Pandera permitem definir e executar validações de dados programaticamente.
+Além dis so, compreendemos como ale rtas efetivos são acionáveis, têm runbooks vinculados e equilibram sensibilidade com especificidade ; o processo de incident management (detecção → triagem → mitigação → resolução → post -mortem)
+é essencial para resposta estruturad a e circuit breakers e fallback strategies protegem o sistema quando falhas ocorrem.
+Alertas de Falha em Ingestão/Transformação de Dados
+### Referências
+BEYER, B.; JONES, C.; PETOFF, J.; MURPHY, N. R. Site Reliability Engineering:
+How Google Runs Production Systems. Sebastopol: O'Reilly Media, 2016.
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO/IEC
+33001:2015: Information technology: Process assessment: Concepts and terminology. Geneva: ISO, 2015. Disponível em:
+https://www.iso.org/standard/54175.html . Acesso em: 27 ago. 2026.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps): Overview, Definition, and Architecture. IEEE Access, v. 11, p. 31866 –
+31879, 2023.
+PWC. Experience is everyt hing: Here’s how to get it right. 2018. Disponível em:
+https://www.pwc.com/us/en/advisory -service s/publications/consumer -intelligence -
+series/pwc -consumer -intelligence -series -customer -experience.pdf . Acesso em: 27 ago. 2026.
+RICCIARDI, G. GapAnalysis_IT4IT_Value Stream Flows: Gianni Ricciardi: para fins didáticos. 2023. Disponível em:
+https://1drv.ms/x/s!AteDfZdQAPwHhuovcPYjiNE_2x8CPA?e=U2hevf . Acesso em: 27 ago. 2026.
+SCULLEY, D. et al. Hidden Technical Debt in Machine Learning Systems. In:
+ADVANCES IN NEURAL INFORMATION PROCES SING SYSTEMS (NeurIPS), v. 28,
+2015.
+VUPPU, S.; ACHANTA, V. Building Robust Data Pipelines. International Journal of
+Computer Trends and Technology (IJCTT), 2025.
+Alertas de Falha em Ingestão/Transformação de Dados
+### Palavras -Chave
+Alertas . Falhas Silenciosas . Data Contracts . Great Expectations . Circuit
+Breaker . Incident Management . Fallback . Data Quality . CloudWatch Alarms .
+Runbook.
+Alertas de Falha em Ingestão/Transformação de Dados

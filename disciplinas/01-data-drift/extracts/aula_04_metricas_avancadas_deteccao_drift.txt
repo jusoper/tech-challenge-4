@@ -1,0 +1,202 @@
+Métricas Avançadas para Detecção de Drift
+## | Aula 04 - Machine Learning Engineering
+
+## Fase 4 Métricas Avançadas
+
+### Para Detecção De Drift
+Métricas Avançadas para Detecção de Drift
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Métricas Avançadas para Detecção de Drift
+### O Que Vem Por Aí ?
+Imagine uma fintech de crédito que usa um modelo de machine learning para aprovar empréstimos. Inicialmente, o modelo foi treinado com dados históricos estáveis, apresentando ótima performance. Porém, alguns meses após a implantação, a taxa de inadimplência aumenta e os retornos financeiros caem drasticamente. Testes de de tecção de drift simples, como o teste de Kolmogorov -
+Smirnov e o Population Stability Index (PSI), são aplicados em variáveis individuais,
+mas não indicam mudanças significativas nas distribuições marginais. O que está acontecendo? A suspeita recai sobre um drift sutil e multivariado nos dados – ou seja, uma mudança conjunta nas relações entre múltiplas variáveis, difícil de capturar por métricas univariadas tradicionais.
+Nesta aula, vamos explorar métricas avançadas para detecção de drifts,
+capazes de iden tificar mudanças delicadas em distribuições de alta dimensionalidade. Você aprenderá como essas novas métricas superam os métodos convencionais em cenários complexos e como aplicá -las na prática para manter modelos de ML confiáveis mesmo em ambientes de da dos dinâmicos.
+Métricas Avançadas para Detecção de Drift
+### Hands On
+Nesta aula prática, vamos demonstrar o uso de métricas avançadas de drift que complementam os conceitos teóricos vistos no vídeo. As videoaulas correspondentes mostram passo a passo a aplicação dessas métricas em cenários reais. Co meçaremos configurando o ambiente de programação Python e instalando as bibliotecas necessárias, incluindo ferramentas de código aberto para detecção de drift. Em seguida, mostraremos como calcular e interpretar métricas de drift tanto univariadas quanto m ultivariadas.
+Para isso, usaremos dados sintéticos que simulam mudanças sutis nas distribuições de variáveis, similar ao caso prático discutido. Por exemplo,
+calcularemos o Population Stability Index (PSI) – uma métrica univariada de drift – para comparar a distribuição de uma variável em dois instantes no tempo. Depois,
+utilizaremos uma métrica multivariada moderna, a Máxima Discrepância de Médias
+(MMD) com kernel RBF, para detectar mudanças multidimensionais nos dados,
+cujos fundamentos teóricos foram dis cutidos na seção Saiba Mais.
+Código completo disponível no GitHub: Repositório com todos os scripts desta aula em https://github.com/Miyake -Diogo/9mlet -data-drift (garanta que você tem Python 3.8+ e bibliotecas como numpy, scipy e scikit -learn instaladas).
+Snippet 1: cálculo do population stability index (psi)
+O trecho a seguir ilustra a implementação do cálculo do PSI, usado para medir drift em distribuições univariadas. Conforme discutido na seção Saiba Mais, o
+PSI compara a distribuição de frequências de uma variável entre dois períodos e é definido como ∑_i(p_i−q_i)ln⁡p_i q_i, onde p_i e q_i são as proporções em cada bin no período de referência e no período atual, respectivamente. Aqui geramos dados sintéticos para um recurso numérico e usa mos 10 bins para computar o PSI. Os conceitos teóricos do PSI foram apresentados na seção Saiba Mais, destacando suas vantagens e limitações.
+import numpy as np
+Métricas Avançadas para Detecção de Drift
+# Amostras sintéticas de duas distribuições de um mesmo
+atributo para dois períodos baseline = np.random.normal(loc=50, scale=10,
+size=10000) # período de referência current = np.random.normal(loc=52, scale=12,
+size=10000) # período atual (ligeiramente diferente)
+
+# Definição de bins para cálculo de frequências
+intervalos = np.linspace( min(baseline.min(),
+current.min()),
+ max(baseline.max(),
+current.max()), num=11)
+# Calcula as proporções em cada bin para os dois períodos
+freq_base, _ = np.histogram(baseline, bins=intervalos)
+freq_current, _ = np.histogram(curr ent, bins=intervalos)
+pct_base = freq_base / len(baseline) + 1e -8 #
+proporção em cada bin (evita zero)
+pct_current = freq_current / len(current) + 1e -8
+# Cálculo do PSI agregando a diferença ponderada pelo log
+da razão das proporções psi = np.sum((pc t_current - pct_base) * np.log(pct_current
+/ pct_base))
+print(f\"PSI calculado: {psi:.4f} \")
+Código -fonte 1 – Código completo (Python): https://github.com/Miyake -Diogo/9mlet -data-
+drift/psi_calc.py
+Fonte: Elaborado pelo autor (202 6)
+Observe: No código anterior , baseline e current simulam distribuições de um atributo antes e depois do drift. O PSI resultante é um valor positivo que indica o grau de divergência; tipicamente, valores acima de ~0,25 sugerem mudança de distribuição significativa. O PSI, poré m, analisa cada variável isoladamente e pode não detectar alterações multivariadas sutis – por isso precisamos de métricas avançadas, como veremos a seguir.
+Snippet 2: Detecção de Drift Multivariado com MMD (Máxima Discrepância de
+Médias)
+Este trecho demon stra a aplicação de uma métrica multivariada para detectar drift sutil envolvendo múltiplas variáveis, usando Máxima Discrepância de
+Médias (MMD) com kernel gaussiano (RBF). Na seção Saiba Mais explicamos que a
+MMD é uma estatística de teste não -paramétric a que mede a distância entre duas distribuições no espaço de características do kernel, conforme a fórmula MMD2(P,Q)=∣μ_P−μ_Q∣2_ℋ, onde μ_P e μ_Q são as médias das
+Métricas Avançadas para Detecção de Drift distribuições no espaço de Hilbert reproduzível associado ao kernel [Gretton et al.,
+2012]. Aqui, simulamos dados bidimensionais (por exemplo, renda e idade de clientes) para dois períodos e calculamos a estatística MMD, permitindo detectar mudanças conjuntas nas distribuições que passariam despercebidas por testes univariados. Os fundamentos mat emáticos do MMD foram abordados no Saiba Mais,
+mostrando como essa métrica consegue capturar drifts multivariados complexos.
+import numpy as np
+# Simula dados bivariados (e.g., Idade e Renda) para 2
+períodos np.random.seed(42)
+n = 500
+# Período de referência (dados sem drift)
+idade_ref = np.random.normal(loc=40, scale=10, size=n)
+renda_ref = 3000 + 500 * idade_ref + np.random.normal(0,
+10000, size=n) # correlação positiva com idade
+X_ref = np.column_stack((idade_ref, renda_ref))
+# Período atual ( dados com drift multivariado sutil)
+idade_cur = np.copy(idade_ref) # mesma distribuição marginal de idade renda_cur = 3000 + -500 * idade_cur + np.random.normal(0,
+10000, size=n) # correlação invertida
+X_cur = np.column_stack((idade_cur, renda_cur))
+# Função para calcular MMD com kernel RBF (gaussiano)
+def rbf_mmd(X, Y, gamma=1e -5):
+ XX = np.exp( -gamma * np.sum((X[:, None] - X[None,
+:])**2, axis=2)).mean()
+ YY = np.exp( -gamma * np.sum((Y[:, None] - Y[None,
+ XY = np.exp( -gamma * np.sum((X[:, None] - Y[None,
+:])**2, axis=2)).mean()
+ return XX + YY - 2 * XY mmd_value = rbf_mmd(X_ref, X_cur)
+print(f\"MMD (kernel RBF) = {mmd_value:.4e} \")
+Código -fonte 2 – Código completo (Python): https://github.com/ Miyake -Diogo/9mlet -data-
+drift/mmd_drift_detect.py
+Fonte: Elaborado pelo autor (2026)
+O código anterior calcula o valor de MMD entre as distribuições de referência
+(X_ref) e atual (X_cur). Ao alterar sutilmente a relação entre as variáveis (no exemplo, in vertendo a correlação entre idade e renda no período atual), obtemos um valor de MMD significativamente maior que zero, sinalizando a presença de drift multivariado mesmo que cada variável isoladamente não aparente grande mudança. Assista ao s vídeos desta aula para ver a execução completa do pipeline de detecção de drift e a interpretação desses resultados em um cenário prático.
+Métricas Avançadas para Detecção de Drift
+### Saiba Mais
+Nesta seção, vamos aprofundar os conceitos de detecção de drift e apresentar as métricas avançadas desenvolvidas para e nfrentar desafios que métodos tradicionais não conseguem solucionar. Lembre -se: em machine learning, drift refere -se à mudança da distribuição de dados ao longo do tempo, o que pode degradar a performance dos modelos preditivos [GAMA et al., 2014].
+Formalm ente, podemos definir drift como uma diferença significativa entre as distribuições conjunta de dados em dois instantes: há concept drift entre tempos t_0 e t_1 se ∃,X,y:P_t_0(X,y)≠P_t_1(X,y), onde P_t(X,y) é a distribuição conjunta das variáveis preditora s X e da variável -alvo y no tempo t. Esse fenômeno pode manifestar -se de duas maneiras principais [GAMA et al., 2014; ver Figura
+1]: drift de input (também chamado de feature drift ou covariate shift),
+quando P(X) muda ao longo do tempo; e drift de conceit o real, quando P(y∣X) muda
+(ou seja, a relação entre as variáveis preditoras e a resposta se altera). Em cenários práticos, ambos os tipos de drift podem ocorrer simultaneamente e de forma sutil .
+Para detectá -los e atuar adequadamente, é crucial medir as m udanças de distribuição com precisão e sensibilidade, especialmente em contextos de alta dimensionalidade.
+Limites de Métricas Simples em Altas Dimensionalidades
+Os métodos clássicos de detecção de drift, como o Teste de Kolmogorov -
+Smirnov (KS) e o PSI (Population Stability Index), analisam variáveis individualmente. Eles comparam distribuições univariadas (por exemplo, distribuição de frequências de um atributo antes e depois) para identificar mudanças. No entanto, esses métodos podem falhar em de tectar drifts quando a alteração ocorre na relação entre variáveis. No caso da fintech, por exemplo, os testes univariados não captaram nenhuma variação significativa em “idade”, “renda” ou “dívidas” separadamente, pois as distribuições marginais permanece ram similares. Entretanto,
+a correlação conjunta entre essas variáveis mudou sutilmente, deteriorando o desempenho do modelo de crédito. Esse tipo de “ponto cego” motivou pesquisas em métricas que consideram o conjunto de variáveis simultaneamente, avalian do o
+Métricas Avançadas para Detecção de Drift drift no espaço multivariado. Além disso, em dados de alta dimensão, a noção de proximidade e similaridade pode se tornar difusa, uma vez que distâncias
+Euclidianas tendem a se concentrar em valores semelhantes independentemente da diferença real entr e os pontos (efeito conhecido como “maldição da dimensionalidade”) [BELLMAN, 1961; AGGARWAL; HINNEBURG; KEIM, 2001]. Em espaços com dezenas ou centenas de atributos, testes univariados ou suposições de independência perdem poder. Pesquisas clássicas demons traram, por exemplo,
+que em dimensões elevadas métricas de distância usuais podem se tornar menos significativas [AGGARWAL; HINNEBURG; KEIM, 2001]. Portanto,
+detectar drifts nesses contextos exige medidas que capturem a estrutura de dependências entre vari áveis e possuam fundamentação estatística sólida em espaços de alta dimensão.
+Métricas de Divergência para Comparar Distribuições
+Uma abordagem fundamental para mensurar mudanças de distribuição é o uso de métricas de divergência estatística. Essas medid as quantificam o quão
+“distantes” duas distribuições P (referência) e Q (atual) estão. Por exemplo,
+a divergência de Kullback -Leibler (KL) é definida por D_KL(P∣Q)=∑_xP(x)ln⁡P(x)
+Q(x) (ou a integral análoga no caso contínuo). Essa métrica, utilizada em PSI e em métodos de detecção baseados em entropia [BASSEVILLE; NIKIFOROV, 1993], mede a perda de informação quando Q é usado para aproximar P. Entretanto, D_KL não é uma distância simétrica e pode divergir para infinito se Q(x)=0 em algum ponto onde P(x)>0. Para lidar com isso, surgiu a divergência de Jensen -Shannon (JSD),
+uma versão simétrica e finita do KL, definida como D_JS(P∣Q)=1
+### 2D_Kl(P∣M)+
+2D_KL(Q∣M), onde M=1
+2(P+Q). A JSD varia de 0 a 1 bit e é amplamente usada para medir drift em distribuições de atribu tos categóricos ou discretizados. Apesar de úteis, tanto D_KL quanto D_JS são aplicados individualmente a cada variável, ou requerem supor independência entre atributos para extensões multivariadas – o que é problemático quando há correlações importantes entre os features.
+Outra família de métricas de divergência são as baseadas em distâncias estatísticas. Por exemplo, a distância de Hellinger e a distância de
+Métricas Avançadas para Detecção de Drift
+Wasserstein (também conhecida como distância de transporte ótimo ou Earth
+Mover’s Distance) medem o “custo” para transformar uma distribuição em outra. A distância de Wasserstein, muito empregada em modelos geradores como o WGAN
+[ARJOVSKY; CHINTALA; BOTTOU, 2017], é definida (no caso unidimensional)
+como a área entre as funções de distribuição acumula da de P e Q. Essa métrica tende a ser mais estável e sensível a mudanças sutis na forma das distribuições do que divergências baseadas apenas em densidades, sendo robusta mesmo em altas dimensões [VILLANI, 2009].
+A Figura 1 ilustra um exemplo sintético de drift multivariado sutil: as distribuições marginais de “idade” e “renda” em 2025 vs. 2026 permanecem parecidas (histogramas semelhantes), mas o diagrama de dispersão revela que a correlação entre essas variáveis inverteu -se de 2025 para 2026. Nenhuma métr ica univariada capturaria essa inversão, mas distâncias multivariadas (como
+Wasserstein de ordem 2 sobre o vetor 2D ou MMD, discutida adiante) identificam essa mudança.
+Figura 1 ‒ Exemplo de detecção de drift multivariado: Gráfico de dispersão de variáveis “Idade” (eixo
+X) e “Renda” (eixo Y) para dados sintéticos de 2025 (pontos azuis) e 2026 (pontos vermelhos). As distribuições marginais de cada variável isoladamente são similares em ambos os anos (não exibidas aqui), mas a correlação conjunta mud a de positiva para negativa, configurando um drift multivariado sutil
+Fonte: Elaborado pelo autor (2026)
+Métricas Avançadas para Detecção de Drift
+Máxima Discrepância de Médias (MMD) e Teste de Duas Amostras
+Para lidar com drifts multivariados, pesquisadores propuseram testes estatísticos como a Máxima Discrepância de Médias (MMD) – também conhecida como teste de duas amostras em espaços de kernel [GRETTON et al., 2012]. A
+MMD é uma medida de distância entre distribuições construída projetando os dados em um espaço de dimensões possivelmente infin itas (um Reproducing Kernel Hilbert
+Space, RKHS) através de uma função de kernel. Intuitivamente, a MMD calcula a diferença entre as médias das distribuições embebidas nesse espaço de alta dimensão, fornecendo uma estatística cujo valor esperado é zero se (e somente se) P=Q [GRETTON et al., 2012]. Considere um kernel gaussiano k(x,x′)= exp⁡(−γ∣x−x′∣2).
+A MMD ao quadrado pode ser expressa como MMD2(P,Q)=Ex,x′∼P[k(x,x′)]+
+Ey,y′∼Q[k(y,y′)]−2 Ex∼P, y∼Q[k(x,y)] , onde os primeiros dois termos representam similari dades médias dentro de cada distribuição e o último termo, entre dados de P e Q. Em nossas simulações, ao inverter a correlação entre variáveis
+(vide Figura 1), obtivemos um valor de MMD significativamente maior que zero,
+indicando drift. Em geral, para us o prático, define -se um limiar de significância estatística (valor -p) via permutações ou suposições assintóticas [GRETTON et al.,
+2012]. Estudos recentes demonstram que abordagens multivariadas como MMD e seu parente relativo Kernel Two -Sample Test superam métodos univariados em detectar drifts sutis em dados complexos, inclusive em aplicações de processamento de linguagem natural com vetores de embeddings textuais [FELDHANS et al.,
+2021].
+Outra métrica avançada relacionada é o Least -Squares Density Diffe rence
+(LSDD) [SUGIYAMA et al., 2013]. Em vez de calcular divergências indiretas via densidades (como KL ou JS), o LSDD busca estimar diretamente a diferença entre as densidades p(x) e q(x) dos dois períodos, minimizando o erro quadrático médio dessa difere nça. A estatística de teste LSDD é equivalente à energia do erro de aproximação de p(x)−q(x) em um espaço de funções, e pode ser usada para inferir drifts sem precisar estimar cada distribuição separadamente. Trabalhos de
+Sugiyama e colegas demonstraram qu e o LSDD pode identificar mudanças sutis em distribuições de alta dimensão com maior eficiência computacional, possuindo
+Métricas Avançadas para Detecção de Drift desempenho superior ao KS em vários cenários. Em resumo, tanto a MMD quanto o
+LSDD são exemplos de testes não supervisionados de drift que não exigem rótulos dos dados (ou seja, não dependem de quedas de acurácia para sinalizar problema,
+diferentemente de métodos supervisionados que monitoram erro preditivo)
+[CLOUDERA FFL, 2021]. Essas métricas comparam apenas as amostras de dados em dife rentes janelas de tempo, adequadas para cenários em que não há resposta verdadeira disponível imediatamente – por exemplo, em detecção de fraude ou manutenção preditiva, em que o feedback pode demorar ou ser escasso.
+Métricas Avançadas para Detecção de Drift
+### Mercado, Cases E Tendências
+Com a crescente demanda por confiabilidade em ML, o campo de detecção de drifts tem evoluído rapidamente. Pesquisas recentes exploram abordagens baseadas em deep learning para detectar drift em dados complexos. Por exemplo,
+Greco et al. (2024) propuseram u m método de detecção de concept drift não supervisionada usando representações de deep learning, aproveitando embeddings de redes neurais para monitorar mudanças em tempo real em fluxos de dados de alta frequência. Essa linha segue a tendência de extrair características latentes de modelos complexos (como transformadores ou autoencoders) e, em seguida, aplicar testes multivariados (como MMD e LSDD) nesses vetores de embedding. Os resultados indicam que essa abordagem detecta drifts mais rapidamente e de for ma mais robusta do que métodos tradicionais baseados em dados brutos [GRECO et al., 2024].
+No âmbito industrial, soluções de monitoramento automatizado de drift vêm sendo incorporadas em plataformas de MLOps. Ferramentas open source como Evidently AI, Nann yML e Alibi-Detect oferecem pacotes para acompanhar métricas de drift (univariadas e multivariadas) continuamente nos dados de modelos em produção. Em uma avaliação comparativa recente (D3Bench),
+Müller et al. (2024) analisaram essas ferramentas e concluír am que o Evidently AI se destaca na detecção geral de data drift, enquanto o NannyML apresenta vantagem em localizar precisamente o momento do drift e avaliar seu impacto na performance do modelo. Isso reflete uma tendência de mercado: equipes de data scie nce estão adotando cada vez mais tais bibliotecas para monitorar modelos de machine learning em produção de forma proativa, sem depender exclusivamente de validações manuais ou quedas de acurácia para identificar problemas.
+Por fim, casos do mundo real i lustram a importância dessas métricas avançadas.
+Durante a pandemia de COVID -19, a Instacart – empresa de entrega de mantimentos – testemunhou um drift abrupto: um modelo de previsão de estoque viu sua acurácia despencar de 93% para 61% em poucas semanas, devido à mudança repentina no comportamento dos consumidores. Embora as distribuições individuais de vendas de muitos produtos não tivessem se alterado drasticamente, o padrão de compras agregado mudou completamente, exigindo métricas robustas para detecta r
+Métricas Avançadas para Detecção de Drift essa alteração multivariada e acionar rapidamente o retreinamento do modelo. Em outro exemplo, um serviço de e -mail precisou adaptar seu filtro de spam ao longo do tempo: spammers introduzem gírias e formatos novos para burlar a filtragem,
+provocando drift no conteúdo textual dos e -mails maliciosos. Pesquisadores mostraram que detectores de drift baseados em embeddings de documentos e testes de duas amostras (como MMD e LSDD) conseguem indicar quando o conteúdo estatístico das mensagens mudou significativ amente, mesmo antes da queda na eficácia do classificador [FELDHANS et al., 2021]. Esses exemplos reforçam a necessidade de monitoramento contínuo e uso de métricas avançadas para garantir que modelos de ML em produção mantenham desempenho confiável ao lon go do tempo.
+Métricas Avançadas para Detecção de Drift
+## O Que Você Viu Nes Ta Aula ?
+Nesta aula, exploramos o desafio das mudanças de distribuição (drifts) em dados e seus impactos em modelos de machine learning. Você aprendeu que métodos tradicionais (como KS e PSI) nem sempre capturam drifts complexos,
+especialmente quando múltiplas variáveis mudam conjuntamente ou em alta dimensionalidade. Discutimos métricas avançadas, incluindo divergências estatísticas (KL, Jensen -Shannon, Hellinger, Wasserstein) e testes de duas amostras como MMD e LSDD, que oferecem maior sensibilidade para detectar drifts sutis.
+Também revisamos como implementar essas métricas na prática, com exemplos de código e referências a bibliotecas Python especializadas. Por fim,
+examinamos casos reais e tendências atuais – desde problemas concretos, como o drift no modelo de estoque da Instacart, até o surgimento de ferramentas de
+MLOps e abordagens de deep learning para monitoramento de modelos.
+Com esse conteúdo, você está preparado (a) para identificar proativamente diferentes tipos de drift e aplicar técnicas modernas para manter a performance dos modelos mesmo em cenários de dados em evolução contínua. Não deixe de conferir as videoaulas referentes a esta aula para visualizar esses conceitos em ação e consolidar seu ap rendizado!
+Métricas Avançadas para Detecção de Drift
+### Referências
+ARJOVSKY, Martin; CHINTALA, Soumith; BOTTOU, Léon. Wasserstein Generative
+Adversarial Networks . 2017. In: Proceedings of the 34th International Conference on Machine Learning (ICML). PMLR, v. 70, p. 214 –223. Disponível em:
+http://proceedings.mlr.press/v70/arjovsky17a.html . Acesso em: 14 ago. 2026.
+BASSEVILLE, Michèle; NIKIFOROV, Igor V. Detection of Abrupt Changes: Theory and Application . 1993. Englewood Cliffs, NJ: Pre ntice Hall. ISBN 0 -13-126780 -9.
+Acesso em: 14 ago. 2026.
+BELLMAN, Richard. Adaptive Control Processes: A Guided Tour . 1961.
+Princeton, NJ: Princeton University Press. ISBN 978 -0691652214. Acesso em: 14 ago. 2026.
+CLOUDERA FAST FORWARD LABS (FFL). Inferring Concept Drift Without
+Labeled Data . 2021. Whitepaper. Disponível em: https://concept -
+drift.fastforwardlabs.com/ . Acesso em: 14 ago. 2026.
+FELDHANS, Robert et al. Drift Detection in Text Data with Document
+Embeddings . 2021. In: Proceedings of IDEAL 2021: International Conference on
+Intelligent Data Engineering and Automated Learning. LNCS, v. 12873. Springer, p.
+124–135. Disponível em: https://doi.org/10.1007/978 -3-030-92273 -3_11 . Acesso em:
+14 ago. 2026.
+GAMA, João et al. A Survey on Concept Drift Adaptation . 2014. ACM Computing
+Surveys, v. 46, n. 4, art. 44. Disponível em: https://doi.org/10 .1145/2523813 . Acesso em: 14 ago. 2026.
+GRETTON, Arthur et al. A Kernel Two -Sample Test . 2012. Journal of Machine
+Learning Research, v. 13, p. 723 –773. Disponível em:
+http://www. jmlr.org/papers/volume13/gretton12a/gretton12a.pdf . Acesso em: 14 ago.
+2026.
+MÜLLER, Rieke et al. Open -Source Drift Detection Tools in Action: Insights from
+Two Use Cases . 2024. arXiv preprint, arXiv:2404.18673. Disponível em:
+https://doi.org/10.48550/arXiv.2404.18673 . Acesso em: 14 ago. 2026.
+SZÉKELY, Gábor J.; RIZZO, Maria L. Energy Statistics: A Class of Statistics
+Based on Distances . 2013. Journal of Statistical Planning and Inference, v. 143, n.
+8, p. 1249 –1272. Disponível em: https://doi.org/10.1016/j.jspi.2013.03.018 . Acesso em: 14 ago. 2026.
+SUGIYAMA, Masashi et al. Densi ty-Difference Estimation . 2013. Neural
+Computation, v. 25, n. 10, p. 2734 –2775. Disponível em:
+https://doi.org/10.1162/NECO_a_00492 . Acesso em: 14 ago. 2026.
+Métricas Avançadas para Detecção de Drift
+### Palavras -Chave
+Data Drift . Machine Learning . Monitoramento .
+Métricas Avançadas para Detecção de Drift

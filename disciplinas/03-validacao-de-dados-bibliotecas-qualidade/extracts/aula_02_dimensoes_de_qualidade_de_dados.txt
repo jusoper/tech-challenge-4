@@ -1,0 +1,213 @@
+Dimensões de Qualidade de Dados
+## | Aula 02 - Machine Learning Engineering
+
+## Fase 4 Dimensões De
+
+### Qualidade De Dados
+Dimensões de Qualidade de Dados
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Dimensões de Qualidade de Dados
+### O Que Vem Por Aí?
+A qualidade dos dados é o pilar da confiabilidade em qualquer sistema de
+Machine Learning (ML), e não apenas um detalhe técnico. Considere um cenário: você utiliza um conjunto de dados clínicos para desenvolver um modelo de predição de risco cardiovascular, vital para a priorização de atendimentos hospitalares. Após um treinamento com excelente acurácia aparente, o modelo entra em produção. Contudo,
+médicos notam falhas sistemáticas nas predições para mulheres acima de 60 anos. A investigação revela o problema: em 40% dos registros desse subgrupo, campos de exames laboratoriais estavam ausentes. A solução técnica, aparentemente inofensiva , foi preencher essas lacunas com a média global do dataset. Essa decisão introduziu um viés silencioso, mas devastador, comprometendo a confiança no sistema. A falha demonstra que a excelência da engen haria de dados é fundamental para a performance e a justiça do modelo.
+Nesta aula, vamos mergulhar nas dimensões que definem o que significa um dado ser de boa qualidade. Partindo do framework de Wang & Strong (1996) — que organiza a qualidade em quatro gr andes categorias: Intrínseca, Contextual,
+Representacional e Acessibilidade — passaremos pelas normas internacionais
+(ISO/IEC 25012 e ISO/IEC 5259 -4:2024) e chegaremos à teoria formal de mecanismos de dados ausentes formulada por Donald Rubin. Você vai ent ender a diferença entre um dado que simplesmente está faltando e um dado que está faltando por uma razão sistemática — e o impacto que essa distinção tem nos métodos de imputação, desde técnicas clássicas como média, mediana e k -NN até abordagens modernas baseadas em autoencoders, GANs e modelos de difusão. Ao final, você terá ferramentas conceituais e práticas para avaliar a qualidade de um conjunto de dados antes de confiar nele.
+Dimensões de Qualidade de Dados
+### Hands On
+Nesta aula prática, vamos colocar a mão na massa utilizando Python e a biblioteca ydata -profiling para realizar uma auditoria de qualidade de dados em um dataset gerado sinteticamente, que representa clientes de uma plataforma de e -
+commerce — escolhido por reunir variáveis numéricas e categóricas com padrões distintos de qualidade. A partir de um único relatório gerado automaticamente, você será capaz de identificar problemas de completude, acurácia, consistência e temporalidade — os pilares que estudaremos posteriormente
+Começamos criando um ProfileReport sobre o dataframe de clientes (com explorative=True e o cálculo de correlações desabilitado, para focar nas estatísticas simples) e salvando -o com to_file como um relatório HTML interativo, que inclui a análise de valores faltantes com heatmap de correlação, alertas automáticos por tipo e análise de duplicatas; você verá como a ferramenta sinaliza colunas com alta correlação, alta taxa de valores ausentes, constantes, outliers e distribuições enviesadas — sinais de qualidade que um engenheiro de ML precisa capturar antes de qualquer pré -processamento, e que manualmente consumiriam um bom tempo de codificação.
+Em seguida, mostramos como interagir programaticamente com o resultado por meio de get_description( ), extraindo o número de linhas duplicadas e percorrendo a lista de alertas (tipo e coluna) para integrá -los a um pipeline automatizado de validação; por fim, criamos nossos próprios métodos de identificação das regras de qualidade que queremos analisar, c om rotinas específicas para Completude (por variável), Acurácia, Consistência e Unicidade.
+O notebook Jupyter com todo o passo a passo está disponível no repositório
+GitHub do curso (pasta da Aula 2) e pode ser executado no Google Colab ou em um
+Jupyter No tebook local. A única dependência além do pandas é a própria biblioteca de profiling, instalável com pip install ydata -profiling ; execute as células na ordem, pois o dataframe sintético e o objeto profile são reaproveitados ao longo do notebook, e abra o a rquivo HTML gerado no navegador para explorar o relatório interativo mostrado na videoaula.
+Dimensões de Qualidade de Dados
+### Saiba Mais
+Nesta seção, construiremos um entendimento robusto sobre o que significa qualidade de dados em Machine Learning, dos frameworks teóricos consolidados às técnicas mais modernas de imputação.
+Framework Wang & Strong – Quatro Dimensões de Qualidade
+O artigo 'Beyond Accuracy: What Data Quality Means to Data Consumers',
+publicado por Richard Wang e Diane Strong no Journal of Management Information
+Systems em 19 96, é um marco da área. Antes dele, qualidade de dados era quase sinônimo de acurácia; os autores perguntaram o que os consumidores de dados consideram importante e, a partir de 179 atributos coletados junto a profissionais de
+TI e usuários de negócio, con solidaram 15 dimensões em quatro categorias. Essa estrutura ficou conhecida como framework ICRA (Intrinsic, Contextual,
+Representational, Accessibility) e permanece como a referência teórica fundamental
+(Wang & Strong, 1996).
+'Data quality is defined as fi tness for use — a concept that cannot be assessed without considering the context in which data will be used.' (Wang & Strong, 1996, p.
+6)
+A qualidade intrínseca trata da qualidade inerente ao dado, independentemente do uso: acurácia (o dado representa corretamente o valor real — '30/02/1985' é uma data inválida), objetividade (ausência de viés, como a sub -representação sistemática de grupos) , credibilidade (origem e cadeia de custódia verificáveis, como um prontuário com trilha de auditoria) e reputação/precisão (precisão suficiente para o uso pretendido). A qualidade contextual reconhece que qualidade não existe sem contexto
+— um dataset pod e ser excelente para uma aplicação e inadequado para outra — e reúne completude (uma das mais críticas em ML: dados incompletos levam a padrões parciais e má generalização), temporalidade (dado atual o suficiente para a tarefa; em recomendação, 30 dias pod em ser demais), volume, relevância (features irrelevantes introduzem ruído) e valor agregado.
+Dimensões de Qualidade de Dados
+A qualidade representacional aborda como os dados são apresentados —
+problemas de encoding, formatação e padronização: interpretabilidade ('col_123'
+versus 'idade _paciente_anos'), consistência (formatos e definições uniformes; o exemplo clássico são datas como '2024 -01-15', '15/01/2024' e 'Jan 15, 2024' no mesmo campo), concisão e facilidade de manipulação (chaves de junção com encodings diferentes, como CPF com e sem pontuação, quebram integrações). Por fim, a qualidade de acessibilidade avalia se o dado está disponível quando necessário e com controles adequados: acessibilidade (crítica em feature stores, para que features de treino e inferência sejam idênticas) e segurança de acesso (privacidade em conformidade com LGPD e GDPR).
+Categoria Dimensões Relevância em ML
+Intrínseca Acurácia
+Objetividade
+Credibilidade
+Reputação Qualidade factual dos dados de treino
+Risco de aprender padrões incorretos
+Contextual Completude
+Temporalidade
+Volume
+Relevância
+Valor Agregado Seleção de features
+Data freshness em sistemas em produção
+Representacional Interpretabilidade
+Consistência
+Concisão
+Integração Encoding
+Normalização
+Padronização de tipos
+Acessibilidade Acessibilidade
+Segurança Feature stores
+SLAs de pipelines
+Compliance LGPD/GDPR
+Tabela 1 – Framework ICRA de Wang & Strong (1996)
+Fonte: Adaptado de Wang & Strong (1996)
+Dimensões de Qualidade de Dados
+ISO/IEC 25012 e ISO/IEC 5259 -4:2024
+O framework de Wang & Strong foi incorporado e expandido por normas internacionais que criam uma linguagem comum sobre qualidade de dados. A principal é a ISO/IEC 25012:2008, da família SQuaRE, que define quinze características em duas perspectivas: as ine rentes ao dado (acurácia, completude, consistência,
+credibilidade e atualidade) e as dependentes do sistema (acessibilidade,
+conformidade, confidencialidade, eficiência, precisão, rastreabilidade,
+compreensibilidade, portabilidade, recuperabilidade e dispo nibilidade). É amplamente referenciada em contratos de qualidade de dados e auditorias.
+Mais recentemente, a ISO/IEC 5259 -4:2024 estabeleceu um framework específico para qualidade de dados em Inteligência Artificial, reconhecendo particularidades do ML não capturadas por normas gerais: a representatividade
+(adequação da distribuição de treino à população de interesse, contra viés de seleção e sub -representação), a separação treino/teste (dados de teste exigem qualidade especialmente alta para uma avaliação confiável), a linhagem de dados
+(rastreabilidade da origem e das transformações, fundamental para auditoria e compliance) e a qualidade em aprendizado contínuo (retreinamento). A convergência entre essas normas e a prática de ML está dando origem à discipl ina Data -Centric AI,
+que propõe melhorar sistematicamente a qualidade dos dados como estratégia primária de desempenho: estudos empíricos demonstraram ganhos de 33 a 88% em classificação (Zhou et al., 2024).
+Métricas de Completude, Acurácia, Consistência e Temporalidade
+Operacionalizar métricas é o que transforma a afirmação este dataset tem problemas de qualidade em algo mensurável: '23,7% dos registros de colesterol estão ausentes e 4,2% apresentam valores biologicamente impossíveis'. A completude pode ser medida por célula, coluna, linha e dataset — cada granularidade revela um aspecto do problema e direciona uma estratégia de tratamento. A acurácia é a mais complexa de medir automaticamente, pois requer conhecimento do domínio para definir o que é
+'corre to'; combinam -se validação por regras de negócio (range checks, type checks,
+Dimensões de Qualidade de Dados integridade referencial), comparação com uma fonte de verdade externa (ground truth)
+e detecção estatística de anomalias.
+A consistência avalia contradições internas, que em ML su rgem em três cenários: intra -registro (valores contraditórios no mesmo registro), inter -registro
+(violações de dependências funcionais) e temporal (valores que se contradizem ao longo do tempo). A temporalidade, frequentemente subestimada em projetos acadê micos, é crítica em produção: dados 'velhos' podem não representar mais o padrão atual do mundo, e suas métricas — idade máxima dos registros, distribuição temporal de treino versus produção, taxa de atualização — são o primeiro sinal de alerta em sistemas sujeitos a data drift.
+Mecanismos de Dados Faltantes – Teoria de Rubin (1976)
+Chegamos ao coração desta aula: a teoria formal dos mecanismos de dados faltantes formulada por Donald Rubin em 'Inference and Missing Data' (Biometrika,
+1976), que não apenas c lassifica os tipos de dados ausentes, mas determina quais métodos de imputação são estatisticamente válidos em cada cenário — e quando a imputação introduz viés sistemático.
+Imagine que você tem uma tabela cheia de dados (sua matriz de dados Y).
+Alguns esp aços estão em branco ( Ymis) e os preenchidos são os dados que você conseguiu coletar ( Yobs ,). Para controlar quais espaços estão preenchidos, criamos uma "tabela de controle" R, com 1 se o dado está observado e 0 se está ausente. A grande pergunta é: por que alguns dados estão faltando? O "mecanismo que gera R"
+é a causa por trás dos '0': a probabilidade de um dado faltar depende dos dados observados ou é algo totalmente aleatório? É como perguntar se um aluno falta à aula por causa da nota que tirou nas p rovas anteriores.
+MCAR – Missing Completely At Random
+No mecanismo MCAR, a probabilidade de um valor estar ausente não depende nem dos valores observados ( Yobs ,) nem dos valores ausentes ( Ymis):
+𝐏(𝐑 | 𝐘𝐨𝐛𝐬 , 𝐘𝐦𝐢𝐬) = 𝐏(𝐑)
+Dimensões de Qualidade de Dados
+A ausência é completamente aleatória — como se alguém tivesse escolhido ao acaso quais células apagar; por exemplo, um sensor que falha por interferência eletromagnética não relacionada aos valores medidos. Sob MCAR, a análise com dados completos (complete case analysis) produz estimativas não -viesadas, com menor poder estatístico, e a imputação simples pela média ou mediana é defensável.
+O teste de Little (1988) é o padrão para verificar empiricamente o MCAR.
+MAR – Missing At Random
+No mecanismo MAR, a pro babilidade de ausência depende dos valores observados ( 𝐘𝐨𝐛𝐬), mas não dos próprios valores ausentes ( 𝐘𝐦𝐢𝐬):
+𝐏(𝐑 | 𝐘𝐨𝐛𝐬 , 𝐘𝐦𝐢𝐬) = 𝐏(𝐑 | 𝐘𝐨𝐛𝐬)
+O nome é enganoso — o dado não falta completamente ao acaso, mas de forma aleatória condicio nal aos valores observados: em um estudo clínico, pacientes mais idosos têm maior probabilidade de não completar um questionário de qualidade de vida, mas essa probabilidade depende da idade (observada), não do valor que teriam respondido. Sob MAR, a compl ete case analysis é viesada, mas métodos de imputação condicional como k -NN e MICE produzem estimativas não -viesadas.
+MNAR – Missing Not At Random
+O MNAR é o mais problemático e o mais comum em dados reais de alta consequência: a probabilidade de ausência depende dos próprios valores ausentes:
+𝐏(𝐑 | 𝐘𝐨𝐛𝐬 , 𝐘𝐦𝐢𝐬) ≠ 𝐏(𝐑 | 𝐘𝐨𝐛𝐬)
+Pessoas com renda muito alta ou muito baixa tendem a não reportá -la;
+sensores falham quando o valor ultrapassa um threshold crítico. Nesses casos,
+qualquer método de imp utação introduzirá viés sistemático se não modelar explicitamente o mecanismo de ausência — e a consequência para ML é severa: em um dataset de crédito onde clientes de maior risco tendem a não reportar a renda, um modelo com imputação simples aprenderá qu e 'renda não informada' indica baixo risco, o oposto da realidade. Identificar MNAR requer conhecimento do domínio; testes estatísticos não distinguem MAR de MNAR apenas pelos dados.
+Dimensões de Qualidade de Dados
+Mecanismo Definição Exemplo Métodos Indicados
+MCAR P(R | Yobs , Ymis) = P(R) Sensor com falha aleatória Qualquer método ,
+imputação simples é defensável
+MAR P(R | Yobs , Ymis) = P(R | Yobs) Questionário não preenchido por idosos Regressão, k -NN,
+MICE, imputação múltipla
+MNAR P(R | Yobs , Ymis) ≠ P(R | Yobs) Renda não reportada pelos extremos Modelos de seleção,
+pattern mixture,
+abordagens bayesianas
+Tabela 2 – Mecanismos de Missing Data (Rubin, 1976)
+Fonte: Adaptado de Rubin (1976) e Van Buuren (2018)
+Métodos de Imputação: do Clássico ao Deep Learning
+Com a taxonomia de Rubin estabelecida, o estudo de Fan (2025) organiza os métodos de imputação em ordem crescente de complexidade computacional e de capacidade de modelar padrões complexos. Os mais simples são as imputações univariadas — média (numéricas simétricas), mediana (assimétricas ou com outliers)
+e moda (categóricas) —, que distorcem a distribuição original, reduzem artificialmente a variância e introduzem correlações espúrias. A imputação por k-Nearest Neighbors
+(k-NN) identifica, para cada valor ausente, os k registros mais similares no espaço das variáveis observadas e usa seus valores para estimá -lo, preservando melhor as correlações e sendo válida sob MAR (normalize os dados antes, para evitar a dominância de escalas). O MICE (Multiple Imputation by Chained Equations) é o padrão -ouro entre os métodos clássicos para MAR: cria múltiplos datasets completos,
+com valores amostrados da distribuição posterior, analisa todos e combina os resultados pela regra de Rubin, preservando a incerteza da imputação nos intervalos de confiança e valores -p.
+Após 2018, métodos de deep learning passaram a dominar a literatura, e Fan
+(2025) os agrupa em quatro famílias: autoencoders e VAEs , que aprendem uma representaç ão comprimida e reconstroem os valores ausentes (os VAEs acrescentam incerteza quantificada); GANs , como o GAIN (Generative Adversarial Imputation Nets,
+Dimensões de Qualidade de Dados
+Yoon et al., 2018), em que um gerador produz valores plausíveis e um discriminador tenta distingui -los dos reais, forçando imputações estatisticamente indistinguíveis;
+Transformers para dados tabulares , que tratam cada coluna como um 'token' e usam atenção para capturar dependências entre variáveis (como o SAINT); e modelos de difusão , que tratam os dados f altantes como deterioração e usam a difusão reversa para reconstruí -los, com resultados de estado da arte.
+Apesar do poder dos métodos de deep learning, eles exigem volumes significativos de dados e são computacionalmente custosos. Para datasets pequenos
+(< 10.000 registros), MICE com Random Forest frequentemente supera abordagens de deep learning. A escolha deve sempre considerar o tamanho do dataset, o mecanismo de dados faltantes e os recursos computacionais disponíveis. (Fan, 2025)
+Dimensões de Qualidade de Dados
+### Mercado, Cases E Tend Ências
+A teoria de qualidade de dados não vive apenas nos artigos acadêmicos — ela está no centro de alguns dos maiores desastres e sucessos tecnológicos recentes.
+Conhecer esses casos contextualiza a importância prática do que estudamos.
+O caso do Google Flu Trends (2008) serve como um exemplo notório de falha na qualidade de dados, onde um modelo que usava dados de buscas para prever surtos de gripe superestimou dramaticamente o número de casos em 2012 -2013,
+chegando a errar por um fator de 2x em relação aos dados do CDC (Centers for
+Disease Control and Prevention). A análise posterior (post -mortem) identificou problemas de temporalidade e consistência como as causas principais. Mudanças no comportamento de busca ao longo do tempo (data dr ift) e alterações no próprio algoritmo do Google criaram inconsistências significativas entre os dados de treinamento histórico e os dados usados em produção. O erro foi agravado pelo fato de o modelo nunca ter sido retreinado para incorporar essas mudança s (Lazer et al.,
+2014).
+A fronteira atual da pesquisa em imputação está sendo transformada por dois avanços convergentes. Primeiro, o uso de LLMs (GPT s, Claude, Gemini , etc.) para imputação de dados tabulares: ao invés de modelos estatísticos, estes sistemas utilizam conhecimento geral sobre o domínio para inferir valores ausentes com raciocínio contextual — especialmente promissor para MNAR, onde o mecanismo pode ser d escrito em linguagem natural. Segundo, a imputação preservando privacidade em cenários federados: em saúde e finanças, dados que frequentemente não podem ser centralizados, levando ao desenvolvimento de Federated MICE e
+FedGAN que aprendem a imputar dados distribuídos sem revelar valores individuais.
+Dimensões de Qualidade de Dados
+## O Que Você Viu Nesta Aula?
+Nesta aula você percorreu o caminho completo desde os fundamentos teóricos até a implementação prática da qualidade de dados para Machine Learning,
+consolidando os seguintes pontos e ssenciais:
+A qualidade de dados foi abordada por meio do Framework ICRA de Wang &
+Strong, que estrutura 15 dimensões em quatro categorias: Intrínseca, Contextual,
+Representacional e Acessibilidade. Em termos de formalização, existem normas internacionais que estabelecem requisitos de qualidade, como a ISO/IEC 25012 e a
+ISO/IEC 5259 -4:2024, sendo esta última focada especificamente em sistemas de
+Inteligência Artificial (IA). Discutimos as principais métricas de qualidade incluindo :
+• Completude: A proporção d e células com dados presentes (não -ausentes).
+• Acurácia: A conformidade dos dados com as regras de negócio definidas.
+• Consistência: A ausência de contradições nos dados.
+• Temporalidade: A adequação dos dados em relação ao tempo para o uso a que se destinam.
+Analisamos os estudos de Rubin (1976) sobre Mecanismos de dados faltantes classificados como: MCAR (ausência aleatória), que permite imputação simples; MAR
+(ausência que depende de variáveis observadas), para o qual MICE e k -NN são indicados; e MNAR (ausên cia que depende do próprio valor), onde qualquer método introduz viés sem modelagem explícita. Al ém disso, exploramos métodos de imputação seguindo uma complexidade crescente, indo d e técnicas como a extração da Média/mediana, passando por k -NN, MICE, Auto encoders, GANs, e chegando a modelos avançados como Transformers e Diffusion Models , em que, a escolha do método depende do mecanismo de detecção de valores faltantes , do volume de dados e dos recursos computacionais disponíveis.
+Dimensões de Qualidade de Dados
+### Referências
+BUOLAMWINI, J.; GEBRU, T. Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification . In: CONFERENCE ON FAIRNESS,
+ACCOUNTABILITY AND TRANSPARENCY, 1., 2018. Proceedings. PMLR, p. 1 –15,
+2018.
+FAN, J. An Interdisciplinary and Cross -Task Review on Missing Data Imputation .
+arXiv preprint arXiv:2511.01196. School of Data Science, The Chinese University of
+Hong Kong, Shenzhen, 2025. Disponível em: https://arxiv.org/abs/2511.01196 .
+Acesso em: 27 ago. 2026.
+ISO/IEC. ISO/IEC 25012:2008: Software Engineering: Software Product Quality
+Requirements and Evaluation (SQuaRE): Data Quality Model . Geneva: ISO/IEC,
+2008. Disponível em: https://www.iso.org/standard/35736.html . Acesso em: 27 ago.
+2026.
+ISO/IEC. ISO/IEC 5259 -4:2024: Artificial Intelligence: Data Quality for Analytics and Machine Learning (ML): Part 4: Data Quality Process Framework . Gene va:
+ISO/IEC, 2024. Disponível em: https://www.iso.org/standard/84002.html . Acesso em:
+27 ago. 2026.
+LAZER, D. et al. The Parable of Google Flu: Traps in Big Data Analysis . Science,
+v. 343, n . 6176, p. 1203 –1205, 2014. DOI: 10.1126/science.1248506.
+LITTLE, R. J. A. A Test of Missing Completely at Random for Multivariate Data with Missing Values . Journal of the American Statistical Association, v. 83, n. 404, p.
+### 1198–1202, 1988. Doi: 10.2307/22 90057.
+LITTLE, R. J. A.; RUBIN, D. B. Statistical Analysis with Missing Data . 3. ed.
+Hoboken: John Wiley & Sons, 2020. ISBN: 9780470526798. DOI:
+10.1002/9781119482260.
+MIAO, J. et al. An Experimental Survey of Missing Data Imputation Algorithms .
+IEEE Trans actions on Knowledge and Data Engineering, v. 35, n. 7, p. 6630 –6650,
+### 2022. Doi: 10.1109/Tkde.2022.3186498.
+RUBIN, D. B. Inference and Missing Data . Biometrika, v. 63, n. 3, p. 581 –592, 1976.
+### Doi: 10.2307/2335739.
+VAN BUUREN, S. Flexible Imputation of Miss ing Data . 2. ed. Boca Raton: CRC
+Press; Chapman & Hall, 2018. ISBN: 9780429492259. Disponível em:
+https://stefvanbuuren.name/fimd/ . Acesso em: 27 ago. 2026.
+WANG, R. Y.; STRONG, D. M. Beyond Accura cy: What Data Quality Means to Data
+Consumers . Journal of Management Information Systems, v. 12, n. 4, p. 5 –33, 1996.
+### Doi: 10.1080/07421222.1996.11518099.
+Dimensões de Qualidade de Dados
+YDATA AI. Ydata -Profiling: Data Quality Profiling for Pandas and Spark
+DataFrames . GitHub/Documentati on, 2024. Disponível em:
+https://docs.profiling.ydata.ai/ . Acesso em: 27 ago. 2026.
+YOON, J.; JORDON, J.; VAN DER SCHAAR, M. GAIN: Missing Data Imputation
+Using Generative Adversarial Nets . In: INT ERNATIONAL CONFERENCE ON
+MACHINE LEARNING (ICML), 2018. Proceedings of Machine Learning Research, v.
+80, p. 5689 –5698, 2018. Disponível em:
+https://proceedings.mlr.press/v80/yoon18a.h tml. Acesso em: 27 ago. 2026.
+ZHANG, Y. et al. Missing Data Imputation: A Survey . Knowledge -Based Systems,
+v. 276, 110518, 2023. DOI: 10.1016/j.knosys.2023.110518.
+ZHOU, Y. et al. A Survey on Data Quality Dimensions and Tools for Machine
+Learning . In: IEEE INTERNATIONAL CONFERENCE ON BIG DATA & MACHINE
+LEARNING, 2024. University of North Texas, 2024. Disponível em:
+https://arxiv.org/pdf/2406.19614 . Acesso em: 27 ago. 2026.
+Dimensões de Qualidade de Dados
+### Palavras -Chave
+Dimensões de Qualidade de Dados . Métricas . Imputação.
+Dimensões de Qualidade de Dados

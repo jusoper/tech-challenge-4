@@ -1,0 +1,201 @@
+Detecção de Concept Drift vs. Covariate/Label Drift
+## | Aula 06 - Machine Learning Engineering
+
+## Fase 4 Detecção De Concept Drift
+
+### Vs. Covariate/Label Drift
+Detecção de Concept Drift vs. Covariate/Label Drift
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Detecção de Concept Drift vs. Covariate/Label Drift
+### O Que Vem Por Aí ?
+Imagine que uma fintech acaba de lançar um modelo de machine learning para aprovação instantânea de crédito. No início, tudo corre bem: o modelo apresenta alta acurácia nos testes e impulsiona os negócios. Porém, com o passar do tempo, os clientes mudam de comportamento, surgem novos dados de mercado,
+a economia oscila. Sem uma estratégia de monitoramento contínuo, o desempenho do modelo começa a se degradar – e os riscos crescem. Modelos de Machine
+Learning em produção não são soluções “configure e esqueça”: suas previsões podem se tornar menos confiáveis a cada dia, a menos que sejam constantemente acompanhados.
+Nesta aula, vamos abordar Monitoramento Contínuo de Modelos de ML e Data SLOs – ou seja, como manter modelos de machine learning sob vigilância após o deploy, e como definir metas de qualidade para seus dados em produção.
+Você entenderá os desafios únicos do monitoramento de sistemas de ML (como a deriva de dados e de concei to), aprenderá a configurar indicadores de nível de serviço (Service Level Indicators, SLI) e a estabelecer Objetivos de Nível de Serviço de Dados (Data SLOs) para garantir performance e qualidade, além de conhecer ferramentas e métodos práticos de monitor amento. Ao longo do material, faremos conexões entre teoria e prática, preparando você para acompanhar as videoaulas correspondentes e aplicar essas técnicas em projetos reais. Vamos lá!
+Detecção de Concept Drift vs. Covariate/Label Drift
+### Hands On
+Nesta seção Hands On, vamos colocar em prática conceitos de monitoramento contínuo aprendidos na teoria. Nas videoaulas (Parte 3 do curso),
+você acompanhará a implementação de um pipeline de monitoramento de um modelo de ML aplicado a um caso de risco de crédito. Usaremos Python e bibliotecas como scikit -learn, pandas e SciPy, além de funções personalizadas para calcular métricas e verificar Data SLOs. Os códigos completos estão disponíveis em nosso repositório do curso no GitHub. Certifique -se de ter um ambiente Python configurado (recomendado Python 3.10+ e insta lação das dependências listadas no
+README do repositório).
+Código completo disponível no GitHub:
+Miyake -Diogo/9mlet -data-drift: Repositorio da disciplina de Data Drift
+Snippet 1: monitorando a acurácia do modelo
+No primeiro snippet, vamos calcular a acurácia de um modelo de ML em produção e compará -la com um SLO de desempenho. Suponha que nosso modelo de crédito gera previsões y_pred diariamente, e temos os rótulos reais y_true dos últimos dia s. Queremos que a acurácia se mantenha acima de 85%, conforme definido no Data SLO de desempenho. O código abaixo avalia a acurácia atual e dispara um alerta caso o threshold não seja atendido – esse alerta indicaria que o modelo precisa de atenção, possiv elmente um retreinamento ou investigação das causas da degradação.
+# Verifica acurácia do modelo em uma janela de dados
+recente accuracy = accuracy_score(y_true, y_pred) # acurácia das previsões atuais
+SLO = 0.85 # SLO de acurácia mínima (85%)
+if accuracy < SLO:
+ alert(f"Acurácia atual {accuracy:.1%} abaixo do SLO de
+85%!") # dispara alerta
+Código -fonte 1 – verifica_acuracia.py (Python)
+Fonte: Elaborado pelo autor (2026)
+Detecção de Concept Drift vs. Covariate/Label Drift
+No trech o anterior , utilizamos accuracy_score (do scikit -learn) para calcular a acurácia das previsões do modelo em um lote recente de dados. Em seguida, comparamos a métrica com o SLO definido (85%). Se a acurácia observada ficar abaixo desse objetivo, a função alert() é acionada para notificar a equipe de que o desempenho do modelo piorou além do aceitável. Essa lógica simples é fundamental para manter confiança no modelo ao longo do tempo – sempre que a performance cair abaixo do esperado, medidas corretivas pod em ser tomadas (como rever os dados de treinamento ou realizar troubleshooting do sistema). Assista à s videoaula s para acompanhar a execução completa desse pipeline de monitoração e compreender como integrar esses códigos em um sistema real.
+Snippet 2: Det ecção de Deriva de Dados
+Além de monitorar performance, precisamos acompanhar mudanças nos dados de entrada – a chamada deriva de dados. No segundo snippet, ilustramos como detectar data drift na distribuição de uma variável de entrada ao longo do tempo. U sando um teste estatístico de Kolmogorov -Smirnov (K -S), podemos comparar a distribuição de frequências de uma feature nas amostras recente e original. Se a diferença for estatisticamente significativa, interpretamos que ocorreu deriva. No exemplo, avaliamo s a variável idade dos solicitantes de crédito,
+comparando a distribuição atual (novos_dados) com a original de referência (base):
+# Teste de Kolmogorov -Smirnov para detecção de deriva na
+variável "idade"
+_, p_val = ks_2samp(base['idade'], novos['idade'])
+if p_val < 0.05: # p<0.05 indica mudança significativa na distribuição alert(f"Alerta: deriva detectada na distribuição de
+'idade' (p={p_val:.3f})")
+Código -fonte 2 – detectar_deriva.py (Python)
+Fonte: Elaborado pelo autor (2026)
+No código anterior , utilizamos o teste K -S bicaudal (função ks_2samp da biblioteca SciPy) para verificar se a distribuição da feature idade nos novos dados difere da distribuição da mesma feature nos dados de referência. O resultado é um valor -p (p_val). Se p_val < 0.05, rejei ta-se a hipótese de distribuição igual, indicando
+Detecção de Concept Drift vs. Covariate/Label Drift uma possível deriva de dados significativa. Nesse caso, um alerta é emitido para sinalizar que as entradas que o modelo tem recebido não se parecem mais com as do treinamento, o que pode levar à degradação do desempenho do modelo. Em um sistema real, esse tipo de alerta serviria para disparar a investigação das causas da deriva (mudanças no perfil dos clientes, novos padrões de fraude etc.) e possível retreinamento do modelo com dados atualizados.
+Snippet 3: Verificação de Qualidade dos Dados
+Além de acompanhar a acurácia e as distribuições, o monitoramento contínuo envolve garantir a qualidade dos dados de entrada. No terceiro snippet,
+exemplificamos uma verificação de completude dos dados – uma das dimens ões críticas de qualidade. Suponha que fixamos um SLO de no máximo 1% de valores ausentes em cada atributo de entrada. O código a seguir calcula a taxa de missing em cada coluna do dataset de produção (df) e emite um aviso se alguma coluna ultrapassar o li mite de 1% de missings:
+# Verifica porcentagem de valores ausentes por coluna nos
+dados de produção missing_rate = df.isnull().mean() # fração de valores nulos em cada coluna if (missing_rate > 0.01).any():
+ alert(f"Alerta: colunas com +1% de valores ausentes:
+{missing_rate[missing_rate > 0.01].index.tolist()}")
+Código -fonte 3 – verificar_completude.py (Python)
+Fonte: Elaborado pelo autor (2026)
+Nesse exemplo, definimos um SLO de qualidade de dados: cada atributo deve ter no máximo 1% de valores ausentes. O código percorre o dataframe df (com os dados recentes de produção recebidos pelo modelo) e calcula a proporção de valores nulos em cada coluna. Caso alguma coluna apresente mais que 1% de missings, um aviso é registrado/emi tido contendo os nomes das colunas problemáticas. Nas videoaulas, você verá esses e outros exemplos de checks de qualidade, além da integração com ferramentas especializadas em validação de dados (como o framework Great Expectations) para garantir que o pipeline de ML em produção se mantenha confiável e robusto.
+Detecção de Concept Drift vs. Covariate/Label Drift
+### Saiba Mais
+Por Que Monitorar Modelos de ML em Produção?
+A etapa de monitoramento se inicia quando o modelo de machine learning está em operação (pós -implementação) e visa garantir que o sistema continue a operar com desempenho confiável e dentro dos padrões esperados. Essa é uma diferença crucial em relação a sistemas de software tradicionais: modelos de
+ML são altamente sensíveis a mudanças no ambiente e nos dados. Mesmo alterações sutis no perfil dos dados de entrada ou nas condições de uso podem degradar significativamente sua performance.
+Estudos mostram que, conforme o tempo passa, muitos modelos sofrem decay de desempenho – seja pela perda de acurácia preditiva, pelo aumento de erros ou pelo desequilíbrio de suas predições – se não houver intervenção ativa. Em outras palavras, um modelo eficaz hoje pode não o ser daqui a alguns meses. Por isso, monitorar continuamente essas mudanças é fundamental para identificar cedo quaisquer desvios (de drift, ou deriva) e agir antes que o modelo cause impactos negativos severos (por exemplo, perdas financeiras ou prejuízo de reputação).
+Além do declínio natural de performance, outras situações de produção reforçam a necessidade de monitoramento. Modelos d e ML podem enfrentar dados fora do escopo original, erros acumulados em efeitos de retroalimentação (feedback loops) e até ataques adversariais que passam despercebidos. Além disso, o contexto operacional pode mudar: por exemplo, um modelo de recomendação treinado com dados de antes da pandemia pode não refletir comportamentos pós-pandemia. Até mesmo modelos que passaram por rigorosos testes antes do deploy podem falhar em cenários não previstos durante o desenvolvimento. Esse caráter dinâmico e não determi nístico dos sistemas de ML exige monitoramento contínuo como extensão das atividades de teste, para observar o sistema em tempo de execução e detectar problemas em tempo hábil. Em suma,
+sem monitoramento, problemas passam despercebidos até se tornarem cata stróficos
+– como ocorreu com o case da Zillow, em que um modelo de precificação imobiliária
+Detecção de Concept Drift vs. Covariate/Label Drift mal supervisionado levou a prejuízos de mais de 500 milhões de dólares e à perda de confiança dos usuários na ferramenta.
+Data Drift & Concept Drift: Entendendo a s Derivas
+Um dos principais fenômenos a serem monitorados é a deriva de dados. Esse termo refere -se às mudanças nas características estatísticas dos dados de entrada ao longo do tempo. Por exemplo, no caso de aprovação de crédito, a proporção de solicitant es de determinadas faixas etárias ou níveis de renda pode se alterar conforme mudanças macroeconômicas. Já a deriva de conceito está relacionada à mudança na relação entre as variáveis de entrada e a variável alvo ao longo do tempo.
+Ou seja, mesmo que a d istribuição dos dados de entrada não mude muito, o comportamento real que o modelo tenta prever pode se alterar – por exemplo, as variáveis que antes eram preditivas do risco de inadimplência podem perder parte do poder preditivo devido a novas condições d e mercado. Conforme Gama et al.
+(2014), a maioria dos algoritmos de streaming precisa lidar com concept drift para evitar degradação do desempenho. Em contextos de ML de produção, é imprescindível detectar esses tipos de deriva.
+Uma abordagem útil é resu mir a distribuição de cada variável em bins e acompanhar as proporções de dados em cada faixa. Uma métrica classicamente usada em Finanças é o Índice de Estabilidade Populacional (do inglês Population
+Stability Index, PSI). Esse índice, derivado da teoria da informação, quantifica a
+diferença entre duas distribuições de probabilidade. A fórmula do PSI é dada por:
+PSI=∑(n i=1Pi−Qi)ln⁡ (Pi
+Qi),⁡onde P_i é a proporção de observações no bin i da amostra de referência (por exemplo, os dados de treino originais) e Q_i é a proporção correspondente na amostra atual monitorada.
+Valores de PSI mais altos indicam maior drift entre as distribuições;
+tipicamente considera -se que PSI > 0.25 evidencia uma deriva severa que requer investigação imediata, enquanto valores entre ~0.10 –0.25 indicam uma deriva moderada. Além do PSI, outras métricas podem ser calculadas: por exemplo, distância de Wasserstein, divergência de Kullback -Leibler ou até mesmo
+Detecção de Concept Drift vs. Covariate/Label Drift medidas baseadas em modelos (como performance de um classificador auxiliar que tenta distinguir dados novos dos antigos). Na prática, muitas ferramentas de monitoramento implementam diversas dessas estatísticas simultaneamente,
+automatizando a detecção de drifts com base em limiares definidos pelo usuário (ver seção de tendências poste riormente ).
+Service Level Indicators (SLI) e Data SLOs em ML
+Além de acompanhar métricas, é essencial definir indicadores e objetivos de nível de serviço para os modelos e seus dados. Os Service Level Indicators
+(SLIs) são as grandezas que medem a qualida de ou performance do sistema – por exemplo, taxa de erro, latência média ou desvio -padrão da previsão. Já os Service
+Level Objectives (SLOs) são as metas ou faixas aceitáveis para esses indicadores.
+Em outras palavras, um SLO é um compromisso interno de qu e o sistema manterá o
+SLI dentro de certo patamar. No exemplo da nossa fintech, um SLI de desempenho é a acurácia do modelo, e o SLO associado é mantê -la acima de 85%. Há
+SLIs/SLOs comuns para sistemas tradicionais de software (como disponibilidade
+99.9% ou latência média abaixo de 100ms), mas em sistemas de ML precisamos de novos tipos de SLIs/SLOs devido ao comportamento não -determinístico e dependente de dados desses modelos.
+Por exemplo, a acurácia de predição ou a confiabilidade das inferências passam a ser indicadores fundamentais de qualidade do serviço de
+ML. Breck et al. (2017) propuseram um conjunto de verificadores (rubrica ML Test
+Score) que enfatiza a monitoração de aspectos como consistência dos dados de entrada, avaliação contínua da qualidad e preditiva e teste de degradação controlada do modelo em produção. Esses pontos servem justamente como indicadores de manutenibilidade e confiança de um sistema de ML ao longo do tempo.
+Data SLOs são SLOs aplicados especificamente à qualidade dos dados – isto é, definem critérios mínimos para a “saúde” das entradas que alimentam os modelos em produção. De nada adianta um modelo sofisticado se os dados de produção não respeitarem padrões mínimos de acurácia e completude. Os líderes em Engenharia de Dados costumam estabelecer SLOs de dados com base em dimensões clássicas de qualidade: usefulness (utilidade do dado para a decisão de
+Detecção de Concept Drift vs. Covariate/Label Drift negócio), acurácia (conformidade com a verdade, livre de erros), completude (ausência de lacunas ou dados ausentes), consistênc ia (integridade entre diferentes fontes), unicidade (não existência de registros duplicados), validade (valores dentro de formatos e intervalos válidos) e atualidade (dados frescos, dentro da janela de atualização esperada).
+Uma vez definidas essas dimens ões e seus limiares, é preciso monitorá -las continuamente. Por exemplo, se a vigência dos dados (freshness) é crítica para o negócio, pode -se estabelecer um SLO de que “o dataset de eventos de pagamentos deve ser atualizado a cada 12 horas”. Esse SLO serve como buffer interno para assegurar o SLA prometido aos consumidores (por exemplo, “atualização diária”).
+Assim, se o dado não for atualizado dentro de 12h, um alerta é disparado antes de o limite de 24h (SLA) ser ultrapassado, garantindo que a equipe de d ados possa agir proativamente para restabelecer o serviço dentro do combinado.
+Outra área importante é a confiabilidade das predições em si. Algoritmos de
+ML produzem saídas probabilísticas, e é desejável que essas probabilidades reflitam fielmente a rea lidade (ou seja, que estejam calibradas). Uma maneira de avaliar a calibração é utilizando a métrica de Brier, definida por BS  =  1
+### N∑(N
+i=1pi− yi)2,⁡onde p_i é a probabilidade prevista para a observação i (por exemplo, a chance de um cliente dar default) e y_i é o resultado observado (1 para default, 0 caso contrário). O Brier Score (BS) mede o erro quadrático médio das previsões probabilísticas e indica o quão bem calibrado o modelo está (quanto menor, melhor).
+Estudos empíricos mostram que tanto a acurácia quanto a calibração dos modelos costumam se deteriorar sob dataset shift – ou seja, sob condições de dados diferentes das do treino. Em um experimento de larga escala, Ovadia et al.
+(2019) constataram que métodos modernos de inferência bayesiana e aprendizado profundo sofrem redução de acerto e ficam super ou sub -confiantes quando expostos a dados cuja distribuição diverge daquela original. Esses resultados reforçam a importância de monitorar não apenas o desempenho nominal do modelo,
+mas também a confiabilidade de suas previsões (incerteza), incorporando métricas de calibração e alertas sobre confiança baixa ou variável nas previsões ao longo do tempo.
+Detecção de Concept Drift vs. Covariate/Label Drift
+Boas Práticas, Ferramentas e Estado da Arte
+Para implementar o monitoramento contínuo na prátic a, é necessário reunir dados de referência e métricas em tempo real. Uma arquitetura típica de monitoramento de ML inclui: log de previsões e rótulos reais em produção (para cálculo de métricas SLI como acurácia e erro), verificação periódica de qualidade e integridade dos dados, além de detecção automática de drift nos dados e no comportamento do modelo. Muitas organizações utilizam stacks de monitoramento com dashboards e alertas: por exemplo, coleta -se métricas via logs do modelo e das bases de dados (po dendo usar sistemas abertos como Prometheus e ELK Stack),
+consolida -se indicadores em painéis de controle (via ferramentas como Grafana ou serviços gerenciados na cloud) e define -se regras de alerta (por exemplo, enviar uma notificação no Slack ou Teams se um SLO não é atendido).
+O ecossistema atual conta com diversas plataformas de MLOps focadas em monitoramento de modelos, como o Arize AI e Fiddler, e bibliotecas open -source de destaque, como: Evidently (que gera relatórios de deriva e performance automa ticamente), Great Expectations (validação de qualidade de dados)
+e Deepchecks (verificações de integridade e consistência) entre outras. Essas ferramentas têm ajudado equipes a implementar monitoramento em escala, com verificações programáticas e dashboard s interativos que facilitam a detecção de anomalias. Hoje, já é possível, por exemplo, configurar pipelines de monitoramento que recalculam métricas de acurácia e deriva diariamente e geram relatórios automatizados com gráficos comparativos (pense nos rela tórios do
+Evidently.ai) para o time de ML, além de integrar webhooks de alerta que disparam e-mails ou mensagens instantâneas caso um SLO seja violado.
+No estado da arte, a pesquisa acadêmica tem avançado para acompanhar esses desafios. Revisões de literat ura recentes categorizam os domínios do monitoramento de ML em eixos como dados, modelo e operação, identificando lacunas – por exemplo, aspectos de ML justo e ética ainda estão sub -representados nas soluções de monitoramento atuais. Por outro lado, há um esforço crescente em fechar o ciclo do MLOps: novas abordagens propõem pipelines que detectam automaticamente problemas e já realizam a ação corretiva, como disparar o
+Detecção de Concept Drift vs. Covariate/Label Drift retreinamento do modelo ou reverter para uma versão anterior, sem necessidade de interve nção humana direta.
+Além disso, algoritmos de ponta vêm sendo incorporados ao monitoramento:
+um exemplo é o Deep Isolation Forest, que combina florestas aleatórias com redes neurais para melhorar a detecção de anomalias – atingindo até 15-20% mais AUC -
+ROC em relação à versão original do algoritmo. Outra frente inovadora é o uso de modelos de LLMs para análise de causas -raiz de falhas em sistemas complexos;
+por exemplo, Roy et al. (2024) descrevem um agente baseado em modelos de linguagem capaz de diagnosti car automaticamente erros de software a partir de logs e métricas do sistema. Essas tendências indicam que o futuro do monitoramento de ML envolverá cada vez mais automação inteligente: sistemas que não apenas detectam anomalias em tempo real, mas reagem a elas (por exemplo,
+ajustando hiperparâmetros, escalando recursos de infraestrutura ou triggering de pipelines de retreinamento) de forma autônoma.
+Detecção de Concept Drift vs. Covariate/Label Drift
+### Mercado, Cases E Tendências
+Uma das lições mais claras sobre a necessidade de monitoramento contín uo veio com o caso Zillow. Em 2021, a gigante imobiliária norte -americana Zillow teve de encerrar seu programa de compra e revenda de imóveis (iBuyer) após o fracasso de seu modelo de previsão de preços. O algoritmo, que não estava sendo monitorado adequad amente, não captou mudanças drásticas no mercado imobiliário durante a pandemia, resultando em avaliações equivocadas de preços de casas e prejuízos de mais de US$ 500 milhões. Além do impacto financeiro, um estudo revelou que a falha do algoritmo abalou a confiança dos usuários nas estimativas do Zillow, levando vendedores a se distanciarem cada vez mais dos preços sugeridos pela plataforma.
+Esse caso ilustra de forma contundente que erros de modelos em produção podem gerar prejuízos financeiros e danos à reputação da empresa. Por outro lado, empresas que investem em monitoramento proativo colhem resultados positivos: o LinkedIn, por exemplo, implementou um sistema interno de monitoramento de modelos que reduziu pela metade o tempo de detecção de bugs em a lgoritmos de recomendação, evitando que falhas de relevância afetassem a experiência do usuário (case discutido na s videoaula s).
+Da mesma forma, a Uber desenvolveu a plataforma Michelangelo, que inclui módulos de tracking de dados e performance de modelos, permitindo ajustes rápidos e automatizados quando alguma métrica foge ao padrão esperado. Essas iniciativas demonstram que monit orar é cuidar do ciclo de vida do modelo tanto quanto desenvolvê -lo – empresas que encaram o monitoramento como parte estratégica do
+MLOps conseguem mitigar riscos e manter a confiabilidade de suas soluções de IA.
+Publicações Recentes e Tendências
+O camp o de monitoramento de ML tem se desenvolvido rapidamente, com novas pesquisas e ferramentas surgindo nos últimos anos. Destacam -se, por exemplo:
+Detecção de Concept Drift vs. Covariate/Label Drift
+• Artigo “Monitoring Machine Learning Systems: A Multivocal Literature
+Review” (Naveed et al., 2025) – Uma revisã o extensa de 136 publicações sobre monitoramento de ML, que classifica as abordagens em categorias
+(dados, modelo, infra -estrutura e aspectos de ML responsável) e aponta lacunas entre a pesquisa acadêmica e as práticas da indústria. Esse trabalho reforça a importância de unificar perspectivas acadêmicas e industriais para avançar na área – por exemplo, integrando métodos de detecção de deriva robustos (p. ex., ADWIN, DDM, EDDM) com frameworks de logging e alerting usados por engenheiros de software.
+• Artig o “Deep Isolation Forest for Anomaly Detection” (Xu et al., 2023) –
+Apresenta uma extensão do algoritmo Isolation Forest utilizando redes neurais profundas para aumentar a capacidade de isolar anomalias em dados não lineares. Os autores relatam melhorias d e até 20% na métrica AUC -
+ROC em relação ao Isolation Forest clássico, demonstrando o potencial de algoritmos híbridos (aprendizado profundo + métodos de ensemble) no monitoramento de dados complexos.
+• Ferramentas Open -Source e Frameworks – Comunidades de software livre têm lançado soluções voltadas à monitoração de modelos: por exemplo, o já citado Evidently (2019), que provê relatórios de drift e performance prontos para uso; o TensorFlow Data Validation (TFDV), parte do TensorFlow
+Extended (TFX), que aut omatiza verificações de esquemas de dados e estatísticas de treino/produção; e o MLFlow Monitoring, módulo do MLFlow que auxilia na coleta de métricas de modelo e experimentos de forma unificada. Além disso, startups de MLOps vêm introduzindo plataformas c ada vez mais robustas e fáceis de usar – por exemplo, a startup Arize AI lançou em 2023 um dashboard de monitoramento para modelos de Linguagem
+Natural (LLMs) que automatiza a detecção de respostas inadequadas e problemas de toxicidade em modelos de lingua gem, atendendo à demanda crescente de monitorar modelos generativos.
+De forma geral, as tendências apontam para um monitoramento cada vez mais automatizado, escalável e integral. Tanto as pesquisas acadêmicas quanto as soluções de mercado caminham para si stemas de ML autoprotetores, capazes de detectar e reagir a problemas em tempo real. Isso inclui desde fail-safes
+Detecção de Concept Drift vs. Covariate/Label Drift inteligentes (por exemplo, reversão automática para um modelo anterior, caso a performance caia abruptamente) até integração com políticas de DevOps/SRE, nas quais violações de SLO geram gatilhos para a execução de procedimentos de recuperação e mitigação . A consolidação de Data SLOs e MLOps eficazes é apontada por analistas como um fator -chave para confiabilidade e sucesso de iniciativas de IA nos próximos anos, tornando o monitoramento contínuo uma competência essencial para engenheiros de machine learning.
+Detecção de Concept Drift vs. Covariate/Label Drift
+## O Que Você Viu Nes Ta Aula ?
+Nesta aula, você aprendeu a importância do monitoramento contínuo de modelos de machine learning em produção e compreendeu por que modelos de ML podem ter seu desempenho degradado ao longo do tempo sem supervisão ativa.
+Vimos como dados de produção podem sofrer deriva (drift) – seja nas distribuições de entrada ou nos padrões subjacentes – e discutimos m étodos para detectar essas mudanças (por exemplo, testes estatísticos e métricas como PSI).
+Também abordamos a definição de SLIs e SLOs, em especial os Data SLOs,
+para estabelecer metas de desempenho e qualidade de dados que o modelo deve manter.
+Por fim , exploramos casos reais que evidenciam a importância de monitorar modelos (tanto exemplos de falha quanto de sucesso), bem como as principais tendências da área – incluindo novas ferramentas de mercado e pesquisas acadêmicas de ponta. Com esse conheciment o, você está apto (a) a planejar e implementar a monitoração de sistemas de ML em ambientes de produção,
+contribuindo para a confiabilidade e eficiência das soluções de IA no longo prazo.
+Detecção de Concept Drift vs. Covariate/Label Drift
+### Referências
+BRECK, E.; CAI, S.; NIELSEN, E.; SALIB, M.; SCULLEY, D. The ML Test Score: A
+Rubric for ML Production Readiness and Technical Debt Reduction . 2017. In:
+2017 IEEE International Conference on Big Data (Big Data). Boston, MA: IEEE, p.
+1123 –1132. Disponível em: https://doi.org/10.1109/BigData.2017.8258093 . Acesso em: 14 ago. 2026.
+DOKANIA, A. Monitoring Machine Learning in Production: Model Drift, Alerting,
+and Governance . 2024. International Journal of Creative Research Thoughts, v. 12,
+n. 7. Disponível em: https://ijcrt.org/papers/IJCRT2507894.pdf . Acesso em: 14 ago.
+2026.
+GAMA, J.; ŽLIOBAITĖ, I.; BIFET, A.; PECHENIZKIY, M.; BOUCHACHIA, A. A
+Survey on Concept Drift Adaptation . 2014. ACM Computing Surveys, v. 46, n. 4,
+art. 44. Disponível em: https://doi.org/10.1145/2523813 . Acesso em: 14 ago. 2026.
+GAULT, J. How to Ensure Data Product SLAs and SLOs . 2025. dbt Labs Blog.
+Disponível em: https://www.getdbt.com/blog/how -to-ensure -data-product -slas-and-
+slos/. Acesso em: 14 ago. 2026.
+NAVEED, H.; BARNETT, S.; ARORA, C.; G RUNDY, J.; KHALAJZADEH, H.;
+HAGGAG, O. Monitoring Machine Learning Systems: A Multivocal Literature
+Review . 2025. arXiv. Disponível em: https://arxiv.org/abs/2509.14294 . Acesso em:
+14 ago. 2026.
+OVADIA, Y.; FERTIG, E.; REN, J.; NADO, Z.; SCULLEY, D.; NOWOZIN, S.;
+DILLON, J. V.; LAKSHMINARAYANAN, B.; SNOEK, J. Can You Trust Your
+Model’s Uncertainty? Evaluating Predictive Uncertainty Under Dataset Shift .
+2019. In: Advances in Neural Information Processing Syste ms 32 (NeurIPS 2019).
+Disponível em: https://arxiv.org/abs/1906.02530 . Acesso em: 14 ago. 2026.
+ROY, D.; ZHANG, X.; BHAVE, R.; BANSAL, C.; LAS -CASAS, P.; FONSECA, R.;
+RAJMOHAN, S. Exploring LLM-Based Agents for Root Cause Analysis . 2024. In:
+Companion Proceedings of the 32nd ACM International Conference on the
+Foundations of Software Engineering (FSE), p. 208 –219. Disponível em:
+https://doi .org/10.1145/3663529.3663841 . Acesso em: 14 ago. 2026.
+SCHRÖDER, T.; SCHULZ, M. Monitoring Machine Learning Models: A
+Categorization of Challenges and Methods . 2022. Data Science and
+Management, v. 5, n. 3, p. 105 –116. Disponível em:
+https://doi.org/10.1016/j.dsm.2022.07.004 . Acesso em: 14 ago. 2026.
+SCULLEY, D.; HOLT, G.; GOLOVIN, D.; DAVYDOV, E.; PHILLIPS, T.; EBNER, D.;
+CHAUDHARY, V.; YOUNG, M.; CRESPO, J. -F.; DENNISON, D. Hidden Technical
+Debt in Machine Learning Systems . 2015. In: Advances in Neural Information
+Processing Systems 28 (NIPS 2015). Disponível em:
+https://papers.nips.cc/paper/5656 -hidden -technical -debt-in-machine -learning -
+systems.pdf . Acesso em: 14 ago. 2026.
+Detecção de Concept Drift vs. Covariate/Label Drift
+TRONCOSO, I.; FU, R.; MALIK, N.; PROSERPIO, D. Algorithm Failures and
+Consumers' Response: Evidence from Zillow . 2023. Harvard Business School,
+Working Paper. Disponível em: https://doi.org/10.2139/ssrn.4520172 . Acesso em: 14 ago. 2026.
+XU, H.; PANG, G.; WANG, Y.; WANG, Y. Deep Isolation Forest for Anomaly
+Detection . 2023. IEEE Transactions on Knowledge and Data Engineering .
+Disponível em: https://doi.org/10.1109/TKDE.2023.3270293 . Acesso em: 14 ago.
+2026.
+Detecção de Concept Drift vs. Covariate/Label Drift
+### Palavras -Chave
+MLO ps. Data drift. Data products. Monitoramento .
+Detecção de Concept Drift vs. Covariate/Label Drift

@@ -1,0 +1,162 @@
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+## | Aula 07 - Machine Learning Engineering
+
+## Fase 4 Monitoramento De
+
+### Infraestrutura: Cloud (Aws/Azure) E Open-Source
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+### O Que Vem Por Aí?
+Seu modelo de recomendação está em produção, servindo milhões de requisições por dia. De repente, a latência dispara. O modelo não mudou, os dados não mudaram — o que aconteceu? Investigando, você descobre que a instância GPU atingiu 100% de utilização de memória porque outro processo foi deployado no mesmo cluster sem coordenação.
+Modelos de ML são consumidores intensivos de recursos computacionais —
+GPU, memória, storage, rede. Sem monitoramento de infraestrutura, problemas de capacidade, custos descontrolados e degradação de performance passam despercebidos até que impactem os usuários.
+Nesta aula, vamos explorar como monitorar a infraestrutura que sustenta sistemas de ML, tanto em provedores cloud (AWS, Azure) quanto com ferramentas open -source (Prometheus, Grafana), e como fazer capacity planning para workloads de ML.
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+### Hands On
+Nessa aula, estudaremos métricas de infraestrutura essenciais para ML, AWS
+CloudWatch para ML, Azure Monitor para ML e FinOps para ML. Também veremos
+Prometheus e Grafana , uma stack completa open -source e monitoramento de GPU.
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+### Saiba Mais
+Métricas de Infraestrutura Essenciais para ML
+Workloads de ML têm características distintas que exigem métricas específicas .
+Em c omputação , temos CPU utilization (percentual de uso dos pro cessadores ), GPU utilization (percentual de uso das GPUs - crítico para treino e inferência) , GPU memory
+(uso de memória da GPU , VRAM , — frequentemente o gargalo ) e Memory , RAM , (uso de memória do sistema ).
+Em s torage , temos Disk I/O (throughput de leitura /escrita - importante para carregamento de datasets) , disk latency (latência de operações de disco ) e s torage capacity (espaço disponível - datasets e checkpoints consomem muito espaço) .
+Já com relação à r ede, há n etwork throughput (bandwidth utilizada -
+transferência de dados entre serviços) , network latency (latência entre componentes distribuídos ) e API request rate (requisições por segundo ao endpoint de inferência ).
+Sobre e specíficas de ML , temos i nference latency (p50, p95, p99 - tempo de resposta do modelo ), batch processing time (tempo para processar um batch de treino ), queue depth (requisições aguardando processamento ) e m odel load time
+(tempo para carregar o modelo em memória ).
+AWS Cloudwatch para ML
+O Amazon CloudWatch é o s erviço nativo de monitoramento da AWS. Para workloads de ML, as integrações mais relevantes são:
+SageMaker Endpoints:
+• Invocations: Número de requisições ao endpoint .
+• InvocationModelErrors: Erros retornados pelo modelo .
+• ModelLatency: Latência de inferência do modelo .
+• OverheadLatency: Latência de overhead (serialização, rede) .
+• CPUUtilization, MemoryUtilization, GPUUtilization: Uso de recursos .
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+Lambda Functions (para inferência serverless):
+• Duration: Tempo de execução .
+• Errors: Taxa de erros .
+• Throttles: Requisi ções throttled .
+• ConcurrentExecutions: Execuções simultâneas .
+ECS/EKS (containers):
+• CPUUtilization, MemoryUtilization: Por task/pod .
+• RunningTaskCount: Número de tasks ativas .
+• Custom metrics via CloudWatch Agent .
+Azure Monitor para ML
+O Azure Monitor oferece capacidades equivalentes para o ecossistema Azure:
+Azure ML Endpoints: request latency e throughput , error rates por tipo de erro e resource utilization dos compute targets .
+AKS (Azure Kubernetes Service): pod-level metrics (CPU, memory, network) ,
+node-level metrics e cluster autoscaler metrics .
+Application Insights: distributed tracing para pipelines de ML , custom events e métricas e smart detection (anomaly detection automática) .
+FinOps para ML
+FinOps (Financial Operations) aplicado a ML é a práti ca de gerenciar e otimizar custos de infraestrutura de ML. Kreuzberger et al. (2023) destacam que custos de infraestrutura são frequentemente subestimados em projetos de ML.
+Custos típicos de ML:
+• Treino: GPUs são caras — um treino de modelo grande pode cus tar milhares de dólares
+• Inferência: Endpoints always -on consomem recursos continuamente
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+• Storage: Datasets, checkpoints, artefatos e logs acumulam custos
+• Data transfer: Movimentação de dados entre serviços e regiões
+Práticas de FinOps para ML : tagging de re cursos por projeto/equipe/modelo ;
+dashboards de custo por pipeline e modelo ; alertas de custo (ex .: treino excedeu budget) ; spot/preemptible instances para treino ; autoscaling para inferência (scale to zero quando possível) e right-sizing de instâncias baseado em utilização real
+Prometheus: Monitoramento Open -Source
+Prometheus é o sistema de monitoramento open -source mais utilizado,
+especialmente em ambientes Kubernetes. Sua arquitetura é baseada em pull — o
+Prometheus busca métricas nos t argets periodicamente.
+Componentes:
+• Prometheus Server: Coleta e armazena métricas em time -series database .
+• Exporters: Expõem métricas de sistemas que não suportam Prometheus nativamente .
+• Alertmanager: Gerencia alertas (routing, silencing, grouping) .
+• Pushga teway: Para jobs de curta duração que não podem ser "scraped" .
+PromQL (Prometheus Query Language):
+# Taxa de requisições por segundo nos últimos 5 minutos
+rate(http_requests_total{job="ml -inference"}[5m])
+# Percentil 99 de latência
+histogram_quantile(0.99 , rate(http_request_duration_seconds_bucket[5m]))
+# Uso de GPU acima de 90%
+nvidia_gpu_utilization > 90
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+Grafana: Dashboards e Alerting
+Grafana é a plataforma de visualização mais popular para métricas de infraestrutura .
+Data Sources: Suporta Prometheus, CloudWatch, Elasticsearch, InfluxDB, e dezenas de outros.
+Dashboards: Painéis customizáveis com gráficos de séries temporais,
+heatmaps, tabelas, gauges e mais.
+Alerting: Sistema de alertas integrado com suporte a múltiplos canais (Slack,
+PagerDuty, email, webhooks).
+Provisioning: Dashboards e data sources podem ser definidos como código
+(YAML/JSON), permitindo versionamento e automação.
+Stack Comp leta Open -Source
+Uma stack de observabilidade open -source completa para ML:
+Prometheus (métricas) + Loki (logs) + Tempo (traces) + Grafana (visualização)
+ Alertmanager (alertas)
+Vantagens: sem vendor lock -in, custo controlado (infraestrutura própria) ,
+customização total e comunidade ativa .
+Desvantagens: overhead operacional (manter a stack) , escalabilidade requer expertise e menos features "out of the box" que soluções SaaS .
+Case: Monitora Mento de Infraestrutura em Escala
+Cenário: Sistema de recomendação servindo 10M requisições/dia.
+Arquitetura de monitoramento: NVIDIA DCGM exporta métricas de GPU para
+Prometheus ; node exporter coleta métricas de sistema (CPU, memória, disco) ; custom exporter coleta métricas de modelo (latência, throughput, scores) ; Prometheus
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source armazena todas as métricas ; Grafana dashboards para visualização em tempo real e
+Alertmanager envia alertas para Slack e PagerDuty .
+Autoscaling baseado em métricas: scale up quando GPU utilization > 80% por
+5 minutos ; scale down quando GPU utilization < 30% por 15 minutos e warm pools para reduzir tempo de scale up .
+Capacity planning: análise de tendências de tráfego para prever demanda futura ; right-sizing baseado em utiliza ção real vs provisionada e reserva de capacidade para picos (Black Friday, eventos) .
+Monitoramento de GPU: NVIDIA DCGM
+O NVIDIA Data Center GPU Manager (DCGM) é a ferramenta oficial para monitoramento de GPUs em data centers. Métricas importantes:
+• GPU Util ization: Percentual de tempo que a GPU está executando kernels
+• Memory Utilization: Uso de VRAM
+• Temperature: Temperatura da GPU (thermal throttling reduz performance)
+• Power Usage: Consumo de energia
+• ECC Errors: Erros de memória que podem indicar hardware de gradado
+• SM Clock: Frequência dos streaming multiprocessors
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+### Mercado, Cases E Tendências
+A Microsoft publicou a arquitetura de referência MLOps v2 que inclui monitoramento como componente central, com integração entre Azure Monitor,
+Application Insights e Az ure ML para visibilidade completa do ciclo de vida de modelos.
+A tendência de FinOps para ML está ganhando tração, com organizações percebendo que custos de GPU para treino e inferência podem representar uma parcela significativa do orçamento de TI. Ferramentas como Kubecost e CloudHealth estão adicionando capacidades específicas para wor kloads de ML.
+O monitoramento de GPUs está se tornando mais sofisticado com o crescimento de workloads de LLMs, que exigem clusters de múltiplas GPUs com comunicação de alta velocidade (NVLink, InfiniBand). Métricas de comunicação inter -
+GPU e eficiência de paralelismo estão se tornando essenciais.
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+## O Que Você Viu Nesta Aula?
+Nesta aula, vimos que Workloads de ML exigem métricas específicas de infraestrutura, especialmente GPU utilization, VRAM e latência de inferência ; AWS
+CloudWatch e Azure Monitor oferece m integrações nativas para monitorar serviços de
+ML na nuvem e FinOps para ML é essencial para controlar custos de treino e inferência, com práticas como tagging, right -sizing e spot instances.
+Também compreendemos que Prometheus e Grafana formam uma stack open -
+source poderosa para monitoramento, sem vendor lock -in; NVIDIA DCGM é a ferramenta padrão para monitoramento detalhado de GPUs e capacity planning para
+ML requer análise de tendências e reserva de capacidade para picos.
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+### Referências
+BEYER, B.; JONES, C.; PETOFF, J.; MURPHY, N. R. Site Reliability Engineering:
+How Google Runs Production Systems. Sebastopol: O'Reilly Media, 2016.
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO/IEC
+33001:2015: Information technology: Process assessment: Concepts and terminology. Geneva: ISO, 2015. Disponível em:
+https://www.iso.org/standard/54175.html . Acesso em: 27 ago. 2026.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps) : Overview, Definition, and Architecture. IEEE Access, v. 11, p. 31866 –
+31879, 2023.
+MICROSOFT AZURE. MLOps v2 Reference Architecture: Monitoring. Azure
+Architecture Center, 2023.
+NANDAMURI, S. Monitoring and Observability in Machine Learning
+Infrastructure . World Journal of Advanced Research and Reviews (WJARR), 2025.
+PWC. Experience is everything: Here’s how to get it right. 2018. Disponível em:
+https://www.pwc.com/us/en/advisory -services/publications/consumer -intelligence -
+series/pwc -consumer -intelligence -series -customer -experience.pdf . Acesso em: 27 ago. 2026.
+RICCIARDI, G. GapAnalysis_IT4IT_Value St ream Flows: Gianni Ricciardi: para fins didáticos. 2023. Disponível em:
+https://1drv.ms/x/s!AteDfZdQAPwHhuovcPYjiNE_2x8CPA?e=U2hevf . Acesso em: 27 ago. 2026.
+SCULLEY, D. et al. Hidden Technical Debt in Machine Learning Systems. In:
+ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS (NeurIPS), v. 28,
+2015.
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source
+### Palavras -Chave
+CloudWatch . Azure Monitor . Prometheus . Grafana . FinOps . GPU Monitoring . NVIDIA
+DCGM . Autoscaling . Capacity Planning . Infraestrutura de ML.
+Monitoramento de Infraestrutura: Cloud (AWS/Azure) e Open-Source

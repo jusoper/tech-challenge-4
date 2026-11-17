@@ -1,0 +1,223 @@
+Frameworks de Qualidade de Dados
+## | Aula 07 - Machine Learning Engineering
+
+## Fase 4 Frameworks De
+
+### Qualidade De Dados
+Frameworks de Qualidade de Dados
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Frameworks de Qualidade de Dados
+### O Que Vem Por Aí?
+Você está trabalhando em um pipeline de Machine Learning em produção,
+onde os modelos treinados entregaram resultados excelentes em desenvolvimento.
+No entanto, quando os dados chegam do mundo real, surgem problemas: campos nulos inesperados, distribuições completamente diferentes, tipos de dados incor retos e valores fora de faixa. O resultado é que o modelo silenciosamente começa a falhar,
+e muitas vezes a falha só é descoberta tarde demais. É exatamente para resolver esse tipo de problema que nasceram os frameworks de qualidade de dados:
+ferramentas e specializadas que permitem definir, verificar e monitorar contratos formais sobre a qualidade dos seus dados. Nesta aula, vamos explorar os quatro grandes frameworks de qualidade de dados usados na indústria: Great Expectations,
+Amazon Deequ, Pandera e Ten sorFlow Data Validation (TFDV).
+Cada um desses frameworks endereçam problemas de qualidade de dados de uma perspectiva diferente — alguns focam em grandes volumes com processamento distribuído, outros em integração direta com fluxos de dados científicos. O que todos têm em comum é a capacidade de transformar a qualidade de dados de um processo manual e reativo para algo automatizado, proativo e rastreável. Você irá explorar como criar conjuntos de regras de qualidade, verificar constraints, validar schemas e visualizar estatísticas dos seus dados. Ao final desta aula, você terá o repertório necessário para escolher o framework mais adequado ao seu contexto e integrá -lo aos seus pipelines de ML. Prontos para garantir que seus dados estejam sempre em conformid ade antes de chegarem ao modelo?
+Frameworks de Qualidade de Dados
+### Hands On
+Nesta seção prática, vamos colocar a mão na massa com dois dos frameworks mais utilizados: Great Expectations e Pandera. Você verá como instalar e configurar cada ferramenta, criar suas primeiras expectation suites e executar validações, com o objetivo de que, ao final, você seja capaz de montar um pipeline mínimo de validação de dados integrado ao seu fluxo de trabalho em Python. Trabalhamos com um dataset sintético de preços de casas (inspirado no clássico Califor nia Housing
+Dataset), no cenário de uma imobiliária que recebe diariamente feeds de novas propriedades e precisa garantir regras como: preço não negativo, número de quartos entre 1 e 20, campos obrigatórios não nulos e distribuição de preços que não desvie mais de 30% da média histórica — exatamente o tipo de contrato de dados que os frameworks nos ajudam a implementar.
+Começamos pelo Great Expectations na API moderna v1.x (a versão 1.0, de
+2024, reformulou e simplificou a API das versões 0.x): criamos um contexto efêmero com gx.get_context(mode="ephemeral") , um Data Source Pandas com asset e batch definition para o DataFrame de imóveis, uma Expectation Suite com regras como
+ExpectColumnValuesToNotBeNull (preço, cidade) e
+ExpectColumnValuesToBeBetween (faixas de preço e quartos), e uma Validation
+Definition que executamos com run() — o resultado lista, expectation por expectation,
+o que foi aprovado ou reprovado e o motivo exato.
+Em seguida, com o Pandera, definimos um DataFrameSchema declarativo
+(tipo e Checks por coluna: preço positivo e abaixo de 10 milhões, quartos em [1, 20],
+área entre 10 e 5.000 m², cidade não nula) e validamos com lazy=True , que coleta todos os erros de uma vez em uma tabela com coluna, check violado e valor inválido;
+depois exploram os a abordagem orientada a objetos do DataFrameModel
+(ImoveisSchema ), em que o decorator @pa.check_types faz a função enriquecer_imoveis() validar automaticamente entrada e saída; e fechamos com checks customizados — um check element_wise (preço divisível por R$1.000), um check agregado sobre a média histórica da coluna e uma Hypothesis com teste t de
+Student verificando se imóveis grandes têm preço médio estatisticamente maior que os pequenos.
+Frameworks de Qualidade de Dados
+Antes de iniciar, certifique -se de ter o ambi ente configurado — recomendamos o Google Colab, o Jupyter Notebook ou o VS Code com Python 3.9+ — e instale as bibliotecas com pip install great_expectations pandera pandas . Os códigos apresentados são os mesmos utilizados na videoaula correspondente e est ão no repositório da disciplina; execute as células na ordem (o DataFrame de imóveis é criado no início e reaproveitado por todos os exemplos) e assista ao vídeo junto com este material para acompanhar a saída de cada validação e maximizar o aprendizado.
+Frameworks de Qualidade de Dados
+### Saiba Mais
+O Problema de Qualidade de Dados em Pipelines de ML
+A qualidade de dados em sistemas de Machine Learning não é apenas uma preocupação técnica — é uma questão de negócio crítica. Um estudo da IBM de 2016 estimou que dados de baixa qualidade custam às empresas americanas cerca de 3,1 trilhões de dólares por ano (Redman, 2016), e o fenômeno dos ' data cascades '
+descrito por Sambasivan et al. (2021), visto em aulas anteriores, mostrou consequências sociais amplificadas em domínios de alto impacto (saúd e, justiça criminal, crédito): 92% dos profissionais entrevistados já os sofreram, e o custo de correção cresce exponencialmente quanto mais tarde os problemas são detectados.
+Em sistemas transacionais, as regras de qualidade são definidas pelo esquema do banco (NOT NULL, UNIQUE, FOREIGN KEY); em ML, são mais sutis e estatísticas
+— o valor precisa estar dentro de uma distribuição esperada, ter a escala correta, não conter correlações espúrias com o target, não ter drift em relação ao treinamento —,
+e as val idações precisam ocorrer em múltiplos pontos do pipeline: ingestão, features,
+predição em tempo real e monitoramento contínuo.
+Conceito -chave : o princípio 'Shift Left' em qualidade de dados propõe que as validações aconteçam o mais cedo possível no pipelin e — idealmente na fonte —
+para evitar que problemas se propaguem e amplifiquem. Frameworks de qualidade de dados são a implementação técnica deste princípio. Antes de mergulharmos em cada um, é preciso entender os dois grandes paradigmas de validação que e les implementam.
+Validação Declarativa vs. Imperativa
+Na abordagem imperativa, o desenvolvedor escreve código procedural que executa verificações explicitamente ('se o valor for nulo, lançar exceção'); é flexível,
+mas mistura validação e lógica de negócio, as regras não são legíveis por não técnicos e é difíc il documentá -las automaticamente. A validação declarativa separa a definição das regras (o 'o quê') de sua execução (o 'como'): declaram -se expectativas ou constraints e o framework executa e reporta — as regras viram artefatos de
+Frameworks de Qualidade de Dados primeira classe, versioná veis e reutilizáveis, e ferramentas geram documentação a partir delas. Schelter et al. (2018) resumem: 'a qualidade de dados deve ser declarada como constraints sobre os dados, similar ao que constraints de banco de dados fazem para schemas relacionais'. N a prática, os frameworks modernos são híbridos:
+oferecem uma DSL declarativa para os casos comuns e permitem estender com código imperativo — o Great Expectations traz mais de 300 Expectations prontas,
+mas aceita expectativas customizadas em Python; o Pand era usa decoradores e anotações de tipo, mas aceita funções de validação arbitrárias.
+Great Expectations: A Biblioteca de Referência
+Great Expectations (GX) é provavelmente o framework de qualidade de dados mais popular do ecossistema Python. Criado em 201 7 por Abe Gong e James
+Campbell, teve em 2024 a versão 1.0, com uma API mais limpa e moderna. Opera com quatro conceitos centrais: o Data Source (a conexão com a fonte — DataFrame
+Pandas, tabela Spark ou SQL, CSV, S3), do qual um Asset é um conjunto de dad os específico e um Batch uma fatia (os dados de um dia); as Expectations, regras individuais em linguagem próxima do inglês ('expect_column_values_to_not_be_null',
+'expect_column_values_to_be_between'); a Expectation Suite, coleção de
+Expectations de um As set; e a Validation Definition, que as executa. As expectations se organizam em categorias: Column Map verificam cada linha
+('expect_column_values_to_match_regex'), Column Aggregate verificam estatísticas da coluna ('expect_column_mean_to_be_between'), Tab le Expectations verificam a tabela como um todo ('expect_table_row_count_to_be_between') e há uma classe voltada a ML, como 'expect_column_chisquare_test_p_value_to_be_greater_than',
+que verifica se a distribuição de uma coluna categórica não mudou signifi cativamente.
+Um dos diferenciais mais marcantes do GX é a geração automática de Data
+Docs — documentação interativa em HTML com todas as suites e os resultados de validação: a documentação vira subproduto natural da validação, e pode ser publicada em S3, G CS ou Azure Blob Storage e compartilhada com toda a equipe,
+incluindo stakeholders não técnicos.
+Frameworks de Qualidade de Dados
+Amazon Deequ: Validação em Escala com Apache Spark
+O Amazon Deequ foi desenvolvido internamente na Amazon e descrito por
+Schelter et al. (2018) em 'Automating Large -Scale Data Quality Verification'; open -
+sourced em 2018 sob licença Apache 2.0, tornou -se uma das referências acadêmicas
+mais citadas em qualidade de dados para ML. Construído sobre o Apache Spark,
+valida datasets massivos — bilhões de linhas — de for ma eficiente: enquanto o Great
+Expectations faz uma passagem pelos dados por constraint, o Deequ computa todas as métricas em uma única passagem. Seu modelo tem três abstrações: Analyzers calculam métricas (completude, unicidade, média, desvio padrão, hist ogramas),
+Constraints verificam se as métricas atendem a critérios e o ConstraintVerification orquestra a execução. A versão Python, PyDeequ, encapsula a implementação
+Scala/Spark — mas requer Spark como backend, sendo mais adequada a Amazon
+EMR, Databrick s ou clusters Spark. Uma verificação típica encadeia constraints sobre o DataFrame Spark:
+check = Check(spark, CheckLevel.Warning, 'Validação
+Imóveis') \
+ .isComplete('preco') \
+ .isPositive('preco') \
+ .isComplete('cidade') \
+ .hasMin('preco', lambda x: x >= 50000) \
+ .hasMean('area_m2', lambda x: 50 <= x <= 500) \
+ .isUnique('id')
+verification_result =
+VerificationSuite(spark).onData(df).addCheck(check).run()
+Código -fonte 1 - Validação da qualidade dos dados com Apache Deequ (Scala)
+Fonte: Elaborado pelo autor (202 6)
+Além da verificação, o Deequ oferece perfil de dados: o
+ConstraintSuggestionRunner analisa automaticamente um dataset e sugere constraints relevantes com base nas estatísticas observadas — extremamente útil para definir regras de qualidade de um dataset novo sem conhecimento prévio profundo —, devolvendo sugestões com nível de confiança para o engenheiro revisar e aprovar.
+Frameworks de Qualidade de Dados
+Pandera: Schema Va lidation para DataFrames Python
+Pandera é um framework de validação para DataFrames Python (Pandas,
+Polars, Modin) que se destaca pela elegância e pela integração com o ecossistema
+Python moderno. Criado por Niels Bantilan e mantido pela Union.ai, baseia -se em anotações de tipo e no estilo declarativo — a escolha natural para equipes que já usam mypy ou pyright. Seu conceito central é o DataFrameSchema, que descreve a estrutura esperada de um DataFrame (colunas, tipos, constraints, relações entre colunas); schema.validate(df) retorna o DataFrame validado (possivelmente com coerção de tipos) ou lança uma SchemaError detalhada, e 'lazy=True' coleta todos os erros antes da exceção — fundamental para debugging. O DataFrameModel permite definir schemas como class es com anotações de tipo, à maneira do Pydantic,
+integrando -se a type checkers e IDEs; e o Pandera suporta checks customizados e hipóteses estatísticas — testes formais entre colunas ou entre o dataset atual e o histórico, úteis para detectar data drift ou verificar relações de negócio (por exemplo,
+um teste t de Student confirmando que imóveis com 3+ quartos têm preço médio maior), documentadas junto às demais regras do schema.
+TensorFlow Data Validation (TFDV): Análise Estatística para ML
+O TensorFlow Dat a Validation (TFDV) é parte do TensorFlow Extended (TFX),
+o framework de produção de ML do Google (Caveness et al., 2020). Diferente dos demais, focados em constraints, tem orientação estatística voltada a sistemas de ML em produção e resolve três problema s: entender as características estatísticas de um dataset, detectar anomalias em relação a um schema ou a dados históricos, e identificar skew e drift entre treino e produção. O fluxo típico é gerar estatísticas, inferir um schema a partir delas, visualizá -las, detectar anomalias em novos datasets contra o schema e comparar estatísticas entre datasets (treino vs. serving, semana atual vs.
+anterior):
+train_stats = tfdv.generate_statistics_from_dataframe(dataframe=df_treino)
+schema = tfdv.infer_schem a(statistics=train_stats)
+serving_stats = tfdv.generate_statistics_from_dataframe(dataframe=df_novos_dad os)
+Frameworks de Qualidade de Dados anomalies = tfdv.validate_statistics(statistics=serving_stats,
+schema=schema)
+tfdv.display_anomalies(anomalies)
+tfdv.visualize _statistics(lhs_statistics=train_stats,
+rhs_statistics=serving_stats,
+ lhs_name='TRAIN',
+rhs_name='SERVING')
+Código -fonte 2 - Validação e comparação de dados de treinamento e serving com TensorFlow Data
+Validation (Python)
+Fonte: E laborado pelo autor (202 6)
+A visualização interativa é um dos pontos fortes do TFDV — os gráficos de distribuição revelam problemas difíceis de capturar com regras estáticas. Outro recurso é o gerenciamento refinado de schemas: após inferir o schema inici al, o engenheiro o ajusta com conhecimento de domínio e configura drift comparators com limites de divergência aceitáveis (L -infinito, Jensen -Shannon) entre treino e serving
+— quando ultrapassados, o TFDV reporta anomalias de drift.
+Comparação de Framework s: Escolhendo a Ferramenta Certa
+Com quatro frameworks poderosos, qual escolher? Depende do contexto —
+não existe solução ótima para todos os casos — e vale analisá -los por escala,
+integração com o ecossistema Python, curva de aprendizado, orientação técni ca e casos de uso. O Great Expectations se destaca pela maturidade, documentação rica e mais de 300 Expectations prontas — a escolha natural para uma solução robusta com Data Docs e múltiplas fontes; seu ponto fraco é a lentidão em datasets muito grandes c om Pandas. O Amazon Deequ é a escolha para big data: aproveita o Spark,
+executa todas as métricas em uma passagem e sugere constraints automaticamente
+— ao custo da dependência do Spark. O Pandera brilha onde a integração com o sistema de tipos Python é pr ioridade (mypy, pyright), com código expressivo graças a type hints e decorators, e é o único da lista com suporte nativo a Polars. O TFDV é a escolha de quem já está no ecossistema TensorFlow/TFX ou precisa de análise estatística profunda: pipelines end -to-end com validação como etapa formal do treinamento, visualização interativa e comparação treino/serving. A tabela a seguir resume as características de cada framework:
+Frameworks de Qualidade de Dados
+Critério Great
+Expectations Amazon Deequ Pandera TFDV
+Backend Pandas, Spark,
+SQL, Cloud Apache Spark Pandas, Polars,
+Modin TensorFlow/TFX,
+Pandas
+Escalabilidade Média -Alta (com
+Spark) Muito Alta (bilhões de linhas) Média (limitado pela memória) Alta (com
+TFRecords/Beam)
+Curva de
+Aprendizado Baixa (v1.x) / Alta
+(v0.x) Alta (requer Spark) Baixa (Pythônico) Média -Alta
+(ecossistema TF)
+Análise Estatística Boa Excelente Boa Excelente (foco em
+ML)
+Documentação
+Auto. Excelente (Data
+Docs) Limitada Boa (integra com mypy) Boa (visualização)
+Melhor para Pipelines
+Python/SQL com múltiplas fontes Big Data com
+Spark/AWS DataFrames
+Python com type safety Ecossistema
+TF/TFX, análise de skew
+Tabela 1 – Comparação dos frameworks de qualidade de dados
+Fonte: Elaborado pelo autor (2025)
+Integração com Pipelines de ML
+Definir regras é só parte do trabalho: para proteger pipelines em produção, os frameworks precisam ser etapas formais do fluxo — não scripts manuais — em diferentes níveis: ingestão (raw data validation), feature engineering, treinamento e serving. Em uma arquitetura típica, os dados brutos são validados ao entrar (com
+Great Expectations ou Pandera); se a validação falha, o pipeline é interrompido e um alerta disparado; os dados validados seguem para o feature engineering, onde são validados de novo após a transformação; e, no serving, as entradas são validadas em tempo real para garantir que estão no domínio com que o modelo foi treinado. A prática recomendada é o 'fail fast': lançar exceções imediatamente nas validações críticas, impedindo que dados inváli dos avancem, e registrar as não -críticas
+(warnings) em um sistema de rastreamento e observabilidade (como o MLflow) para análise posterior.
+Em produção, a validação costuma ser orquestrada por Apache Airflow,
+Lakeflow Jobs (Databricks) ou Dagster, de forma nativa ou via operadores customizados — para Great Expectations com Airflow, o Astronomer Cosmos oferece o GreatExpectationsOperator, que executa suites como etapas do DAG e registra os resultados como artefatos. Dica prática : defina claramente quais violações são
+'blockers' (impedem o avanço do pipeline) e quais são 'warnings' (registradas, não bloqueantes) — valores nulos em campos obrigatórios devem ser blockers;
+'distribuição mudou 5%' pode ser um warning que dispara notificação para revisão humana .
+Frameworks de Qualidade de Dados
+Software Engineering para Data Quality
+Os frameworks de qualidade de dados materializam princípios sólidos de engenharia de software aplicados a dados. O 'Contract -Based Programming' (Design by Contract — DbC), introduzido por Bertrand Meyer na linguagem Eiffel no fim dos anos 1980 e detalhado em 'Object -Oriented Software Construction' (Meyer, 1997), é a base filosófica: componentes definem contratos formais — pré-condições, pós -
+condições e invariantes —, e os data contracts seguem a mesma lógica: o produ tor garante que os dados seguem certas regras (pré -condição) e o consumidor pode assumi -las (pós -condição).
+A escalabilidade do Deequ — todas as métricas em uma única passagem —
+baseia -se em 'Sketching Algorithms', algoritmos probabilísticos que aproximam métricas em uma passagem com erro bounded: HyperLogLog para cardinalidades,
+Count -Min Sketch para frequências e t -Digest para percentis (Cormode e
+Hadjieleftheriou, 2010). E os 'Integration Patterns' de Hohpe e Woolf (2003) também se aplicam: o 'Message Va lidator' — interceptar e validar dados antes de encaminhá -
+los — é o que implementamos ao colocar validações como etapas do pipeline, e o
+'Dead Letter Channel' mapeia para a prática de redirecionar dados inválidos a uma
+'quarentena' para análise, em vez de descartá -los.
+Frameworks de Qualidade de Dados
+### Mercado, Cases E Tendências
+Um dos casos mais emblemáticos de uso em produção de frameworks de qualidade de dados em escala é a própria Amazon, que desenvolveu o Deequ internamente para resolver seus desafios de governança de dados. Segundo S chelter et al. (2018), o sistema foi projetado para executar verificações de qualidade em datasets com bilhões de linhas, sustentando casos de uso críticos — desde sistemas de recomendação de produtos até o gerenciamento de inventário. O time da AWS docume ntou que o Deequ é utilizado internamente para gerenciar a qualidade de data lakes com mais de 60 petabytes de dados, consolidando -o como a ferramenta de referência para qualidade de dados em grande escala na empresa (Amazon Web
+Services, 2021). O retorno do investimento foi evidente: redução de incidentes causados por dados corrompidos chegando a modelos de ML em produção.
+O Great Expectations consolidou -se como um dos frameworks de qualidade de dados mais amplamente adotados no ecossistema Python, registrando milhões de downloads semanais no PyPI e mais de 1 1 mil estrelas no GitHub. A Trivago publicou,
+em 2023, um estudo técnico detalhando a a doção do framework em ambientes híbridos de dados para garantir consistência em pipelines de engenharia em múltiplos ambientes de nuvem. O Airbnb, por sua vez, documentou a evolução de sua infraestrutura de qualidade de dados — incluindo o sistema Midas e o Data Quality
+Score calculado diariamente —, evidenciando que a qualidade de dados em escala exige tanto ferramentas robustas quanto processos culturais consolidados.
+Com a consolidação dos Large Language Models (LLMs) e da IA Generativa,
+novos desafios d e qualidade de dados emergiram no período de 2024 –2025. O movimento “Data -Centric AI” (Ng, 2021) argumenta que melhorar sistematicamente a qualidade dos dados de treinamento gera mais ganhos de desempenho do que otimizar arquiteturas de modelos. Nesse cont exto, três tendências se destacam: (i) os
+Data Contracts tornaram -se um padrão emergente de governança, com ferramentas como Soda e dbt permitindo acordos formais e executáveis entre produtores e consumidores de dados, codificando expectativas de qualidade diretamente nos pipelines; (ii) a Observabilidade de Dados evoluiu para cobrir pipelines de IA
+Generativa, com plataformas como Monte Carlo monitorando a qualidade de dados não estruturados em fluxos de RAG (Retrieval -Augmented Generation) e fine -tuning
+Frameworks de Qualidade de Dados de LLMs; (iii) ferramentas especializadas em curadoria de dados para LLMs — como o Argilla, plataforma open -source de anotação e feedback humano integrada ao ecossistema Hugging Face — passaram a complementar os frameworks tradicionais de validação, atuando diretamente na qualidade dos dados de treinamento e alinhamento de modelos.
+Frameworks de Qualidade de Dados
+## O Que Você Viu Nesta Aula?
+Nesta aula, exploramos o universo dos frameworks de qualidade de dados para
+Machine Learning, equipando você com conhecimento prático e teórico para implementar validações robustas em seus pipelines. Começamos entendendo o problema: a qualidade de dados em ML é uma questão crítica de negócio, com custos trilionários e o fenômeno dos 'data cascades' documentando como problemas de qualidade se amplificam a o longo do pipeline. Distinguimos os dois paradigmas de validação — declarativo (onde se declara O QUÊ os dados devem ser) e imperativo
+(onde se escreve COMO verificar) — e vimos como os frameworks modernos combinam ambos.
+Mergulhamos em cada um dos quatro frameworks principais. O Great
+Expectations, com sua rica biblioteca de mais de 300 Expectations e a geração automática de Data Docs, se mostrou ideal para pipelines Python/SQL de médio a grande porte. O Amazon Deequ, construído sobre Apache Spark e basea do em algoritmos de sketching, é a escolha para cenários de big data onde outros frameworks não escalam. O Pandera se destacou pela elegância pythônica e integração com o sistema de tipos Python, sendo especialmente adequado para equipes que valorizam type safety. O TFDV, do ecossistema TensorFlow/TFX, se destaca na análise estatística profunda e na detecção de distribution skew entre dados de treino e serving — funcionalidades únicas e essenciais para sistemas de
+ML em produção de alta maturidade.
+Exploram os teorias complementares — Contract -Based Programming,
+Sketching Algorithms e Integration Patterns — que nos ajudaram a entender não apenas o 'como usar', mas o 'por quê funciona' de cada framework. Por fim, a integração com pipelines de produção (Airflow ) e a estratégia de 'fail fast'
+completaram o quadro para você implementar qualidade de dados como uma prática de primeira classe em seus projetos de Machine Learning. Não deixe de assistir às videoaulas desta unidade para ver todos esses conceitos em ação no código!
+Frameworks de Qualidade de Dados
+### Referências
+CAVENESS, E. et al. TensorFlow Data Validation: Data Analysis and Validation in Continuous ML Pipelines . In: ACM SIGMOD INTERNATIONAL CONFERENCE
+ON MANAGEMENT OF DATA, 2020, Portland. Proceedings... New York: ACM, 2020.
+p. 2501 -2514. DOI: 10.1145/3318464.3386139.
+CHEN, C. et al. Reliable Machine Learning: Applying SRE Principles to ML in
+Production . Sebastopol: O'Reilly Media, 2022. ISBN: 9781098106225.
+CORMODE, G.; HADJIELEFTHERIOU, M. Methods for Finding Frequent Items in
+Data Str eams . The VLDB Journal, v. 19, n. 1, p. 3 -20, 2010. DOI: 10.1007/s00778 -
+009-0146 -x.
+HOHPE, G.; WOOLF, B. Enterprise Integration Patterns: Designing, Building, and
+Deploying Messaging Solutions . Boston: Addison -Wesley, 2003. ISBN:
+9780321200686.
+MEYER, B. Object -Oriented Software Construction . 2. ed. Upper Saddle River:
+Prentice Hall, 1997. ISBN: 9780136291558.
+REIS, J.; HOUSLEY, M. Fundamentals of Data Engineering: Plan and Build
+Robust Data Systems . Sebastopol: O'Reilly Media, 2022. ISBN: 9781098108298.
+SAMBASIVAN, N. et al. Everyone wants to do the model work, not the data work:
+Data Cascades in High -Stakes AI . In: ACM CHI CONFERENCE ON HUMAN
+FACTORS IN COMPUTING SYSTEMS, 2021, Yokohama. Proceedings... New York:
+### Acm, 2021. Doi: 10.1145/341 1764.3445518.
+WRIGHT, C. Data Quality Score: The next chapter of data quality at Airbnb . The
+Airbnb Tech Blog, Medium, 2024. Disponível em: https://medium.com/airbnb -
+engineering/data -quality -score -the-next-chapter -of-data-quality -at-airbnb -
+851dccda19c3 . Acesso em: 18 a br. 2026.
+Frameworks de Qualidade de Dados
+### Palavras -Chave
+Frameworks de Qualidade de Dados. Great Expectations. Pandera.
+Frameworks de Qualidade de Dados

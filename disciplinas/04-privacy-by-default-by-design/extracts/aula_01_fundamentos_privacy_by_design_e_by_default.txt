@@ -1,0 +1,214 @@
+Fundamentos de Privacy by Design e by Default
+## | Aula 01 - Machine Learning Engineering
+
+## Fase 4 Fundamentos De
+
+### Privacy By Design E By Default
+Fundamentos de Privacy by Design e by Default
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Fundamentos de Privacy by Design e by Default
+### O Que Vem Por Aí ?
+Imagine um mundo onde cada clique, compra e conversa on -line fosse rastreada e armazenada sem o seu conhecimento. Um mundo onde suas informações mais pessoais, desde hábitos de compra até registros médicos,
+estivessem vulneráveis a hackers e empresas. Parece um pesadelo distópico, c erto?
+Mas essa realidade não está tão distante assim. A cada dia, geramos uma quantidade colossal de dados, e proteger essas informações é um desafio crescente. É aí que entra o Privacy by Design e by Default , um conjunto de princípios que coloca a privaci dade no centro da criação de novas tecnologias.
+Nesta aula, vamos mergulhar nos fundamentos do Privacy by Design e by
+Default , explorando seus sete princípios e como eles pode m ser aplicados na prática. Você vai descobrir como essa abordagem proativa pode transformar a maneira como lidamos com dados pessoais, garantindo a proteção da privacidade desde a concepção de produtos e serviços. Prepare -se para desvendar os segredos de uma internet mais segura e ética .
+Fundamentos de Privacy by Design e by Default
+### Hands On
+Nesta aula, exploraremos os conceitos básicos de Privacy by Design e
+Privacy by Default , analisando seus princípios e como colocá -los em prática. Você aprenderá como essa abordagem proativa pode revolucionar o tratamento de dados pessoais, assegurando a pr ivacidade na concepção de produtos e serviços.
+Veremos como construir uma internet mais ética e segura, onde a privacidade é tratada como um direito essencial, e não como um privilégio .
+Fundamentos de Privacy by Design e by Default
+### Saiba Mais
+
+### Como Vemos A Privacidade Nos Dias Atuais?
+Nas últimas décadas, testemunhamos uma explosão na coleta e utilização de dados pessoais, impulsionada pelo avanço da tecnologia e a popularização da internet. Contudo, o uso indiscriminado de dados levantou questões éticas, legais e sociais, desta cando a importância da proteção da privacidade dos indivíduos. É nesse contexto que surgem os conceitos de Privacy by Design e Privacy by Default ,
+que têm como objetivo centralizar a privacidade , desde a concepção de produtos,
+serviços e sistemas.
+Na era digital, a privacidade se tornou uma questão central nas discussões sobre direitos humanos e liberdades individuais. Com o avanço exponencial da tecnologia, a coleta de dados atingiu proporções sem precedentes.
+Organizaçõe s utilizam dados para pers onalizar serviços, prever comportamentos e impulsionar estratégias de marketing, enquanto governos empregam tecnologias de vigilância para fins de segurança nacional. Esse cenário é amplamente conhecido como a "sociedade da vigilância", em que cada interaç ão digital (desde buscas no Google até interações em redes sociais ) pode ser rastreada, armazenada e analisada. Casos como o escândalo da Cambridge
+Analytica, em que dados de milhões de usuários do Facebook foram usados para manipulação eleitoral, exemplif icam os perigos dessa vigilância desenfreada e ressaltam a necessidade de mecanismos rigorosos para proteger a privacidade na era digital.
+Vigilância em massa
+A vigilância em massa, possibilitada por tecnologias avançadas como câmeras com reconhecimento facial e inteligência artificial, também levanta preocupações éticas e jurídicas. Por exemplo, a China implementou um sistema de
+"crédito social", monitorando o comportamento de cidadãos para determinar privilégios ou restrições na sociedade. Apesar de promessas de segurança e eficiência, tais sistemas podem levar a abusos e discriminação.
+No Brasil, o aumento do uso de tecnologias de reconhecimento facial em espaços públicos tem suscitado debates sobre violação de direitos à privacidade e
+Fundamentos de Privacy by Design e by Default uso indevido de dados. Diante desses desafios, legislações como o GDPR na União
+Europeia e a LGPD no Brasil surgem como respostas para regular a coleta e o uso de dados, promove ndo transparência e proteção aos cidadãos. No entanto, a verdadeira proteção da privacidade na era digital depende não apenas de leis, mas também da conscientização e da ação coletiva de indivíduos, empresas e governos para equilibrar inovação tecnológica e direitos fundamentais.
+Impacto das violações de privacidade
+As violações de privacidade têm consequências profundas tanto para indivíduos quanto para organizações. Para os indivíduos, a exposição de informações pessoais pode resultar em prejuízos finance iros, como fraudes bancárias e roubo de identidade. Além disso, pode gerar danos emocionais e psicológicos, especialmente quando informações sensíveis, como registros de saúde ou fotos pessoais, são divulgadas sem consentimento.
+Figura 1 – Impactos aos indivíduos
+Fonte: elaborado pel a autor a (2024)
+Por exemplo, o vazamento de dados da Netshoes em 20 18 expôs informações de milhões de clientes, incluindo nomes, endereços e detalhes financeiros, gerando indignação pública e colocando as vítima s em situação de
+Fundamentos de Privacy by Design e by Default vulnerabilidade. Casos de discriminação também podem ocorrer quando dados sensíveis, como orientação sexual ou histórico médico, são usados de forma indevida, especialmente em processos seletivos ou na concessão de crédito.
+Para as organiz ações, as violações de privacidade podem resultar em prejuízos financeiros significativos, multas regulatórias e danos irreparáveis à reputação.
+Figura 2 – Impactos para as organizações
+Fonte: elaborado pel a autor a (2024)
+O caso da Equifax , em 2017 ( uma das maiores agências de crédito dos EUA ),
+exemplifica o impacto devastador de um incidente dessa natureza. A violação expôs dados financeiros e pessoais de mais de 147 milhões de pessoas, resultando em uma multa de 575 milhões de dólares e na pe rda de confiança por parte de consumidores e investidores. Além disso, empresas que não lidam de forma responsável com dados pessoais enfrentam dificuldade em atrair novos clientes e parceiros comerciais.
+A confiança, elemento essencial para o sucesso organizacional, é gravemente prejudicada em situações de violações, reforçando a necessidade de investir em
+Fundamentos de Privacy by Design e by Default políticas robustas de privacidade e segurança da informação para prevenir tais incidentes e mitigar s eus impactos.
+Qual a importância da preservação da privacidade ?
+A privacidade é um direito fundamental garantido em diversas constituições e tratados internacionais, como a Declaração Universal dos Direitos Humanos , em seu artigo 12, sendo essencial para p reservar a liberdade, a autonomia e a dignidade humana.
+É por meio da privacidade que as pessoas podem exercer livremente sua individualidade, sem medo de monitoramento ou julgamento. Ela permite que indivíduos façam escolhas conscientes sobre como suas i nformações são compartilhadas, criando um espaço seguro para a expressão de opiniões, decisões pessoais e relacionamentos.
+Além de sua importância intrínseca, a privacidade desempenha um papel central na confiança entre indivíduos, organizações e governos , sendo essencial para o desenvolvimento social e econômico. Organizações que garantem a proteção dos dados de seus clientes criam um ambiente de segurança e fidelidade,
+fortalecendo relações de longo prazo. Já na esfera social, a privacidade é essencial para proteger grupos vulneráveis e evitar discriminações com base em características sensíveis, como etnia, orientação sexual ou histórico médico.
+A implementação do Regulamento Geral de Proteção de Dados (GDPR) na
+União Europeia e da Lei Geral de Proteção de Dados Pessoais (LGPD) no Brasil exemplificam como legislações robustas sobre privacidade têm contribuído para aumentar a segurança e a transparência no uso de dados. Essas regulamentações não apenas protegem os direitos dos indivíduos, mas também incen tivam práticas responsáveis e éticas no tratamento de dados pessoais.
+PRIVACY BY DESIGN : CONCEITO E PRINCÍPIOS FUNDAMENTAIS
+O conceito de Privacy by Design foi criado pela Dra. Ann Cavoukian,
+Information and Privacy Commissioner de Ontário (Canadá), na década de 1990 , e defende a incorporação da privacidade desde a concepção de sistemas, produtos e serviços, de forma proativa e preventiva, em vez de reativa. Os sete princípios fundamentais de PdD são:
+Fundamentos de Privacy by Design e by Default
+• Proativo, não reativo; preventi vo, não corretivo: antecipar e prevenir problemas de privacidade, em vez de reagir a eles após o fato ;
+• Privacidade como padrão ( Privacy by Default ): garantir que a privacidade seja a configuração padrão, sem necessidade de intervenção do usuário ;
+• Privacida de incorporada ao design: a privacidade deve ser um componente essencial do design, não um elemento adicional .
+• Funcionalidade total : soma positiva, não soma zero: garantir a privacidade sem comprometer a funcionalidade do sistema ou serviço ;
+• Segurança de ponta a ponta : proteção do ciclo de vida completo dos dados: proteger os dados pessoais durante todo o seu ciclo de vida,
+desde a coleta até a eliminação ;
+• Visibilidade e transparência: os processos de tratamento de dados devem ser visíveis e transparent es para os usuários ;
+• Respeito pela privacidade do usuário: colocar o usuário no centro do design, respeitando seus direitos e interesses.
+Figura 3 – Princípios Privacyby Design
+Fonte: elaborado pel a autor a (2024)
+Exemplo prático : o recurso de “Localização Aproximada ”, introduzido no iOS
+14, permite que os usuários compartilhem apenas sua localização aproximada com
+Fundamentos de Privacy by Design e by Default aplicativos em vez de detalhes exatos , atende ndo ao princípio do PbD e protegendo a privacidade ao reduzir a coleta de da dos sensíveis ao mínimo necessário.
+Benefícios d o Privacy by Design
+A aplicação d o PbD traz inúmeros benefícios tanto para as organizações quanto para os usuários, promovendo uma abordagem proativa na proteção de dados.
+Figura 4 – Benefícios do Privacy by Design para as organizações
+Fonte: elaborado pel a autor a (2024)
+Um dos principais benefícios é a redução significativa dos riscos de violações de privacidade e das penalidades associadas. Ao incorporar a privacidade desde a concepção de sistemas, produtos e serviços, as organizações evitam custos elevados relacionados a multas regulatórias, litígios e perdas financeiras decorrentes de incidentes de segurança.
+Por exemplo, empresas como a A pple têm se destacado pelo uso de princípios de PbD em seus produtos, como o recurso de privacidade no Safari que bloqueia rastreadores de anúncios, reduzindo a exposição dos usuários a ameaças e fortalecendo a proteção de dados pessoais. Essa prática tamb ém mitiga riscos legais e operacionais, promovendo uma cultura de conformidade com legislações como a GDPR e a LGPD.
+Em complemento , o PbD aumenta a confiança dos usuários, melhora a reputação da organização e estimula a inovação. Consumidores são cada vez mais criteriosos na escolha de produtos e serviços, priorizando empresas que demonstram compromisso com a privacidade e a segurança de seus dados. Um
+Fundamentos de Privacy by Design e by Default exemplo claro é o sucesso de aplicativos de mensagens como o Signal, que conquistou milhões de usuários a o priorizar criptografia ponta a ponta e práticas de
+PbD em sua arquitetura. Ao investir em soluções inovadoras que atendam aos padrões de privacidade, as empresas não apenas conquistam a lealdade dos clientes, mas também se destacam em mercados competitiv os.
+Figura 5 – Benefícios do Privacy by Design para os usuários
+Fonte: elaborado pel a autor a (2024)
+Essa abordagem, além de beneficiar os usuários, promove um ciclo virtuoso de inovação, onde a privacidade é uma vantagem competitiva que agrega valor às organizações e fomenta a confiança na era digital.
+PbD na prática: exemplos e casos de uso
+O PbD vai além de um conceito teórico; ele é implementado em diversos setores por meio de soluções práticas que protegem a privacidade dos usuários enquanto promovem a inovação e a conformidade regulatória. Vejamos:
+Criptografia
+A criptografia é uma ferramenta central para garantir a privacidade,
+protegendo dados contra acessos não autorizados. Aplicativos de mensagens como
+WhatsApp, Signal e Telegram são exemplos notáveis de PbD aplicado na prática,
+pois utilizam criptografia de ponta a ponta.
+Fundamentos de Privacy by Design e by Default
+Nesse modelo, somente o remetente e o destinatário têm acesso às mensagens tro cadas, impedindo que terceiros ( inclusive os próprios provedores ),
+possam acessá -las. Em um exemplo prático, o Signal tornou seu protocolo de criptografia open -source, permitindo auditorias externas e aumentando a transparência e a confiança. Essa abordagem tem sido um diferencial em tempos de aumento na vigilância digital, como ocorreu após as denúncias de Edward Snowden sobre a coleta massiva de dados pela NSA.
+Outro exemplo está em bancos e e -commerces, que utilizam protocolos como
+TLS (Transport Layer Security ) para proteger transações on -line. Isso garante que os dados dos usuários, como informações de pagamento e credenciais,
+permaneçam seguros durante a trans missão. Organizações que implementam criptografia de forma robusta também se protegem contra vazamentos de dados,
+minimizando os impactos de ataques cibernéticos.
+Anonimização e pseudonimização
+Anonimização é uma técnica que remove ou altera informações que possam identificar uma pessoa, tornando -as não associáveis a um indivíduo específico . Por exemplo, durante a pandemia da COVID -19, governos e organizações utilizaram dados anonimizados de dispositivos móveis para monitorar o distanciamento social sem identificar usuários específicos.
+Já a pseudonimização permite a substituição de identificadores diretos, como nomes ou CPFs, por códigos únicos, mantendo a possibilidade de reidentificação em casos específicos e autorizados. Um exemplo prático são os sistemas de gerenciamento de clientes em plataformas de e -commerce, que pseudonimizam dados de compra para evitar a exposição de informações pessoais, mas permitem associações posteriores mediante autorização.
+Ferramentas de controle de privacidade
+Navegadores como Firefox e Brave adotam PbD ao oferecer ferramentas nativas que aumentam o controle dos usuários sobre seus dados. O Firefox, por exemplo, inclui um modo de navegação privada que bloqueia cookies de terceiros e scripts de rastreamento. Já o Brave vai além, oferecendo bloqueio automático de anúncios e scripts que coletam informações sem consentimento. Essas práticas
+Fundamentos de Privacy by Design e by Default permitem que os usuários naveguem de forma mais segura e preservem sua privacidade sem a necessidade de extensões adicionais.
+Plataformas como o Duck Duck Go, um mecanismo de busca, foram projetadas desde o início com base em princípios de PbD, garantindo que nenhuma consulta seja rastreada ou armazenada. Isso se contrapõe a práticas de empresas como Google, que monetizam dados de pesquisa para publicidade direcionada.
+Redes sociais e plataformas on -line
+As redes sociais representam um dos maiores desafios para o PbD, dada a natureza pública e expansiva dessas plataformas. No entanto, boas práticas têm emergido. Por exemplo, o Inst agram introduziu controles mais robustos para a privacidade, permitindo que usuários ajustem quem pode visualizar suas postagens,
+acessar suas histórias ou contatá -los diretamente. Além disso, o Facebook implementou um painel de controle de privacidade que permite aos usuários revisa r e ajustar as permissões de dados que compartilham.
+Internet das Coisas (IoT)
+Os dispositivos conectados, como smart TVs, termostatos e assistentes virtuais, representam um enorme desafio para a privacidade devido à coleta cons tante de dados sensíveis. Empresas como a Amazon, com o Echo e a assistente virtual Alexa, foram criticadas por falhas na privacidade, como o uso de gravações de voz para aprimorar algoritmos. Como resposta, implementaram controles mais rígidos, permitindo que os usuários excluam gravações diretamente pelo dispositivo.
+Uma boa prática no contexto de IoT é o uso de firewalls específicos para dispositivos conectados, que monitoram e bloqueiam acessos suspeitos. Além disso,
+fabricantes têm adotado criptografia para proteger dados em trânsito e em repouso,
+bem como autenticação multifator para prevenir acessos não autorizados. Um exemplo de inovação é a linha de produtos da Nest (Google), que permite configurações detalhadas de privacidade, alinhadas ao PbD.
+### Privacy By Default
+Fundamentos de Privacy by Design e by Default
+Privacy by Default (PbDf) significa que as configurações de privacidade mais protetivas devem ser definidas como padrão, sem que o usuário precise configurá -
+las manualmente , garant indo que a privacidade seja protegida desde o início da interação do usuário com o sistema ou serviço. Vejamos alguns exemplos:
+Minimização da coleta de dados : coletar apenas os dados pessoais estritamente necessários para a finalidade específica do tratamento é um princípio fundamental do Privacy by Default . A coleta excessiva de dados aumenta os riscos de violações de privacidade e dificulta a gestão da segurança da informação.
+Exemplo prático: comparar as configurações de privacidade padrão de navegadores we b, como Google Chrome e Firefox, é um exemplo prático de como o
+Privacy by Default pode ser implementado. Analisar quais informações são coletadas por padrão, quais cookies são bloqueados e quais permissões são solicitadas ao usuário permite avaliar qual navegador oferece maior proteção por padrão.
+Benefícios do Privacy by De fault
+O Pb Df é essencial para proteger a privacidade dos usuários que não possuem conhecimento técnico ou não estão familiarizados com configurações de privacidade. Esse princípio garante que as configurações mais protetivas de privacidade sejam aplicadas automatica mente, sem que o usuário precise alterar nada.
+Por exemplo, o Google Chrome recentemente configurou automaticamente o bloqueio de cookies de terceiros no modo de navegação anônima, protegendo os usuários de rastreadores enquanto navegam. Da mesma forma, a plicativos como o
+Telegram permitem que mensagens se autodestruam após determinado período ,
+funcionalidade ativa da por padrão em chats secretos. Essas práticas são fundamentais para proteger a privacidade de indivíduos que não entendem completamente os ris cos associados ao tratamento inadequado de seus dados.
+Outro exemplo significativo é o caso da Apple, que passou a adotar, por padrão, restrições no rastreamento de aplicativos no iOS, solicitando que os usuários autorizem explicitamente o compartilhamento de seus dados com terceiros.
+Essa medida reduziu drasticamente a quantidade de dados compartilhados sem o consentimento informado dos usuários.
+Fundamentos de Privacy by Design e by Default
+O Privacy by Default não apenas protege aqueles menos capacitados tecnicamente, mas também promove maior trans parência e confiança nas plataformas. Ao garantir que as configurações de privacidade mais seguras sejam aplicadas como padrão, organizações ajudam a evitar violações de dados e asseguram que a privacidade seja respeitada desde o início, independentemente do nível de conhecimento do usuário.
+PbDf na prática: exemplos e casos de uso
+Configurações de privacidade padrão em redes sociais
+As redes sociais têm implementado o Privacy by Default como uma resposta ao aumento das preocupações com privacidade e conformidade regulatória. O
+Facebook, por exemplo, passou a ativar configurações mais restritivas por padrão para novos usuários, como limitar o alcance de publicações a "Amigos" e restringir informações visíveis em perfis públicos. O Instagram t ambém tornou contas de menores de idade privadas por padrão, protegendo adolescentes de interações não desejadas. Essa abordagem visa reduzir riscos e garantir que os usuários estejam protegidos mesmo sem configurar manualmente suas contas. Apesar dessas melhorias, desafios persistem, como o ajuste dinâmico de privacidade para atender às diferentes necessidades de usuários em todo o mundo.
+Essas práticas exemplificam como o PbD f pode ser usado para prot eger a privacidade de indivíduos que não entendem completamente as implicações de configurações menos seguras. Contudo , organizações devem continuar aprimorando essas práticas, educa ndo os usuários sobre como ajustar suas preferências. Por
+exemplo, alertas educacionais poderiam ser implementados para explicar o que configurações mais restritivas significam e como elas beneficiam o usuário,
+promovendo maior autonomia e confiança.
+Navegadores web com bloqueio de cookies de terceiros
+Como vimos, n avegadores co mo Firefox e Brave exemplificam o PbD com funcionalidades automáticas de bloqueio de cookies de terceiros. O Firefox, por exemplo, ativa o "Enhanced Tracking Protection" por padrão, bloqueando scripts de rastreamento que comprometem a privacidade dos usuár ios. Já o Brave, desde seu lançamento, posiciona -se como um navegador focado em privacidade, bloqueando rastreadores, anúncios invasivos e cookies de terceiros automaticamente. Essa
+Fundamentos de Privacy by Design e by Default abordagem reduz significativamente a coleta não consentida de dados de navegação e impede que anunciantes construam perfis detalhados dos usuários sem autorização explícita.
+Essas medidas são particularmente relevantes em um ambiente digital onde o rastreamento invisível é predominante. Por exemplo, pesquisas mostram que navegad ores com bloqueio automático de rastreadores reduziram em até 35% o volume de dados coletados sem consentimento. A inda, a adoção do PbD por navegadores estimula concorrentes a implementar práticas similares, como o Google
+Chrome, que anunciou mudanças prog ressivas em sua política de cookies. Apesar disso, a transparência e a simplicidade das interfaces continuam tendo oportunidades de melhoria para garantir que usuários compreendam e confiem nos recursos implementados.
+Aplicativos de mensagens com criptogra fia de ponta a ponta
+Aplicativos como WhatsApp, Signal e Telegram demonstram o PbD ao implementar a criptografia de ponta a ponta como configuração padrão para proteger as mensagens dos usuários. No Signal, por exemplo, todas as comunicações , incluindo mensagens, chamadas de voz e arquivos compartilhados , são automaticamente criptografadas, garantindo que somente os remetentes e destinatários possam acessá -las. O WhatsApp adota uma abordagem semelhante, além de notificar os usuários sobre muda nças de chaves de segurança em dispositivos conectados.
+Esses exemplos demonstram como o PbD f protege informações sensíveis,
+como comunicações pessoais e profissionais. Em 2019, a ado ção da criptografia de ponta a ponta pelo WhatsApp foi fundamental para i mpedir acessos não autorizados em grande escala, mesmo em casos de comprometimento parcial de dispositivos.
+Ademais , a popularidade dessas ferramentas pressionou outros serviços de mensagens, como o Facebook Messenger, a considerar a implementação de criptografia como padrão. Apesar dos benefícios claros, as organizações enfrentam desafios relacionados à segurança operacional e manutenção da acessibilidade,
+como o impacto no desempenho ou a dificuldade em fornecer suporte técnico sem acesso ao conteúdo das mensagens.
+Fundamentos de Privacy by Design e by Default
+Fundamentos de Privacy by Design e by Default
+### Mercado, Cases E Tendênc Ias
+Apple e o App Tracking Transparency (ATT)
+A Apple introduziu o recurso de App Tracking Transparency em seus dispositivos iOS. Es se recurso ex ige que os aplicativos solicitem permissão explícita para rastrear a atividade dos usuários em outros aplicativos e sites.
+Relevância PbD e PbDf: por padrão, os aplicativos não podem rastrear os usuários sem consentimento explícito. A Apple integrou o conc eito de privacidade como parte de sua experiência central do produto.
+Brave Browser e bloqueio de rastreamento
+O Brave é um navegador projetado com foco em privacidade . Ele bloqueia rastreadores de terceiro s e anúncios invasivos por padrão, sem necessidade de configurações adicionais pelos usuários.
+Relevância PbD e PbDf: o navegador foi desenvolvido com privacidade como princípio fundamental, garantindo que os dados dos usuários não sejam rastreados sem consentimento .
+Zoom e atualizações de privacidade
+Após críticas sobre falhas de segurança durante a pandemia de COVID -19, o
+Zoom adicionou recursos como criptografia de ponta a ponta e controles aprimorados para reuniões.
+Relevância PbD e PbDf: essas mudanças refletem a integração da privacidade no design dos sistemas para proteger os dados dos usuários de forma proativa.
+Fundamentos de Privacy by Design e by Default
+## O Que Você Viu Nes Ta Aula ?
+Ao concluirmos esta aula sobre os fu ndamentos do Privacy by Design e by
+Default , esperamos que você possua o conhecimento essencial para construir um futuro digital mais seguro e respeitoso.
+Lembre -se de que a privacidade não é apenas uma questão de conformidade,
+mas um direito fundamental que deve ser protegido. Ao aplicar os sete princípios que exploramos, você contribuirá para uma internet mais ética e transparente, onde a privacidade é o padrão e não a exceção !
+Fundamentos de Privacy by Design e by Default
+### Referências
+APPLE. A day in the life of your data . 2021. Disponível em:
+https://www.apple.com/privacy/docs/A_Day_in_the_Life_of_Your_Data.pdf . Acesso em: 11 jun 2025.
+APPLE. Differential privacy . 2016. Disponível em:
+https://www.apple.com/privacy/docs/Differential_Privacy_Overview.pdf . Acesso em:
+11 jun 2025.
+BRASIL. Constituição da República Federativa do Brasil de 1988 . Disponível em:
+https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm . Acesso em: 11 jun 2025.
+BRASIL. Lei nº 13.709, de 14 de agosto de 2018 . Lei Geral de Proteção de Dados
+Pessoais (LGPD). Disponível em: http://www.planalto.gov.br/ccivil_03/_ato2015 -
+2018/2018/lei/L13709.htm . Acesso em: 11 jun 2025 .
+BRAVE BROWSER. Brave privacy features . Disponível em:
+https://brave.com/privacy/ . Acessoem: 11 jun 2025.
+CADWALLADR, C; GRAHAM -HARRISON, E. Revealed: 50 million Facebook profiles harvested for Cambridg e Analytica in major data breach . 2018.
+Disponível em: https://www.theguardian.com/news/2018/mar/17/cambridge -
+analytica -facebook -influence -us-election . Acessoem: 11 jun 2025.
+CAVOUKIAN, Ann. Privacy by design: The 7 foundational principles . Ontario:
+Information and Privacy Commissioner of Ontario, 2009.
+FACEBOOK. Facebook privacyby default . Disponível em:
+https://www.facebook.com/privacy . Acessoem: 11 jun 2025.
+FEDERAL TRADE COMMISSION. Equifax agrees to pay $575 million as part of settlement with FTC . Federal Trade Commission , 2019.
+G1. Vazamento de dados da Netshoes expõe milhõe s de consumidores no
+Brasil . G1, 2020.
+GDPR. General Data Protection Regulation . 2018. Disponível em: https://eur -
+lex.europa.eu . Acesso em: 11 jun 2025.
+MOZILLA. Firefox enhanced tracking protection . 2025. Disponível em:
+https://www.mozilla.org/en -US/firefox/features/ . Acesso em: 11 jun 2025.
+SCANDIZZO, S. O crédito social chinês: práticas de vigilância . Revista Brasi leira de Direito Digital , 2021 .
+SCHNEIER, B. Data and Goliath: The hidden battles to collect your data and control your world . Nova Iorque: W.W. Norton & Company, 2015.
+Fundamentos de Privacy by Design e by Default
+SIGNAL. Signal app . 2025. Disponível em: https://signal.org/ . Acesso em: 11 jun
+2025.
+SOLOVE, D . Digital person: Technology and privacy in the information age .
+Nova Iorque: NYU Press, 2008.
+WESTIN, A. Privacy and freedom . Nova Iorque: Atheneum, 1967.
+ZUBOFF, S. The age of surveillance capitalism: The fight for a human future at the new frontier of power . Nova Iorque: PublicAffairs, 2019.
+Fundamentos de Privacy by Design e by Default
+### Palavras -Chave
+Privacidade . Design . Privacy . Default . LGPD.
+Fundamentos de Privacy by Design e by Default

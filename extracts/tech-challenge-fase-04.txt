@@ -1,0 +1,105 @@
+Tech Challenge
+Tech Challenge  é o projeto da fase que englobará os conhecimentos obtidos em todas as disciplinas da fase. Esta é uma atividade que, a princípio, deve ser desenvolvida em grupo. É importante atentar -se ao prazo de entrega, pois trata -se de uma atividade obrigatória, uma  vez que vale 90% da nota de todas as disciplinas da fase.
+Tema Central: Observabilidade Contínua, Detecção de Drift, Qualidade de
+Dados e Governança em Produção
+Contexto
+Uma fintech de concessão de crédito possui um modelo de Credit Scoring rodando em p rodução. No entanto, com recentes mudanças na economia (inflação,
+novos perfis de clientes), a diretoria suspeita que o modelo está tomando decisões erradas e sofrendo degradação silenciosa.
+O foco deste projeto é construir a camada de Sustentação e Confia bilidade .
+O grupo deverá pegar um modelo de classificação simples, criar contratos de qualidade de dados, simular um cenário de degradação ao longo do tempo (Data Drift e Concept Drift), detectar essa mudança com ferramentas de observabilidade e garantir q ue todo o processo esteja documentado sob as regras de governança e privacidade (LGPD), incluindo uma análise causal do problema.
+Requisitos Obrigatórios
+Repositório GitHub
+• Pipeline de validação de dados (data contracts) configurado.
+• Scripts para simula ção e detecção estatística de Drift.
+• Dashboards ou relatórios HTML gerados comprovando o monitoramento.
+• Documentação consolidada de Governança no README.md.
+Tech Challenge
+• Histórico de commits semântico e organizado.
+Vídeo (5 minutos — método STAR)
+• Situation:  o risco da degradação silenciosa de modelos de crédito no mundo real.
+• Task:  requisitos técnicos da fase (interceptar dados ruins, detectar drift,
+garantir compliance).
+• Action:  ferramentas escolhidas de validação e observabilidade, simulação do drift e plano  de governança.
+• Result:  demonstração prática do relatório apontando o drift, alertas gerados e lições aprendidas.
+Bibliotecas Requeridas
+• Scikit -Learn / XGBoost  — para treinar o modelo base de risco de crédito.
+• Great Expectations  ou Pandera  — para validaç ão e qualidade de dados
+(Data Contracts).
+• Evidently AI  (ou Alibi Detect) — para detecção de Data/Concept Drift e geração de relatórios.
+• Opcional (se quiserem integrar com a Fase 3): Prometheus -client para métricas.
+Boas Práticas Obrigatórias
+• Separação clara entre o dataset de Referência (usado no treino) e o dataset de Análise/Produção (onde o drift ocorre).
+• Implementação de pelo menos 3 regras rígidas de qualidade de dados ( ex.:
+sem nulos, range de idade, limites de renda).
+Tech Challenge
+• Relatório estatístico evidenciando a mudança de distribuição ( ex.: teste PSI ou Kolmogorov -Smirnov).
+• Documentação de compliance contendo plano de privacidade (LGPD).
+Etapas de Desenvolvimento (4 Etapas)
+Etapa 1 — Validação de Dados e Contratos (Disciplina: Validaç ão de Dados e
+Bibliotecas de Qualidade)
+Foco: Garantir que lixo não entre no modelo.
+Tarefas :
+• Treinar um classificador base para o problema de crédito usando um dataset limpo (Dataset de Referência).
+• Criar um contrato de dados (usando Great Expectations o u Pandera)
+estabelecendo regras estritas ( ex.: idade > 18, renda não pode ser nula,
+sem duplicatas).
+• Forçar a passagem de um lote de dados com erros para demonstrar o contrato falhando e bloqueando a ingestão.
+o Entregável:  Script de validação de dados opera nte e modelo baseline treinado.
+Etapa 2 — Simulação e Detecção de Drift (Disciplina: Data Drift)
+Foco: Diagnosticar a degradação do modelo ao longo do tempo.
+Tarefas:
+• Criar um "Dataset  de Produção" simulando a passagem do tempo, alterando intencionalmente a distribuição de pelo menos duas variáveis importantes
+(ex.: aumentar artificialmente a renda ou a taxa de desemprego dos clientes).
+• Gerar predições para esse novo dataset.
+Tech Challenge
+• Utilizar o  Evidently AI  para comparar o Dataset de Referência com o
+Dataset de Produção.
+• Identificar através dos testes estatísticos (PSI, Kolmogorov -Smirnov etc.)
+quais features sofreram Drift.
+o Entregável:  Relatório de Drift (HTML do Evidently ou painel customizado )
+apontando claramente as variáveis degradadas.
+Etapa 3 — Observabilidade de Pipelines e Modelos (Disciplina:
+Monitoramento de Pipelines e Infraestrutura)
+Foco:  Visibilidade operacional dos pipelines de dados, da infraestrutura e dos modelos em produção.
+Tarefas:
+● Centralizar logs e métricas:  Integrar os logs de execução do pipeline
+(sucesso/falhas na ingestão e transformação de dados) e os resultados dos testes de Drift da Etapa 2.
+● Implementar o Rastreamento/Monitoramento:  O grupo pode optar por rastrear o ciclo de vida do modelo e e xperimentos utilizando o MLflow , ou exportar as métricas da infraestrutura e do pipeline para um dashboard interativo (utilizando Datadog , soluções Cloud nativas ou alternativas Open -
+Source).
+● Definir e Documentar Métricas:  Documentar as métricas de saúde operacionais escolhidas (ex: status de execução das tarefas do pipeline,
+latência, volume de dados processados, e quantidade de alertas de falha ou drift).
+Entregável:  Dashboard de monitoramento ou ambiente de rastreamento (ex:
+MLflow / Datadog) evidenciand o a saúde completa do pipeline de dados, a estabilidade da infraestrutura e os alertas de degradação do modelo.
+Tech Challenge
+Etapa 4 — Governança (Disciplinas: Priv acy By Design e By Default)
+Foco: Documentação arquitetural, compliance e prescrição.
+Tarefas (Teóricas, no README.md):
+• Governança e LGPD:  Escrever um plano de proteção de dados explicando como dados sensíveis (PII) foram tratados neste projeto, qual a base legal para a decisão de crédito e o plano de retenção.
+• Gravar o vídeo STAR demonstrando o projeto.
+• Entregável:  Documentação completa de Governança e Causalidade no
+README + Link do Vídeo.
+Critérios de Avaliação
+Critério  Peso  Descrição
+Validação de Dados  25%  Contratos de dados configurados corretamente
+(Great
+Expectations/Pandera)
+interceptando anomalias.
+Detecção de Drift  25%  Simulação correta de alteração de distribuição e geração clara de relatório com Evidently AI.
+Observabilidade e Logs  20%  Apresentação visual das métricas de saúde do modelo e dos alertas de drift (Dashboard ou
+Relatórios automatizados).
+Tech Challenge
+Governança (LGPD)  15%  Clareza na documentação sobre privacidade, base legal e mitigação de vieses.
+Vídeo STAR  15%  Clareza na demonstração técnica da degradação do modelo e explicação do impacto (≤ 5 min).
+Dataset Sugerido
+Recomendamos o uso de datasets  públicos tabulares focados em risco, crédito ou precificação, onde a degradação econômica faz sentido prático.
+Exemplos:  German Credit Data (Kaggle/UCI), Home Credit Default Risk
+(Kaggle) ou Lending Club Loan Data. Qualquer dataset de classificação binári a financeira com pelo menos 5.000 amostras é aceito.
+Passo a Passo Resumido
+• [Etapa 1]  Treinar modelo base + Escrever regras de validação
+(Pandera/Great Expectations).
+• [Etapa 2]  Alterar os dados propositalmente para gerar Drift + Rodar testes estatísticos  com Evidently.
+• [Etapa 3]  Consolidar logs e expor relatórios visuais/dashboards de monitoramento.
+• [Etapa 4]  Preencher documentação de LGPD no README + Gravar o
+Vídeo.
+Caso tenha alguma dúvida, é só nos procurar no Discord!
+Tech Challenge

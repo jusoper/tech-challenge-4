@@ -1,0 +1,200 @@
+Técnicas de Detecção de Drift (Estatística)
+## | Aula 02 - Machine Learning Engineering
+
+## Fase 4 Técnicas De
+
+### Detecção De Drift (Estatística)
+Técnicas de Detecção de Drift (Estatística)
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Técnicas de Detecção de Drift (Estatística)
+### O Que Vem Por Aí ?
+Imagine que você trabalha em uma fintech de crédito que, de repente, nota um aumento na inadimplência entre novos clientes. Suas políticas de concessão não mudaram, mas de algum modo o score de crédito que antes era preciso agora está falhando. O que aconteceu? Esse cenário real levanta um sinal de alerta: será que os dados mudaram?
+Nesta aula, vamos explorar o conceito de drift de dados – uma mudança estatística na distribuição dos d ados de entrada (data drift, também conhecida como deriva de covariáveis) – e entender por que identificar essas mudanças cedo é fundamental para evitar a degradação de modelos de Machine Learning,
+prevenindo erros e prejuízos de negócio. Vamos descobrir como detectar formalmente esse fenômeno usando métricas estatísticas e testes de hipótese e discutir estratégias de monitoramento contínuo para você nunca ser pego de surpresa novamente.
+Preparado (a) para analisar seus modelos com novos olhos? Ao final des ta aula, você saberá quando (e como) soar o alarme contra o drift de dados – e verá na prática como implementar essas técnicas em código. Vamos lá!
+Técnicas de Detecção de Drift (Estatística)
+### Hands On
+Nesta seção Hands On, você terá um gostinho prático de como detectar data drift usando Python, re forçando os conceitos discutidos na teoria. As videoaulas passo a passo demonstram a implementação das técnicas apresentadas, desde a comparação de distribuições até testes estatísticos automatizados.
+Usaremos bibliotecas Python como NumPy, SciPy e visuali zações com Matplotlib para analisar um exemplo de mudança na distribuição de dados.
+Também apresentaremos o cálculo de métricas de drift, como o PSI, utilizado na área financeira, para conferir a estabilidade de variáveis ao longo do tempo. Você aprenderá a identificar quando um modelo “saiu do trilho” e a conectá -lo com a teoria, entendendo por que cada técnica funciona.
+Código completo disponível no GitHub: repositório da aula no GitHub.
+Certifique -se de ter o Python 3.10+ instalado, juntamente com biblio tecas como numpy, scipy e matplotlib. Você pode clonar o repositório usando git clone e seguir as instruções no arquivo README para instalar os requisitos. Em seguida,
+abra o Jupyter Notebook fornecido para acompanhar os exemplos passo a passo.
+Snippet 1: teste estatístico (kolmogorov -smirnov) para detectar drift
+O script a seguir mostra como aplicar o teste de Kolmogorov -Smirnov (KS) em duas amostras de dados para verificar se suas distribuições são significativamente diferentes. Primeiro, geramos duas dis tribuições fictícias de idades de clientes: dados_ref (distribuição usada no treinamento do modelo)
+e dados_novos (dados mais recentes). Em seguida, utilizamos a função stats.ks_2samp do SciPy para calcular a estatística do teste KS e seu p-
+value, determin ando quantitativamente se houve drift:
+import numpy as np from scipy import stats np.random.seed(42)
+# Dados de idade de clientes: antes (dados_ref) e depois
+(dados_novos) do possível drift dados_ref = np.random.normal(40, 10, size =1000) # média
+~40, dp ~10
+Técnicas de Detecção de Drift (Estatística)
+dados_novos = np.random.normal(30, 8, size=1000) # média
+~30, dp ~8 estatistica, p_valor = stats.ks_2samp(dados_ref,
+dados_novos)
+print(f\"Estatística KS: {estatistica:.3f}, p -valor:
+{p_valor:.3e} \")
+Código -fonte 1 - [ks_test.py no repositório GitHub] (Python)
+Fonte: Elaborado pelo autor (202 6)
+No código anterior , geramos duas amostras de 1000 idades simuladas para antes e depois do possível drift (com médias diferentes). Executando o teste
+KS, são o btidos valores para a estatística D (a “maior diferença acumulada” entre as distribuições) e para o p-valor associado. Se o p -valor for muito pequeno – tipicamente menor que 0,05 – rejeitamos a hipótese nula de que as distribuições são idênticas e concluím os que houve drift estatisticamente significativo. (No exemplo acima, o teste KS geralmente retorna um p -valor praticamente zero, indicando mudança clara.) Note que o SciPy também oferece testes para variáveis categóricas, como o Qui-quadrado, útil para co mparar distribuições de frequências de categorias (por exemplo, distribuição de scores de crédito antigos vs. novos).
+Snippet 2: Cálculo da métrica Population Stability Index (PSI)
+Agora, veremos como calcular o PSI (Índice de Estabilidade Populacional) –
+métrica amplamente usada em finanças para quantificar drift de variáveis contínuas ou discretas. Suponha que dividimos clientes em 3 categorias de risco (Baixo,
+Médio, Alto) e comparamos a distribuição dessas categorias entre um conjunto de referência (tre inamento) e um conjunto atual. O código a seguir computa o PSI conforme a fórmula vista anteriormente, somando as diferenças de proporção ponderadas pelo logaritmo do ratio de frequências em cada bin:
+import numpy as np
+# Distribuições de exemplo (proporçõ es em cada categoria
+de risco)
+dist_referencia = np.array([0.20, 0.50, 0.30]) # 20% baixo, 50% médio, 30% alto (treinamento)
+dist_atual = np.array([0.10, 0.40, 0.50]) # 10% baixo, 40% médio, 50% alto (recentes)
+psi = np.sum((dist_atual - dist_refere ncia) * np.log(dist_atual / dist_referencia))
+print(f\"PSI calculado: {psi:.4f} \")
+Técnicas de Detecção de Drift (Estatística)
+ Código -fonte 2 - [calcular_psi.py no GitHub] (Python)
+Fonte: Elaborado pelo autor (2026)
+Esse snippet ilustra o cálculo manual do PSI para uma variável categórica com três faixas. Após definirmos as distribuições de frequência nos grupos (por exemplo, percentuais de clientes de alto, médio e baixo risco no conjunto original e no novo), calculamos o índice usando a fórmula: \(PSI = \sum_{j}(p_{j} - q_{j}) \ln
+\frac{p_{j}}{q_ {j}}\), onde \(p_{j} \) é a proporção no segmento \(j\) na população de referência e \(q_{j} \) a proporção no conjunto atual. O resultado impresso, PSI calculado: 0.1465 (aprox.), indica drift moderado nesse exemplo. Em geral, valores de PSI ≥ 0,25 são cons iderados alto drift que requer atenção imediata; valores entre
+0,1–0,25 sugerem algum grau de drift a ser monitorado, enquanto abaixo de 0,1 implicam estabilidade. Nos vídeos , você poderá conferir a execução completa desses cálculos e a interpretação detal hada dos resultados, integrando as saídas do código com a análise visual do comportamento do modelo.
+Dica: Ao implementar testes de drift, lembre -se de conectar os resultados à teoria. Por exemplo, um p-valor muito baixo em um teste estatístico indica uma diferença real e significativa entre distribuições, ao passo que um PSI alto em um atributo específico mostra quais variáveis contribuem mais para o drift. Essas ferramentas complementares ajudam a diagnosticar não apenas se o modelo está
+“derivando”, mas também onde e por quê – conhecimento essencial para tomar ações corretivas informadas.
+Técnicas de Detecção de Drift (Estatística)
+### Saiba Mais
+Ilustremos o problema com mais detalhes: no caso da fintech de crédito mencionada, drift de dados significa que a distribuição estatística dos dados de entrada mudou ao longo do tempo. Por exemplo, se antes a maioria dos tomadores de empréstimo tinha entre 30 e 50 anos, mas agora g rande parte dos novos clientes é de jovens de 20 e poucos anos, a distribuição da variável “idade” se deslocou em relação à original. Essa mudança – chamada deriva de covariáveis ou data drift – não envolve necessariamente alteração no conceito predito (ne ste caso, risco de crédito), mas sim nas características dos dados utilizados pelo modelo. Como os modelos de Machine Learning supõem que os dados futuros seguem a mesma distribuição dos dados de treinamento, quando essa suposição é violada o desempenho do modelo tende a degradar. No nosso exemplo, o modelo de crédito treinado em um perfil de clientes “antigo” começou a errar mais porque os novos clientes não se parecem estatisticamente com os clientes antigos. Em outras palavras, o mundo mudou, mas o model o ainda “pensava” que os dados eram os mesmos.
+Detectar data drift de forma proativa é crítico para evitar surpresas desagradáveis. Assim como no exemplo anterior , drifts de dados podem levar a prejuízos financeiros e decisões equivocadas se não forem id entificados e corrigidos a tempo. E não é só no mercado de crédito: sempre que um modelo de IA começa a receber dados que diferem dos quais ele foi treinado, seja por mudanças no comportamento dos usuários, condições de mercado ou até fatores sazonais,
+temos potencial para data drift. Vale notar que, em aprendizado de máquina,
+considera -se também o chamado drift de conceito, que ocorre quando a relação subjacente entre entrada e predição muda (por exemplo, o conceito de “produto mais popular” muda devido a uma moda passageira). No entanto, o foco desta aula é o drift nas distribuições de entrada (covariate shift), que podemos detectar via estatística mesmo sem observar as saídas do modelo.
+Técnicas de Detecção de Drift (Estatística)
+Como identificar mudanças de distribuição?
+A forma mais intuitiva d e começar é comparando diretamente os dados recentes com os dados históricos de referência. Técnicas de análise visual exploratória são úteis: colocar histogramas ou gráficos de densidade lado a lado ajuda a enxergar deslocamentos na média, dispersão ou fo rmato da distribuição de cada variável. Por exemplo, o histograma a seguir compara a distribuição de idades dos clientes antes e depois de uma possível mudança:
+Figura 1 - Histograma comparando distribuições de idade (dados de referência vs. dados recen tes).
+Note o deslocamento da curva laranja para a esquerda, indicando clientes mais jovens na nova população
+Fonte: Elaborado pelo autor (2026)
+A inspeção visual acima sugere um drift (menos clientes de meia -idade e mais jovens na nova amostra). Porém, a percepção visual é subjetiva e não quantifica formalmente o grau de diferença nem sua significância estatística. Para confirmar se essa diferença é real – e não fruto do acaso – precisamos de métodos quantitativos formais.
+Técnicas de Detecção de Drift (Estatística)
+Métricas de dissimilaridade entr e distribuições
+Uma forma de quantificar drifts é usando medidas estatísticas de distância ou divergência entre distribuições. Essas métricas produzem um número indicando o quanto as distribuições se afastaram. As mais comuns incluem divergências de Kullba ck–Leibler (KL) e Jensen –Shannon (JS), além do Índice de Estabilidade
+Populacional (PSI) citado.
+• Divergência Kullback –Leibler (KL): é uma medida fundamental de diferença entre distribuições de probabilidade, introduzida por S. Kullback e R. Leibler em 1951. Formalmente, para distribuições discretas \(P\) e
+\(Q\), define -se como \(D_{KL}(P \parallel Q) = \sum_{i} P(i), \log
+\frac{P(i)}{ Q(i)}\). Intuitivamente, a KL quantifica a perda de informação quando usamos \(Q\) no lugar de \(P\). Ela é sempre não -
+negativa (zero apenas se as distribuições forem idênticas) e não simétrica (trocar \(P\) e \(Q\) muda o valor). Apesar de teórica, a KL é base para diversas aplicações de drift: por exemplo, o PSI nada mais é do que uma versão específica de KL para distribuições categorizadas em bins,
+com interpretação prática em faixas de valor. Em produção, a KL direta nem sempre é usada isoladamente por ser não limitada superiormente e às vezes difícil de interpretar em termos de impacto no negócio; ainda assim, é útil para ranquear quais variáveis mais mudaram e embasar outras medidas.
+• Divergência Jensen –Shannon (JS): é uma variação simétrica e limitada da KL, muito popular em Machine Learning. A JS calcula a média de duas KL divergences, usando a média das distribuições como referência intermediária. Formalmente, \(D_{JS}(P \parallel Q) = \frac{1}{2}
+D_{KL}(P \paralle l M) + \frac{1}{2} D_{KL}(Q \parallel M) \), onde \(M =
+\frac{1}{2}(P+Q) \). A divergência JS varia de 0 a 1 (usando log base 2) – oferecendo assim uma escala normalizada, mais intuitiva: JS = 0 indica distribuições idênticas, e JS = 1 seria a diferença máxi ma possível. Além disso, a raiz quadrada da JS define uma métrica válida de distância
+(conhecida como distância de Jensen –Shannon). Em detecção de drifts, a
+JS é apreciada por ser estável e simétrica, facilitando comparações entre
+Técnicas de Detecção de Drift (Estatística)
+múltiplos atributos. Por exemplo, se a divergência JS da variável “idade” duplicou (digamos, de 0,05 para 0,10), isso sinaliza um aumento significativo na dissimilaridade de sua distribuição – possivelmente requerendo atenção.
+• Population Stability Index (PSI): amplamente utilizad o no setor bancário e de crédito, o PSI mede o grau de mudança na distribuição de uma variável ao longo do tempo. Calculado dividindo -se a variável em faixas
+(bins) e comparando as frequências relativas em cada faixa entre duas populações (ex.: projeções d o modelo em desenvolvimento vs. produção).
+A fórmula, derivada da divergência de Kullback -Leibler, foi apresentada originalmente em whitepapers de indústrias financeiras e se popularizou pela simplicidade: valores de PSI abaixo de 0,1 indicam estabilidade
+(mudanças mínimas), entre 0,1 e 0,25 apontam drift moderado, e acima de 0,25 sugerem drift substancial que pode comprometer a performance do modelo. Por exemplo, se a proporção de clientes “alto risco” nos novos dados dobra em relação à base original, o PS I dessa variável aumentará significativamente, possivelmente ultrapassando o limiar de 0,25 – um forte indicativo de que o perfil da clientela mudou. Vale frisar: o PSI, assim como KL e JS, não fornece um “p -valor” ou significância estatística, mas sim um score de mudança, complementar aos testes de hipótese. Na prática, muitas equipes usam o PSI em conjunto com testes formais para ter um panorama completo (magnitude do drift + significância estatística).
+Testes estatísticos de hipóteses (duas amostras)
+Enquanto as métricas de divergência quantificam “quanto” as distribuições diferem, os testes de hipótese de duas amostras indicam se essa diferença é estatisticamente significativa (ou seja, improvável de ter ocorrido ao acaso). Dois testes clássicos para d etectar drift são:
+• Teste de Kolmogorov –Smirnov (KS): compara duas distribuições contínuas (não categóricas) calculando a maior diferença entre suas funções de distribuição acumulada (CDFs). A estatística KS,
+geralmente denotada por \(D\), varia de 0 a 1, o nde valores próximos de 0
+Técnicas de Detecção de Drift (Estatística)
+indicam distribuições muito similares, e valores maiores indicam crescente divergência. O teste fornece um p-valor para a hipótese nula de que não há diferença entre as distribuições; se p for menor que um nível de significância ( ex: 0,05), rejeitamos essa hipótese, concluindo que o drift é estatisticamente significativo. A vantagem do KS é que não assume forma de distribuição específica (é um teste não paramétrico), sendo sensível a diferenças na forma das distribuições (não apena s média). Por exemplo,
+no caso da idade dos clientes, o KS detectaria mudanças tanto na posição
+(média) quanto na dispersão ou assimetria da distribuição. Uma limitação do KS é que ele considera uma variável por vez; em dados multidimensionais complexos (c omo imagens ou embeddings de linguagem natural), pode haver necessidade de métodos mais sofisticados.
+• Teste do Qui -quadrado ( χ²): aplicável para variáveis categóricas ou distribuições discretizadas em bins. Avalia se as frequências observadas em cada cat egoria diferem do esperado (por exemplo, comparar a distribuição de tipos de transações financeiras antes vs. depois). A estatística \(\chi^2 \) é calculada somando as diferenças ao quadrado entre frequências observadas e esperadas relativas, divididas pela s frequências esperadas. Assim como no KS, obtemos um p-valor para testar a hipótese nula de que não houve mudança na distribuição. Se o p for pequeno,
+indica que pelo menos uma das categorias teve mudança significativa. Por exemplo, se a proporção de comp ras online com cartão de crédito aumentou de 30% para 50% enquanto transações in loco caíram, o teste χ² apontaria essa alteração como estatisticamente relevante (p. ex., p ≪
+0,01). O teste χ² requer que as contagens esperadas em cada categoria não sejam m uito baixas (tipicamente, pelo menos ~5) para validade dos resultados, devendo -se agrupar categorias raras se necessário.
+Você deve estar se perguntando: “Qual método usar, métrica de drift ou teste estatístico?” Na prática, eles se complementam. As métric as (KL, JS, PSI etc.)
+dizem quanto drift ocorreu e em quais variáveis ele é mais pronunciado. Já os testes de hipótese (KS, χ² etc.) dizem se podemos afirmar com confiança que o drift observado não é apenas ruído aleatório. Portanto, uma boa estratégia de
+Técnicas de Detecção de Drift (Estatística)
+monitoramento de drift inclui ambos: screening contínuo com métricas de divergência (para priorizar alertas) e confirmação com testes estatísticos formais quando um possível drift é identificado.
+Monitoramento Contínuo e MLOps
+Até aqui focamos em detecção de drift em contextos pontuais (por exemplo,
+comparar dados de seis meses atrás vs. dados atuais). Entretanto, em sistemas de Aprendizado de Máquina em produção, é ideal implementar um monitoramento contínuo do data drift – parte essencial do MLOps. Isso s ignifica calcular periodicamente métricas de drift (e executar testes quando necessário) conforme novos dados chegam. Ferramentas de código aberto como Evidently (Python)
+ou NannyML já oferecem pipelines prontos para computar diversas medidas de drift de forma automatizada (por exemplo, o Evidently pode gerar relatórios periódicos de
+PSI, KS e outras métricas para cada feature do seu dataset). Grandes provedores de nuvem também incorporaram essas funcionalidades em plataformas de ML – o
+Amazon SageMaker Mod el Monitor, por exemplo, captura amostras de dados em produção e aplica testes para identificar drifts em features em tempo real. Em aplicações modernas de IA generativa (LLMs), onde os dados são de alta dimensionalidade (como embeddings de texto), novas a bordagens foram propostas combinando métodos estatísticos e análise semântica assistida por modelos para detectar drifts que não seriam percebidos por testes tradicionais. Isso evidencia que a detecção de drifts é um campo em rápida evolução, com pesquisas recentes focadas em ampliar a capacidade de monitorar mudanças sutis em dados complexos (por exemplo, desenvolvendo variantes do teste KS adequadas para dados de alta dimensão).
+Outra frente importante é garantir que detectar o drift leve a ações efetiv as.
+Uma vez soado o alarme estatístico de drift, a equipe de Data Science e de negócio deve investigar as causas: Quais atributos mudaram? O desempenho do modelo já foi afetado? Em casos de concept drift (mudança na relação entrada -saída), pode ser necessá rio retreinar o modelo com dados atualizados. Em outros cenários,
+políticas de negócio podem precisar de ajustes (por exemplo, rever limites de crédito para refletir o novo perfil de clientes). Além disso, a resposta ao drift deve ser
+Técnicas de Detecção de Drift (Estatística)
+calibrada conforme o impacto: um leve desvio pode ser apenas monitorado,
+enquanto um drift severo exige intervenção imediata, como pausa no modelo ou aplicação de salvaguardas até a correção.
+Por fim, vale considerar que a detecção de drift tornou -se parte integrante das boas práticas em AI. Segundo um estudo recente, impressionantes 91% dos modelos de Machine Learning sofrem algum grau de drift durante seu ciclo de vida,
+e modelos mantidos sem atualizações por mais de 6 meses apresentaram aumentos médios de 35% na taxa de erro em novos dados. Não é de admirar que reguladores e padrões de governança tenham começado a exigir monitoramento contínuo de dados e desempenho de modelos. Nos vídeos desta aula, você viu uma demonstração visual de como implementar rotinas de monitoramento de drift e integrar alertas automáticos, preparando -o para manter seus modelos sob controle no mundo real.
+Técnicas de Detecção de Drift (Estatística)
+### Mercado, Cases E Tendências
+Cases e Aplicações: Empresas líderes de tecnologia e finanças já adotam soluções robustas para monitorar e mi tigar data drift. Por exemplo, grandes bancos implementam pipelines de monitoramento com métricas como PSI e testes estatísticos, relatando redução de 70 –80% no tempo gasto em validação manual de modelos após automatizar a detecção de drift. Isso libera an alistas de risco para tarefas mais estratégicas e permite identificar degradações de modelos em horas,
+em vez de meses. Plataformas de MLOps de provedores como AWS e Google Cloud oferecem services integrados de detecção de drift – o Amazon SageMaker Model
+Monitor, por exemplo, captura periodicamente os dados de produção e calcula métricas como Wasserstein distance e alertas de drift em tempo real.
+Publicações e tendências recentes: A comunidade científica vem se dedicando intensamente ao tema de drift. Co nferências importantes de IA (NeurIPS,
+ICML, etc.) trazem trabalhos voltados a novos métodos de detecção, como testes estatísticos aprimorados para dados de alta dimensionalidade (por exemplo,
+extensões do teste KS para grandes streams de dados e embedding s de linguagem). Além disso, surgem iniciativas open -source e startups especializadas:
+frameworks como Evidently e NannyML permitem a qualquer equipe implementar monitores de drift com facilidade, enquanto empresas como Arize
+AI e Fiddler oferecem platafor mas de AI observability que unem detecção de drift a análise de causa -raiz e monitoramento de performance. Esse movimento reflete a conscientização de que modelos de ML precisam de manutenção contínua pós-
+implantação – afinal, dados vivos estão em constant e transformação. Em um cenário onde “91% dos modelos sofrem drift”, monitoração ativa não é luxo, e sim necessidade.
+Podcast e mídia: O assunto também ganhou espaço em podcasts e mídias especializadas. O episódio “Keeping Your Models On Track” do DataCast Podcast
+(2025) reuniu especialistas da Netflix e Amazon para debater estratégias de detecção de drift em larga escala, destacando desafios práticos e soluções nas grandes empresas. Call-to-action: para quem deseja se aprofundar no tema,
+recomendamos assistir às entrevistas disponíveis na s videoaulas , onde exploramos
+Técnicas de Detecção de Drift (Estatística)
+estudos de caso reais de detecção de drift e a implementação de uma pipeline completa de monitoramento.
+Técnicas de Detecção de Drift (Estatística)
+## O Que Você Viu Nes Ta Aula ?
+Entendemos o que é data drift, uma mudança na distribuição dos dados de entrada que, se não detectada, pode degradar os modelos preditivos ao longo do tempo. Vimos por que monitorar essas mudanças é crucial para manter a performance e a confiabilidade das soluções de Machine Learning em produção.
+Aprendemos a identificar drift utilizando ferramentas estatísticas, combinando métricas de dissimilaridade (como KL, JS e PSI) para quantificar a magnitude das mudanças com testes de hipótese (KS, Qui -quadrado, etc .) para verificar a significância estatística dessas diferenças. Assim, obtemos tanto o “termômetro” do drift quanto a garantia de que a mudança detectada não é aleatória.
+Exploramos exemplos práticos, incluindo o caso de uma fintech de crédito,
+para ilust rar como detectar drifts no mundo real e quais passos tomar em resposta.
+Também discutimos best practices de mercado – do uso de visualizações e análises exploratórias à implementação de monitoramento contínuo via plataformas de
+MLOps e bibliotecas open -source – garantindo que você possa antever problemas de drift ao invés de apenas reagir a eles.
+Por fim, destacamos que a detecção de drift é hoje um pilar do MLOps moderno. Há um ecossistema crescente de ferramentas automatizadas e pesquisas acadêmicas dedi cadas a aprimorar a detecção rápida de drifts – uma área em plena evolução. Modelos de IA não são soluções “treine e esqueça”: eles exigem acompanhamento contínuo para permanecerem relevantes e confiáveis .
+Técnicas de Detecção de Drift (Estatística)
+### Referências
+GAMA, J.; ŽLIOBAITĖ, I.; BIFET, A.; PE CHENIZKIY, M.; BOUCHACHIA, A. A
+Survey on Concept Drift Adaptation . 2014. ACM Computing Surveys, v. 46, n. 4,
+p. 44. Disponível em: https://doi.org/10.1145/2523813 . Acesso em: 14 ago. 2026.
+GRETTON, A.; BORGW ARDT, K. M.; RASCH, M.; SCHÖLKOPF, B.; SMOLA, A. J.
+A Kernel Two -Sample Test . 2012. Journal of Machine Learning Research, v. 13, p.
+723–773. Disponível em: https://www.jmlr.org/papers/v13/gretton12a.html . Acesso em: 14 ago. 2026.
+HENDRYCKS, D.; GIMPEL, K. A Baseline for Detecting Misclassified and Out -of-
+Distribution Examples in Neural Networks . 2017. 5th International Conference on
+Learning Representations (ICLR 2017). Disponível em:
+https://openreview.net/forum?id=Hkg4TI9xl . Acesso em: 14 ago. 2026.
+KULLBACK, S.; LEIBLER, R. A. On Informa tion and Sufficiency . 1951. The Annals of Mathematical Statistics, v. 22, n. 1, p. 79 –86. Disponível em:
+https://doi.org/10.1214/aoms/1177729694 . Acesso em: 14 ago. 2026.
+LIN, J. Divergence Measures B ased on the Shannon Entropy . 1991. IEEE
+Transactions on Information Theory, v. 37, n. 1, p. 145 –151. Disponível em:
+https://doi.org/10.1109/18.61115 . Acesso em: 14 ago. 2026.
+LU, J.; LIU, A.; DONG, F.; GU, F .; GAMA, J.; ZHANG, G. Learning under Concept
+Drift: A Review . 2019. IEEE Transactions on Knowledge and Data Engineering, v.
+31, n. 12, p. 2346 –2363. Disponível em:
+https://doi.org/10.1109/TKDE.2018.28 76857 . Acesso em: 14 ago. 2026.
+MASSEY, F. J. The Kolmogorov -Smirnov Test for Goodness of Fit . 1951. Journal of the American Statistical Association, v. 46, n. 253, p. 68 –78. Disponível em:
+https://doi.org/10.1080/01621459.1951.10500769 . Acesso em: 14 ago. 2026.
+NEYMAN, J.; PEARSON, E. S. On the Problem of the Most Efficient Tests of
+Statistical Hypotheses . 1933. Philosophical Transactions of the Royal Society A, v.
+231, n. 694 –706, p. 289 –337. Disponível em: https://doi.org/10.1098/rsta.1933.0009 .
+Acesso em: 14 ago. 2026.
+PEARSON, K. On the Criterion That a Given System of Deviations from the
+Probable in the Case of a Correlated System of Variables is Such That It Can
+Be Reasonably Supposed to Have Arisen from Random Sampling . 1900. The
+London, Edinburgh, and Dublin Philosophical Magazine, v. 50, n. 302, p. 157 –175.
+Acesso em: 14 ago. 2026.
+RABANSER, S.; GÜNNEMANN, S.; LIPTON, Z. C. Failin g Loudly: An Empirical
+Study of Methods for Detecting Dataset Shift . 2019. Advances in Neural
+Information Processing Systems 32 (NeurIPS 2019), p. 1396 –1408. Disponível em:
+https://arxiv.org/abs/1810.11953 . Acesso em: 14 ago. 2026.
+Técnicas de Detecção de Drift (Estatística)
+SCULLEY, D. et al. Hidden Technical Debt in Machine Learning Systems . 2015.
+Advances in Neural Information Processing Systems 28 (NIPS 2015), p. 2503 –2511.
+Disponível em: https://papers.nips.cc/paper/5656 -hidden -technical -debt-in-machine -
+learning -systems . Acesso em: 14 ago. 2026.
+YURDAKUL, B.; NARANJO, J. Statistical Properties of the Population Stability
+Index . 2020. Journal of Risk Model Validation, v. 14, n. 4, p. 89 –100. Disponível em:
+https://doi.org/10.21314/JRMV.2020.227 . Acesso em: 14 ago. 2026.
+Técnicas de Detecção de Drift (Estatística)
+### Palavras -Chave
+Data Drift . MLOps . Monitoramento .
+Técnicas de Detecção de Drift (Estatística)

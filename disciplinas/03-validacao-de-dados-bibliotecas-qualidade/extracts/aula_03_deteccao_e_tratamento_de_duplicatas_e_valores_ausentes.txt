@@ -1,0 +1,218 @@
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+## | Aula 03 - Machine Learning Engineering
+
+## Fase 4 Detecção E Tratamento De
+
+### Duplicatas E Valores Ausentes
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+### O Que Vem Por Aí?
+A detecção e o tratamento de duplicatas são cruciais para a confiabilidade de sistemas de Machine Learning. Quando registros duplicados estão presentes simultaneamente nos conjuntos de treiname nto e teste (um fenômeno conhecido como data leakage por duplicatas), as métricas de avaliação podem ser artificialmente inflacionadas. O modelo, em vez de aprender padrões generalizáveis, simplesmente
+"memoriza" a resposta para os registros repetidos. Iss o leva a uma performance superestimada e a um sistema que não agrega valor real em produção, exigindo a identificação, quantificação e eliminação dessas duplicatas.
+Nesta aula, você vai aprender a enxergar duplicatas que não são óbvias: desde cópias exatas que o simples uso do Pandas não revela, até near -duplicates —
+registros ligeiramente diferentes que representam a mesma entidade real, como um cliente com nome grafado de formas distintas ou dois artigos científicos com pequenas variações de texto. Para isso, mergulharemos na teoria de medidas de similaridade,
+hashing probabilístico e Locality -Sensitive Hashing (LSH), técnicas que permitem detectar duplicatas aproximadas em datasets de milhões de registros com eficiência computacional. Na segunda parte da aula, revisitaremos os dados ausentes — tema introduzido na aula anterior — mas agora com foco na implementação prática de imputação usando bibliotecas como missingno e scikit -learn, explorando também a teoria de matrix completion que fundamenta os métodos modernos. Prepare -se para transformar problemas silenciosos de qualidade em processos sistemáticos e auditáveis de detecção e correção.
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+### Hands On
+Nesta sessão prática, construímos um pipeline completo de detecção e tratamento de duplicatas e valores ausentes sobre um dataset sintético de pacientes
+(nome, cidade, convênio, diagnóstico — Hipertensão, Diabetes etc. —, idade,
+pressão, colesterol e glico se), no qual introduzimos duplicatas exatas, near -duplicates e ausências para simular cenários próximos do real. A ordem importa e é progressiva:
+a deduplicação deve preceder a imputação (imputar antes amplifica padrões espúrios e infla métricas) e a verif icação de leakage deve vir antes de qualquer split treino/teste.
+Começamos pela detecção de duplicatas exatas — o .duplicated() do pandas e, de forma determinística e escalável, o hashing SHA -256 de cada linha serializada
+(função hash_linha ), com as 30 du plicatas embaralhadas sendo localizadas e removidas com drop_duplicates . Em seguida, tratamos os near -duplicates — registros similares, mas não idênticos, que o SHA -256 não detecta — com a abordagem
+MinHash + Locality -Sensitive Hashing (LSH), usando a Simi laridade de Jaccard sobre q-shingles de caracteres (Q=3) dos campos nome, cidade, convênio e diagnóstico, e calculando o índice para pares como "Ana Lima"/"San Paulo" e "Bruno
+Rocha"/"Brunno Rocha". Depois, demonstramos o data leakage por duplicatas compar ando dois cenários com train_test_split : dividir antes de deduplicar (pacientes vazados entre treino e teste) e dividir depois (nenhum vazamento) — daí em diante só o treino limpo é usado.
+Na parte de dados faltantes, introduzimos ausências artificiais pa ra ilustrar os mecanismos — cerca de 20% de NaN aleatórios em colesterol (MCAR) e glicose ausente em pacientes acima de 50 anos (MAR, condicionado à idade) — e usamos a biblioteca missingno ( matrix , bar e a matriz ordenada por idade) para visualizar os padrões de missingness. Por fim, comparamos estratégias de imputação:
+mascaramos 30% da coluna pressão, aplicamos SimpleImputer (média e mediana),
+KNNImputer (k=3, com padronização prévia via StandardScaler , pois a distância seria dominada pela feature de mai or escala) e IterativeImputer (MICE), e medimos o RMSE apenas nas posições mascaradas — o IterativeImputer obtém o menor erro,
+confirmando que métodos multivariados se beneficiam da correlação entre atributos clínicos, como prevê a Matrix Completion Theory .
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+O pipeline completo — deduplicação, verificação de leakage, detecção de near -
+duplicates, diagnóstico de dados faltantes e validação de imputação — está disponível no notebook do repositório do curso. Para executar, instale as dependências listadas em req uirements.txt (pandas, NumPy, scikit -learn, missingno e Matplotlib, além do hashlib da biblioteca padrão) com pip install -r requirements.txt e rode todas as células em ordem, pois cada etapa reaproveita os dataframes produzidos pela anterior; as figuras d e missingness e a comparação de RMSE entre estratégias são geradas ao final e comentadas na videoaula.
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+### Saiba Mais
+Nesta seção, construiremos um entendimento robusto sobre duplicatas e dados ausentes — das bases matemáticas de cada técnica aos casos prático s que ilustram seu impacto em projetos reais de Machine Learning —, para que você seja capaz não apenas de aplicar as ferramentas, mas de justificar cada escolha metodológica.
+O Problema das Duplicatas em Datasets de ML
+A qualidade de um modelo de Machine Learning é, em última instância, limitada pela qualidade dos dados com os quais ele é treinado e avaliado. Ao contrário de outliers, que aparecem em análises exploratórias, e de valores ausentes, que produzem erros visíveis, duplicatas podem permanecer com pletamente invisíveis até que seus efeitos negativos sejam investigados em profundidade. A questão não é trivial: estudos recentes demonstraram que conjuntos de dados de referência amplamente utilizados no benchmarking de modelos de NLP, como Common Crawl,
+C4 e The Pile, contêm taxas de near -duplicação de 1% a 15%, com impactos mensuráveis na calibração dos modelos, na inflação artificial de métricas e na memorização indevida (Lee et al., 2022).
+Taxonomia e Definições Formais
+Para trabalhar rigorosamente co m duplicatas, precisamos de definições formais. Considere um dataset D composto por n registros r1,r2,...,rn, onde cada registro ri é um vetor de d atributos. Dois registros ri e rj são considerados duplicatas se representam a mesma entidade real — um co nceito conhecido na literatura como
+Entity Resolution ou Record Linkage (Elmagarmid et al., 2007). A partir desta definição, estabelecemos uma taxonomia de três categorias principais:
+Tipo Definição Formal Exemplo Prático Impacto em ML
+Duplicata
+Exata ri = rj: todos os atributos idênticos Linha copiada duas vezes no CSV Data leakage direto se cruzar train/test
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+Tipo Definição Formal Exemplo Prático Impacto em ML
+Duplicata
+Parcial ri ≈ rj: subconjunto de atributos idênticos Mesma pessoa com diferentes campos preenchidos Viés de amostragem, over -
+representation
+Near -Duplicate sim(rᵢ,rⱼ) ≥ θ,θ ∈ [0.8,1.0) Artigos com parágrafos iguais;
+paciente com erros de digitação Inflação de métricas,
+memorização
+Tabela 1 – Taxonomia de duplicatas em datasets de ML
+Fonte: Elaborado pelo autor com base em Elmagarmid et al. (2007)
+A distinção entre duplicatas exatas e near -duplicates tem implicações profundas para a escolha das técnicas de detecção: enquanto as primeiras podem ser identificadas com funções de hashing determinísticas em tem po O(n), as near -
+duplicates exigem medidas de similaridade computacionalmente custosas se aplicadas de forma ingênua — o que motivou o desenvolvimento de algoritmos aproximados como o Locality -Sensitive Hashing, abordado adiante.
+Impacto no Ciclo de Vida d e ML
+O impacto de duplicatas não é uniforme — depende de onde no ciclo de vida elas aparecem. Durante o treinamento, duplicatas dentro do conjunto de treino criam um desequilíbrio sutil na função de perda: os exemplos duplicados recebem um peso implícito maior, distorcendo os gradientes em redes neurais profundas; em modelos baseados em instâncias, como k -NN e kernel SVMs, aumentam artificialmente a densidade local em certas regiões do espaço de features, criando viés de representação (Zha et al. , 2023). O fenômeno mais crítico, porém, ocorre quando duplicatas cruzam a fronteira entre treino e teste — o data leakage por duplicatas: o modelo não está generalizando, está reconhecendo, e as métricas de avaliação deixam de ser preditores confiáveis da performance em produção. Em modelos de linguagem de grande escala, Kandpal et al. (2022) demonstraram que a probabilidade de memorização é diretamente proporcional à frequência de ocorrência de uma sequência no dataset de treinamento — efeito amplificado pela presença de near -
+duplicates.
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+Data Leakage e Contaminação do Conjunto de Teste
+O estudo de Albelali & Ahmed (2025), nossa principal referência nesta aula,
+traz evidências empíricas alarmantes sobre data leakage em séries temporais.
+Investigando como di ferentes configurações de validação para modelos LSTM afetam as métricas de forecasting, os autores mostraram que modelos avaliados com k -fold aleatório — sem considerar a ordem temporal — apresentaram RMSE até 40% melhor do que com walk -forward validation , a estratégia que respeita a causalidade temporal;
+e que janelas de entrada maiores agravam o leakage, porque mais dados futuros acabam implicitamente incluídos no treinamento. Para além das séries temporais, o problema afeta qualquer domínio com estrutur a de dependência — pacientes com múltiplas visitas, usuários com múltiplas interações, moléculas similares em química computacional. A solução geral é realizar o split treino/teste ao nível da entidade —
+todos os registros de um mesmo paciente inteiramente no treino ou inteiramente no teste —, lógica que o scikit -learn implementa com o GroupShuffleSplit .
+Tipo de Leakage Mecanismo Detecção Mitigação
+Duplicata exata train↔test Registro idêntico em ambos os conjuntos Comparação de hashes entre splits Deduplicação antes do split
+Near -duplicate train↔test Registro similar cruza os conjuntos LSH ou MinHash similarity Entity -level splitting
+Temporal leakage
+(séries) Sobreposição de janelas temporais Verificação de timestamps Walk -forward validation
+Target leakage Feature calculada com informação do target Análise causal de features Feature engineering cauteloso
+Tabela 2 – Tipos de data leakage e estratégias de mitigação
+Fonte: Elaborado pelo autor com base em Albelali & Ahmed (2025)
+Fundamentos Teóricos da Detecção de Duplicatas
+A detecção de duplicatas existe em diferentes escalas e requer abordagens distintas: para datasets pequenos (até dezenas de milhares de registros), a comparação par -a-par é viável; para datasets grandes (milhões a bilhões, como os de
+Detecção e Tratamento de Duplicatas e Valores Ausentes pré-treinamento de LLMs), precisamos de algoritmos mais performáticos. Para duplicatas exatas, utiliza -se uma função de hash como o SHA -256: cada registro,
+padronizado em uma única string, é convertido em uma "impressão digi tal" de tamanho fixo; registros iguais produzem o mesmo hash, e a chance de dois registros diferentes colidirem é praticamente zero com funções modernas. Basta armazenar os hashes em uma tabela e tratar como duplicata qualquer registro cujo hash já esteja lá
+— muito mais rápido do que comparar cada registro com todos os outros.
+Medidas de Similaridade
+Para near -duplicates, precisamos quantificar "quão similar" dois registros são,
+e a escolha da medida é fundamental: uma medida inadequada gera falsos positivos
+(registros distintos declarados duplicatas) ou falsos negativos (near -duplicates genuínos perdidos). A tabela abaixo sistematiza as principais medidas e s eus fundamentos matemáticos:
+Medida Fórmula Tipo de Dado Propriedades
+Jaccard J(A,B) = |A∩B| /
+|A∪B| Conjuntos, textos
+(shingles) Simétrica; base teórica do
+MinHash
+Cosine
+Similarity cos(θ) = (A·B) /
+(||A||·||B||) Vetores numéricos,
+TF-IDF Invariante a magnitude;
+rápida com produto interno
+Edit Distance edit(s,t) = min operações s→t Strings, IDs, nomes de pessoas Simétrica, métrica
+Hamming
+Distance H(a,b) = Σ[aᵢ≠bᵢ] Strings de mesmo comprimento, bits Adequada para hashes de perceptual hashing
+Tabela 3 – Medidas de similaridade para detecção de near -duplicates
+Fonte: Elaborado pelo autor (2026)
+A Similaridade de Jaccard merece atenção especial por ser a base teórica do
+MinHash, técnica probabilística eficiente para estimativ a entre grandes conjuntos.
+Dados dois conjuntos A e B de shingles (substrings de comprimento fixo extraídas de um texto serializado), o índice de Jaccard mede a proporção de itens compartilhados
+sobre o total de itens únicos. Para dados numéricos, transfor mam -se os números em
+Detecção e Tratamento de Duplicatas e Valores Ausentes categorias (agrupando ou arredondando) antes de aplicar o Jaccard — útil para encontrar duplicatas quase idênticas com pequenas diferenças nos valores.
+Locality -Sensitive Hashing (LSH)
+O maior desafio computacional na detecção de near -duplicates é a complexidade quadrática da comparação par -a-par: para n registros há n(n -1)/2 pares
+— com n=1 milhão, ~5×10¹¹ comparações, inviável. O Locality -Sensitive Hashing resolve o problema de forma elegante: em vez de comparar todos os pares, garant e matematicamente que pares similares têm alta probabilidade de cair no mesmo bucket, e pares dissimilares, em buckets diferentes (Indyk & Motwani, 1998). O
+MinHash, dentro da família LSH, transforma documentos longos (vistos como
+"conjuntos" de palavras o u shingles) em "assinaturas" curtas que preservam a similaridade de Jaccard; o LSH usa essas assinaturas para identificar rapidamente os pares com alta probabilidade de serem duplicatas, sem comparar todos os pares possíveis.
+Quando o LSH identifica grupos de candidatos, o passo seguinte é agrupá -los em clusters que representam a mesma entidade real. O algoritmo Union -Find (Disjoint
+Set Union) é particularmente adequado: começa com cada registro em seu próprio cluster e une os clusters a cada par de near -duplicates identificado. Alternativas baseadas em densidade, como DBSCAN e OPTICS, dispensam a especificação de k e lidam melhor com ruído — registros que não pertencem a nenhum cluster são rotulados como outliers. Para dados textuais, DBSCAN aplicado sobre embeddings gerados por Sentence -BERT tem mostrado excelentes resultados, detectando near -
+duplicates semânticos — dois artigos que descrevem o mesmo fato com vocabulário diferente — impossíveis de capturar com Jaccard (Phan et al., 2024).
+Dados Faltantes
+Na aula anterior, estabelecemos os fundamentos teóricos dos mecanismos de dados faltantes MCAR, MAR e MNAR (Rubin, 1976) e introduzimos métodos de imputação das técnicas clássicas ao deep learning. Nesta aula, aprofundamos dois aspectos complementares: a teo ria de Matrix Completion, que fundamenta os
+Detecção e Tratamento de Duplicatas e Valores Ausentes métodos modernos de imputação matricial, e a implementação prática, explorada na seção HANDS ON com as bibliotecas missingno e scikit -learn.
+Matrix Completion Theory
+A Matrix Completion Theory (Teoria de Completude de Matrizes) trata os dados ausentes como o problema de "preencher as lacunas" de uma matriz incompleta ,
+partindo da ideia de que a tabela, mesmo com lacunas, possui um padrão subjacente que pode ser resumid o de forma simples: a matriz completa deve ter rank baixo, isto é, ser representável de maneira compacta. Como encontrar a matriz de menor rank é um problema muito complexo, usa -se a norma nuclear (soma dos valores singulares)
+como substituto mais fácil de calcular, resolvido por algoritmos como o Singular Value
+Thresholding (SVT) e o Alternating Least Squares (ALS). O IterativeImputer do scikit -
+learn funciona de maneira parecida — essencialmente ALS aplicado à imputação:
+trata cada coluna com valores ausen tes como função das outras colunas e repete o processo até que os valores preenchidos fiquem consistentes. Se os dados têm forte estrutura de correlação entre variáveis (como dados clínicos em que colesterol,
+pressão sanguínea e IMC são correlacionados), KNNImputer e IterativeImputer produzirão imputações significativamente mais precisas que métodos univariados.
+Além do Clássico: Modelos Generativos para Imputação
+Enquanto IterativeImputer/MICE e KNN dependem de correlações lineares ou vizinhanças locais, a fronteira da pesquisa aponta para Modelos Generativos: o objetivo não é apenas "preencher um buraco", mas aprender a distribuição de probabilidade subjacente do dataset para gerar valores estatisticamente indistinguíveis dos reais. O framework GAIN (Gener ative Adversarial Imputation
+Networks), proposto por Yoon et al. (2018), adapta as Redes Adversárias Generativas ao problema com três componentes: o Gerador observa os dados existentes e os vetores de máscara que indicam os valores ausentes para preencher as lacunas de forma plausível; o Discriminador opera valor por valor, tentando discernir quais elementos foram observados e quais foram imputados; e o Vetor de Dica (Hint Vector)
+estabiliza o treinamento, fornecendo ao Discriminador informação parcial sobr e a localização original dos ausentes — o que força o Gerador a aprender a verdadeira
+Detecção e Tratamento de Duplicatas e Valores Ausentes distribuição dos dados para enganar um adversário cada vez mais informado. Apesar de promissoras, essas técnicas exigem maior poder computacional e validação rigorosa via RMSE e análise de distribuição, pois modelos mal treinados podem introduzir "alucinações" estatísticas no dataset.
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+### Mercado, Cases E Tendências
+A detecção de duplicatas e o tratamento de dados ausentes deixaram de ser apenas preocupações acadêmicas para tornarem -se competências críticas em organizações que dependem de ML em produção. Nos últimos anos, casos emblemáticos trouxeram atenção renovada para estas técnicas, enquanto novas fronteiras de pesquisa expandem o que é possível alcançar em termos de escala e sofisticação.
+Case 1: Data Leakage em Séries Temporais — Albelali & Ahmed (2025)
+O estudo conduzido por pesquisadores da King Fahd University aborda um problema central na validação de modelos de Deep Learning para séries temporais: o impacto do vazamento de dados (data leakage) quando a estrutura cronológica não é rigorosamente respeitada. A pesquisa evidencia que o uso de validação cruzada aleatória (K -fold convencional) em arquiteturas LSTM distorce a percepção de performance, entre gando métricas excessivamente otimistas que não se sustentam em cenários reais de aplicação. O ponto central do estudo reside na forma como as janelas deslizantes (sliding windows) são processadas antes do treinamento. Se a partição entre treino e teste oc orrer de forma aleatória após a criação destas sequências, informações que pertencem ao futuro "vazam" para o conjunto de treinamento através da sobreposição de registros. O estudo demonstra que a severidade desse vazamento é sensível a configurações estru turais do dataset, como o tamanho da janela de entrada e o horizonte de previsão, alertando que janelas mal dimensionadas podem agravar a contaminação.
+Case 2: Deduplicação em Datasets de Treinamento de LLMs
+O estudo pioneiro de Lee et al. (2022) investigo u como a redundância em larga escala afeta o comportamento de LLMs. Analisando conjuntos de dados massivos utilizados para o pré -treinamento de modelos como o T5, os pesquisadores observaram que uma parcela relevante dos documentos era composta por near -
+Detecção e Tratamento de Duplicatas e Valores Ausentes duplicates — textos que, embora não fossem idênticos bit a bit, compartilhavam a mesma estrutura e conteúdo semântico.
+Para enfrentar o desafio de processar volumes de dados tão vastos, a equipe aplicou o framework MinHash LSH , que permitiu identificar simil aridades de forma probabilística e eficiente. Os impactos da remoção dessa redundância no ciclo de vida do modelo foram profundos. A deduplicação de dados, ao reduzir a repetição excessiva, diminui a memorização literal pelos modelos de IA (protegendo a privacidade e prevenindo plágio) e melhora a calibração, tornando as predições mais honestas e mantendo o desempenho. Além disso, a eficiência de pipelines altamente paralelizados valida a técnica como uma etapa essencial e economicamente viável para o trein amento de modelos de grande escala.
+Tendências: Deduplicação Neural e Privacy -Preserving Deduplication
+A fronteira atual da pesquisa em deduplicação move -se em duas direções. Na primeira, deduplicação neural baseada em embeddings de foundation models: em v ez de comparar shingles lexicais, registros são codificados como vetores densos por modelos como BERT ou Sentence -BERT, e similaridade é calculada no espaço de embeddings. Isso permite detectar near -duplicates semânticos — tarefa impossível para métodos ba seados em Jaccard lexical. Na segunda direção, Privacy -Preserving
+Record Linkage (PPRL) endereça um desafio crescente: como deduplicar registros distribuídos em diferentes organizações sem revelar informações sensíveis? Técnicas como Bloom Filter Encoding permitem comparar registros de saúde entre hospitais para identificar o mesmo paciente sem trocar dados identificáveis, alinhando deduplicação com requisitos de regulamentações (Vatsalan et al., 2023).
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+## O Que Você Viu Nesta Aula?
+Nesta aula, cobrimos dois pilares fundamentais da qualidade de dados em
+Machine Learning: a detecção e tratamento de duplicatas, e a imputação robusta de valores ausentes.
+A aula consolidou os principais pontos sobre a detecção e tratamento de duplicatas e valores ausentes. Em re lação às duplicatas, foram abordados os tipos exatos (registros idênticos), parciais (subconjunto de campos iguais) e near -duplicates
+(registros similares acima de um threshold), sendo que cada um exige técnicas de detecção específicas. Um risco crucial é o Data Leakage, que ocorre quando duplicatas cruzam a fronteira treino/teste, inflando artificialmente as métricas de avaliação.
+Para a detecção exata, o Hashing com SHA -256 aplicado a registros serializados é uma técnica considerada bastante eficiente, no contexto de similaridade, as medidas Jaccard (para conjuntos e shingles), Cosseno (para vetores)
+e Edit Distance (para strings) são aplicáveis dependendo do tipo de dado. Para a detecção de near -duplicates, utiliza -se o Locality -Sensitive Hashing (LSH), u ma técnica probabilística que, quando combinada com o MinHash, estima a similaridade de Jaccard.
+Já no tratamento de valores ausentes, a Matrix Completion Theory fundamenta métodos como IterativeImputer, que assumem uma estrutura de baixo rank nos dados para recuperar valores ausentes através da otimização da norma nuclear. Também vimos que a análise visual dos padrões de ausência (MCAR/MAR/MNAR) pode ser feita com a biblioteca missingno e que a validação das estratégias de imputação
+(média, KNN, MICE) é bastante significativa.
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+### Referências
+ALBELALI, S.; AHMED, M. Hidden Leaks in Time Series Forecasting: How Data
+Leakage Affects LSTM Evaluation Across Configurations and Validation
+Strategies . arXiv preprint. King Fahd University of Petroleum and Minerals, 2025.
+Disponível em: https://arxiv.org/abs/2512.06932 . Acesso em: 27 ago. 2026.
+BUOLAMWINI, J.; GEBRU, T. Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification . In: CONFERENCE ON FAIRNESS,
+ACCOUNTABILITY AND TRANSPARENCY, 1., 2018. Proceedings. PMLR, 2018. p.
+77–91.
+CANDÈS, E. J.; RECHT, B. Exact Matrix Completion via Convex Optimization .
+Foundations of Computational Mathematics, v. 9, n. 6, p. 717 –772, 2009. DOI:
+10.1007/s10208 -009-9045 -5.
+ELMAGARMID, A. K.; IPEIROTIS, P. G.; VERIKYOS, V. S. Duplicate Record
+Detection: A Survey . IEEE Transactions on Knowledge and Data Engineering, v. 19,
+n. 1, p. 1 –16, 2007. DOI: 10.1109/TKDE.2007.250581.
+FAN, J. An Interdisciplinary and Cross -Task Review on Missing Data Imputation .
+arXiv preprint arXiv:2511.01196. School of Data Science, The Chinese University of
+Hong Kong, Shenzhen, 2025. Disponível em: https://arxiv.org/abs/2511.01196 .
+Acesso em: 27 ago. 2026.
+INDYK, P.; MOTWANI, R. Approximate Nearest Neighbors: Towards Removing the Curse of Dimensionality . In: ACM SYMPOSIUM ON THEORY OF COMPUTING
+(STOC), 30., 1998, Dallas. Proceedings. New York: ACM, 1998. p. 604 –613. DOI:
+10.1145/276698.276876.
+KANDPAL, N.; WALLACE, E.; RAFFEL, C. Deduplicating Training Data Mitigates
+Privacy Risks in Language Models . In: INTERNATIONAL CONFERENCE ON
+MACHINE LEARNIN G (ICML), 39., 2022. Proceedings of Machine Learning Research,
+v. 162, p. 10697 –10707, 2022. Disponível em:
+https://proceedings.mlr.press/v162/kandpal22a.html . Acesso em: 27 ago. 2026.
+KOTELNIKOV, A. et al. TabDDPM: Modelling Tabular Data with Diffusion Models .
+In: INTERNATIONAL CONFERENCE ON MACHINE LEARNING (ICML), 40., 2023.
+Proceedings of Machine Learning Research, 2023. Disponível em:
+https://proceedings.mlr.press/v202/kotelnikov23a.html . Acesso em: 27 ago. 2026.
+LEE, K. et al. Deduplicating Training Data Makes Language Models Better . In:
+ANNUAL MEETING OF THE ASSOCIATION FOR COMPUTATIONAL LINGUISTI CS
+(ACL), 60., 2022. Proceedings. Stroudsburg: ACL, 2022. p. 8424 –8445. DOI:
+10.18653/v1/2022.acl -long.577.
+PHAN, N. et al. Semantic Near -Duplicate Detection in Large Datasets Using
+Sentence Embeddings and DBSCAN . In: IEEE INTERNATIONAL CONFERENCE
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+ON DATA ENGINEERING (ICDE), 40., 2024. Proceedings. IEEE, 2024. DOI:
+### 10.1109/Icde60146.2024.00Xxx.
+RUBIN, D. B. Inference and Missing Data . Biometrika, v. 63, n. 3, p. 581 –592, 1976.
+DOI: 10.1093/biomet/63.3.581.
+VAN BUUREN, S.; GROOTHUIS -OUDSHOORN, K. mice: Multi variate Imputation by Chained Equations in R . Journal of Statistical Software, v. 45, n. 3, p. 1 –67, 2011.
+DOI: 10.18637/jss.v045.i03.
+VATSALAN, D. et al. Privacy -Preserving Record Linkage for Big Data: Current
+Approaches and Research Challenges . In: ENCYC LOPEDIA OF BIG DATA
+TECHNOLOGIES. Springer, 2023. DOI: 10.1007/978 -3-319-63962 -8_253 -1.
+YOON, J.; JORDON, J.; SCHAAR, M. GAIN: Missing Data Imputation Using
+Generative Adversarial Nets . In: INTERNATIONAL CONFERENCE ON MACHINE
+LEARNING (ICML), 35., 2018. Pr oceedings of Machine Learning Research, v. 80, p.
+5689 –5698, 2018. Disponível em: https://proceedings.mlr.press/v80/yoon18a.html .
+Acesso em: 27 ago. 2026.
+ZHA, D. et al. Data -Centric AI: Perspectives and Challenges . In: SIAM
+INTERNATIONAL CONFERENCE ON DATA MINING (SDM), 2023. Proceedings.
+SIAM, 2023. DOI: 10.1137/1.9781611977653.ch2.
+ZHOU, Y. et al. A Survey on Data Quality Dimensions and Tools for Machine
+Learning . In: IEEE INTERNATI ONAL CONFERENCE ON BIG DATA & MACHINE
+LEARNING, 2024. University of North Texas. Disponível em:
+https://arxiv.org/pdf/2406.19614 . Acesso em: 27 ago. 2026.
+Detecção e Tratamento de Duplicatas e Valores Ausentes
+### Palavras -Chave
+Duplicatas. Estratégias de Imputação. Dados Faltantes.
+Detecção e Tratamento de Duplicatas e Valores Ausentes

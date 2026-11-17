@@ -1,0 +1,241 @@
+Validação de Schema e Contratos de Dados
+## | Aula 05 - Machine Learning Engineering
+
+## Fase 4 Validação De
+
+### Schema E Contratos De Dados
+Validação de Schema e Contratos de Dados
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Validação de Schema e Contratos de Dados
+### O Que Vem Por Aí?
+Em equipes de engenharia de dados, falhas na consistência das informações são um risco constante. Um pipeline de dados que processa milhões de transações noturnas, por exemplo, pode alimentar um modelo crítico de detecção de fraudes.
+Quando um campo essencial é renomeado (como transaction_amount para txn_value)
+sem aviso ou documentação adequada, o modelo passa a receber dados inconsistentes, como valores null onde deveriam haver valores reais. O impacto é imediato: as previsões podem colapsar silenciosamente, alertas não são disparados e falhas (como fraudes) podem passar despercebidas por horas. Este tipo de desastre, comum em ambientes de produção, é o problema central que a validação de schema e os contratos de dados visam prevenir, garantindo a integridade e a confiabilidade do fluxo de dados.
+Nesta aula, você vai aprender a tratar o schema — a estrutura formal que descreve os dados — como um verdadeiro contrato de dados: um acordo verificável entre quem produz e quem consome dados. Você vai dominar as principais ferramentas do ecossistema Python para enforcement de schemas — Pandera,
+Pydantic e JSON Schema —, além de aprender a gerenciar a evolução natural dos dados sem quebrar sistemas em prod ução, e a implementar estratégias organizacionais de contratos de dados com o padrão Data Contract Specification. Ao final desta aula, você terá os instrumentos teóricos e práticos para construir pipelines resilientes que falham de forma ruidosa e controla da, nunca silenciosa e catastrófica.
+Validação de Schema e Contratos de Dados
+### Hands On
+Nesta seção prática, vamos construir uma camada de validação robusta para um pipeline de ML que processa transações financeiras, trabalhando com um dataset sintético e aplicando as três ferramentas centrais da aula: Pandera para validação de
+DataFrames pandas, Pydantic v2 para validação de modelos de dados Python e JSON
+Schema para validação de contratos em APIs e eventos.
+Partimos da definição do schema como código (schema -as-code), passamos pela detecção auto mática de violações e chegamos à integração em um workflow de treinamento de modelos. Primeiro, com o Pandera, definimos o schema das transações como uma classe DataFrameModel (TransactionSchema ), usando type hints e anotações pa.Field — transaction_id úni co e não nulo, amount positivo e limitado a R$ 1.000.000, category restrita a uma lista pré -definida, is_fraud anulável
+— e testamos com um DataFrame propositalmente inválido, usando validate(lazy=True) para que o Pandera reporte todas as violações de uma vez em
+SchemaErrors ; essa abordagem, mais legível e testável do que a baseada em dicionários, também funciona como decorator de funções, garantindo o contrato na entrada e na saída do dado.
+Em seguida, com o Pydantic — que valida registros individuais, co mo o payload de uma requisição de API ou a configuração de um experimento —, criamos o modelo
+Transaction (com Field de restrições e um Enum de categorias) e usamos o
+@model_validator da versão 2 para uma regra de negócio cross -field: bloquear transações o nline acima de R$ 10.000, exigindo revisão manual — validação impossível de fazer inspecionando os campos isoladamente. Por fim, com o JSON
+Schema — padrão aberto e neutro de linguagem, ideal para contratos entre serviços
+—, definimos o tipo Amount (número positivo, máximo de R$ 1.000.000) uma única vez em $defs e o reutilizamos via $ref no campo amount, testando com jsonschema.validate um payload válido e um inválido para ver a mensagem de erro gerada pela biblioteca.
+Para acompanhar o hands on, você preci sará de Python 3.9+ com as bibliotecas pandera>=0.18 , pydantic>=2.0 e jsonschema instaladas — pip install
+"pandera>=0.18" "pydantic>=2.0" jsonschema —; todos os exemplos foram validados
+Validação de Schema e Contratos de Dados no Google Colab e no Databricks Free Edition, e o código está disponív el no repositório da disciplina. Execute as células na ordem (schema Pandera, modelo
+Pydantic e JSON Schema são independentes entre si, mas o dataset sintético de transações é criado no início) e acompanhe o vídeo desta seção para ver a implementação passo a passo, incluindo as mensagens de erro produzidas por cada ferramenta.
+Validação de Schema e Contratos de Dados
+### Saiba Mais
+Os dados são a matéria -prima dos modelos de Machine Learning, e a qualidade dessa matéria -prima determina diretamente a qualidade das previsões. Entretanto, ao contrário de uma fábrica onde a matéria -prima chega com especificações físicas mensuráveis, os dados chegam de múltiplas fontes, produzidos por sistemas diferentes, por equipes com objetivos distintos, sob pressões de tempo que frequentemente priorizam a entrega sobre a qualidade. O resultado é que pipelines de
+ML são constantemente ameaçados por mudanças silenciosas nos dados de entrada
+— mudanças que um schema bem definido e um contrato de dados poderiam capturar imediatamente.
+Schema como Fundamento da Confiabilidade em ML
+Um schema é a descrição formal da estrutura esperada de um conjunto de dados: quais colunas ou campos existem, quais são seus tipos, quais restrições são válidas, e quais valores são aceitáveis. Na engenharia de software tradicional,
+schemas são onipresentes — desde definições de tabelas SQL até contratos de APIs
+REST. Na engenharia de ML, entretanto, o conceito de schema permaneceu por muito tempo informal e implícito, vivendo apenas na cabeça do engenheiro que construiu o pipeline.
+A ausência de schemas explícitos cria o que podemos chamar de débito técnico de qualidade. Quando um novo integrante da equipe precisa entender o formato dos dados de entrada do modelo, ele precisa ler o código do pipeline inteiro — não existe uma "fonte d e verdade" que descreva o contrato de dados. Quando um sistema upstream muda um tipo de campo de string para int, o pipeline não tem mecanismo para detectar a incompatibilidade antes que ela cause falhas em produção. A validação de schema resolve ambos os problemas ao tornar explícitas as expectativas sobre os dados e ao verificar automaticamente se essas expectativas são atendidas em tempo de execução.
+Validação de Schema e Contratos de Dados
+Pandera: Validação de DataFrames como Código
+O Pandera é uma biblioteca Python que estende o pandas , polars, e outros tipos de dataframes, com capacidades de validação de schemas. Seu design filosófico é fortemente inspirado na ideia de schema -as-code: schemas são objetos Python de primeira classe, podem ser versionados com o código, testados em pipelines de
+CI/CD, e integrados nativamente com type hints.
+Uma das funcionalidades mais poderosas do Pandera é o suporte a class -
+based schemas via herança de DataFrameModel , que permite escrever schemas com a sintaxe familiar de dataclasses Python:
+import pandera as pa from pandera.typing import Series class TransactionSchema(pa.DataFrameModel):
+ transaction_id: Series[str] = pa.Field(nullable=False,
+unique=True)
+ amount: Series[float] = pa.Field(gt=0,
+le=1_000_000)
+ category: Series[str] = pa.Field(isin=["food","transport",
+"retail","other"])
+ is_fraud: Series[bool] = pa.Field(nullable=True)
+ class Config:
+ strict = True coerce = True
+# Como decorator em funções Pandas
+@pa.check_types def preprocess(df: DataFrame[TransactionSchema]) ->
+DataFrame[TransactionSchema]:
+ df["amount"] = df["amount"].round(2)
+ return df
+Código -fonte 1 - Validação de dados com Pandera em DataFrames do Pandas (Python)
+Fonte: Elaborado pelo autor (202 6)
+O Pandera também suporta checks hipotéticos (Hypothesis) que permitem validar propriedades estatísticas dos dados, como verificar se a distribuição de uma coluna não mudou significativamente entre dois DataFrames — uma ponte natural com o monitoramento de data drift estudado na aula anterior .
+Validação de Schema e Contratos de Dados
+Pydantic v2: Validação de Modelos de Dados em Python
+O Pydantic é a biblioteca de validação de dados mais popular do ecossistema
+Python, com mais de 200 milhões de downloads mensais. Sua versão 2 (lançada em
+2023) trouxe uma reescrita completa do core em Rust, resultando em uma melhoria de desempenho de 5x a 50x. O Py dantic é a espinha dorsal de frameworks como
+FastAPI, SQLModel e LangChain.
+No contexto de validação de dados para ML, o Pydantic é particularmente valioso para validar registros individuais — como payloads de APIs de inferência,
+configurações de experimen tos, ou entidades de negócio que transitam entre serviços.
+A versão 2 introduziu anotações mais expressivas com Annotated[T, constraints] e novos decoradores como @model_validator para validações que envolvem múltiplos campos simultaneamente:
+from pydantic import BaseModel, Field, model_validator from typing import Annotated
+PositiveFloat = Annotated[float, Field(gt=0)]
+class FraudDetectionRequest(BaseModel):
+ transaction_id: str amount: PositiveFloat merchant_country: str = Field(... , min_length=2,
+max_length=3)
+ is_online: bool high_risk_country: bool
+ @model_validator(mode="after")
+ def online_high_risk_requires_review(self):
+ if self.is_online and self.high_risk_country and self.amount > 5000:
+ raise ValueError("Requer revisão manual")
+ return self model_config = {"json_schema_extra": {
+ "example": {"transaction_id": "TX001", "amount":
+99.99,
+ "merchant_country": "BR", "is_online":
+True,
+ "high_risk_country": False}
+ }}
+Código -fonte 2 - Validação de dados e regras de negócio com Pydantic (Python)
+Fonte: Elaborado pelo autor (202 6)
+Validação de Schema e Contratos de Dados
+JSON Schema: Contratos para APIs e Eventos
+O JSON Schema é um padrão aberto para descrever e validar documentos
+JSON. Diferentemente do Pandera e do Pydantic — que são específicos do Python
+— o JSON Schema é uma especificação de linguagem neutra, com implementações em mais de 30 linguagens de programação. Isso o torna a escolha natural para contratos de dados entre serviços , especialmente em arquiteturas de microsserviços ou streaming de eventos.
+Um schema JSON pode ser reutilizado e composto via $ref e $defs , permitind o construir bibliotecas de tipos reutilizáveis. A combinação de allOf, anyOf e oneOf permite expressar polimorfismo e herança de schemas:
+{
+ "$schema": "https://json -schema.org/draft/2020 -
+12/schema",
+ "$defs": {
+ "Amount": {
+ "type": "number", "e xclusiveMinimum": 0, "maximum":
+ }
+ },
+ "title": "PaymentEvent",
+ "type": "object",
+ "required": ["event_id", "event_type", "payload",
+"timestamp"],
+ "properties": {
+ "event_id": {"type": "string", "format": "uuid"},
+ "event_type": {"type": "string", "enum":
+### ["Payment","Refund","Chargeback"]},
+ "payload": {
+ "type": "object",
+ "properties": {
+ "amount": {"$ref": "#/$defs/Amount"},
+ "currency": {"type": "string", "pattern": "^[A -
+### Z]{3}$"}
+ },
+ "required": ["amount","currency"]
+ "timestamp": {"type": "string", "format": "date -time"}
+ },
+ "additionalProperties": false
+}
+Código -fonte 3 - Definição de esquema JSON para validação de eventos de pagamento (Python)
+Fonte: Elaborado pelo autor (202 6)
+Validação de Schema e Contratos de Dados
+Data Contracts: A Evolução para o Nível Organizacional
+A Data Contract Specification eleva o conceito de schema para um acordo organizacional formal. Um data contract não é apenas uma definição técnica de campos e tipos: é um SLA entre equipes que inclui qualidade mínima , frequência de atualização , proprietário e compromisso de compatibilidade retroativa . O formato YAML do DCS é um exemplo de como codificar esse contrato:
+dataContractSpecification: 0.9.3 id: urn:datacontract:finance:transactions:v1 info:
+ title: Transações Financeiras version: 1.0.0 owner: Equipe de Dados Financeiros contact:
+ name: Luiz Braz servers:
+ production:
+ type: kafka topic: finance.transactions.v1 terms:
+ usage: "Uso restrito a modelos de risco e detecção de fraude"
+ limitation s: "Sem uso para marketing direto"
+ billing: "Sem custo interno"
+ noticePeriod: P3M # 3 meses de aviso para breaking changes models:
+ Transaction:
+ fields:
+ transaction_id: {type: string, required: true,
+unique: true} amount: {type: decimal, required: true,
+minimum: 0} category: {type: string, enum:
+[food,transport,retail,other]} timestamp: {type: timestamp, required: true} quality:
+ freshness: "max 5 minutos de latência"
+ complete ness: ">99.9%"
+ accuracy: "Validado contra sistema transacional"
+Código -fonte 4 - Definição de contrato de dados para transações financeiras ( YAML )
+Fonte: Elaborado pelo autor (202 6)
+Validação de Schema e Contratos de Dados
+Schema Evolution e Estratégias de Compatibilidade
+Schemas mudam. Novos campos são adicionados, tipos são refinados, campos obsoletos são removidos. O desafio do schema evolution é gerenciar essas mudanças sem quebrar consumidores existentes. O Apache Avro e o Confluent
+Schema Registry popularizaram um modelo de três tipos de compatibilidade que se tornou referência no mercado:
+Tipo Regra Central Exemplo de Mudança Permitida Caso de Uso Ideal
+Backward Novos schemas leem dados antigos Adicionar campo opcional Consumidor atualiza primeiro
+Forward Schemas antigos leem dados novos Remover campo opcional Produtor atualiza primeiro
+Full Ambas as direções Apenas campos opcionais Deploys independentes
+None Sem garantias Qualquer mudança Ambiente de desenvolvimento
+Tabela 1 - Tipos de compatibilidade de schema Evolution
+Fonte: Elaborado pelo autor (2026)
+No ecossistema Python, a biblioteca fastavro implementa serialização/desserialização Avro, enquanto o confluent -kafka fornece integração com o Schema Registry. Para cenários sem Kafka, o Pandera suporta exportação de schemas em formato JSON que pode ser versionado no repositório de código e validado em pipelines de CI/CD.
+TensorFlow Data Validation (TFDV)
+O TensorFlow Data Validation (TFDV) é a solução do Google para validação de schemas em escala de produção. Desenvolvido internamente no Google e liberado como open -source em 2018, o TFDV é particularmente valioso em dois cenários:
+inferência de schema a partir de grandes datasets existentes e detecção de anomalias e skew entre os dados de treinamento e os dados de serving.
+O TFDV computa estatísticas descritivas de datasets de forma distribuída
+(usando Apache Beam) e pode inferir automaticamente um schema inicial. Esse schema pode então ser refinado manualmente e usado como baseline para detectar training -serving skew (drift t écnico) — a perigosa divergência entre os dados usados para treinar o modelo e os dados que chegam em produção:
+Validação de Schema e Contratos de Dados import tensorflow_data_validation as tfdv
+# Gerar estatísticas do dataset de treinamento
+train_stats = tfdv.generate_statistics_from_dataframe(train_df)
+# Inferir schema inicial
+schema = tfdv.infer_schema(statistics=train_stats)
+# Refinamentos manuais
+tfdv.get_feature(schema, "amount").float_domain.min = 0.01 tfdv.get_feature(schema,
+"category").string_domain.value.append("crypto")
+# Validar dados de serving contra o schema
+serving_stats = tfdv.generate_statistics_from_dataframe(serving_df)
+anomalies = tfdv.validate_statistics( statistics=serving_st ats,
+ schema=schema)
+tfdv.display_anomalies(anomalies)
+Código -fonte 5 - Validação de dados de treinamento e produção utilizando TensorFlow Data
+Validation ( Python )
+Fonte: Elaborado pelo autor (202 6)
+Dica prática : comece com Pandera para validação de DataFrames e Pydantic para validação de entidades individuais. Adote JSON Schema quando precisar de interoperabilidade entre sistemas em linguagens diferentes. Avance para TFDV quando operar com datasets de grande escala e precisar monitorar t raining -serving skew de forma sistemática. Data Contracts são o passo organizacional final, quando sua equipe precisar formalizar SLAs entre produtores e consumidores de dados.
+Validação de Schema e Contratos de Dados
+### Mercado, Cases E Tendências
+A adoção de práticas formais de validação de schema e contratos de dados cresceu significativamente nos últimos anos, impulsionada pela maturidade crescente das organizações em relação a engenharia de dados e pela proliferação de arquiteturas de dados em tempo real.
+A Uber Engineering documentou publ icamente sua jornada para implementar data contracts em escala. O time de dados da empresa processava trilhões de eventos por dia e precisava garantir que mudanças nos schemas de eventos não quebrassem centenas de consumidores downstream. A solução adotada foi a implementação de Data Quality SLAs e um sistema de Tiering de Dados (Tiers 0 a 2),
+que classifica a criticidade dos dados e garante processos automatizados de monitoramento e alerta para evitar quebras em consumidores downstream.
+A tendência emergen te é a integração de validação de schema com plataformas de data mesh e data observability . Ferramentas como Bigeye e Great
+Expectations estão incorporando suporte a data contracts como feature de primeira classe, posicionando os contratos como o mecanismo central de governança em arquiteturas descentralizadas.
+Validação de Schema e Contratos de Dados
+## O Que Você Viu Nesta Aula?
+Nesta aula, você compreendeu por que a validação formal de schema é indispensável em pipelines de Machine Learning em produção. Explorou as principais ferramentas do ecossi stema Python — Pandera para DataFrames, Pydantic v2 para modelos de dados Python, e JSON Schema para contratos interoperáveis entre serviços.
+Você também aprendeu sobre Data Contracts como instrumentos organizacionais que formalizam SLAs entre equipes, e s obre Schema Evolution e seus tipos de compatibilidade (backward, forward e full), fundamentais para gerenciar mudanças sem quebrar consumidores. Por fim, você conheceu o TFDV como solução escalável para inferência de schema e detecção de training -serving s kew em produção.
+Lembre -se: schemas bem definidos e contratos de dados claros são a diferença entre pipelines que falham de forma ruidosa e controlada — permitindo investigação e correção rápidas — e pipelines que falham silenciosamente, contaminando modelos e decisões de negócio. Revise os materiais desta aula quantas vezes precisar e explore os exemplos de código no repositório da disciplina .
+Validação de Schema e Contratos de Dados
+### Referências
+BRECK, E. et al. The ML Test Score: A Rubric for ML Production Readiness and
+Technic al Debt Reduction . In: PROCEEDINGS OF THE IEEE INTERNATIONAL
+CONFERENCE ON BIG DATA, 2017. Disponível em:
+https://research.google/pubs/pub46555/ . Acesso em: 10 abr. 2026.
+CONFLUENT. Schema Evolution an d Compatibility . 2026. Disponível em:
+https://docs.confluent.io/platform/current/schema -registry/fundamentals/schema -
+evolution.html . Acesso em: 10 abr. 2026.
+DATACONTRACT.COM. Data Contract Specification . 2024. Disponível em:
+https://datacontract.com/ . Acesso em: 25 mar. 2026.
+GUTTULA, N.; IBRAHIM, M.; GANTI, R. Data Validation for Machine Learning . In:
+SYSM L CONFERENCE, 2019. Disponível em:
+https://mlsys.org/Conferences/2019/doc/2019/167.pdf . Acesso em: 15 mar. 2026.
+JSON SCHEMA. JSON Schema Specification (Draft 2020 -12). 2020. Disponível em:
+https://json -schema.org/ . Acesso em: 15 mar. 2026.
+PANDERA. Pandera Documentation – Statistical Data Testing for Pandas and
+Polars . 2024. Disponível em: https://pandera.readthedocs.io/ . Acesso em: 14 mar.
+2026.
+PYDANTIC. Pydantic Documentation v2 . 2024. Disponível em:
+https://docs.pydantic.dev/latest/ . Acesso em: 02 mar. 2026.
+REIS, J.; HOUSLEY, M. Fundamentals of Data Engineering . Sebastopol: O'Reilly
+Media, 2022.
+SANDERSON, C. An Engineer's Guide to Data Contracts . Substack, 2022.
+Disponível em: https://dataprod ucts.substack.com/p/an -engineers -guide -to-data-
+contracts . Acesso em: 12 abr. 2026.
+TENSORFLOW. TensorFlow Data Validation Documentation . 2024. Disponível em:
+https://www.tensorflow. org/tfx/data_validation/get_started . Acesso em: 10 mar. 2026.
+UBER ENGINEERING. How Uber Achieves Operational Excellence in the Data
+Quality Experience . Uber Blog, 2021. Disponível em:
+https://www.uber.com/blog/operational -excellence -data-quality/ . Acesso em: 10 abr.
+2026.
+Validação de Schema e Contratos de Dados
+### Palavras -Chave
+Validação de Schema. Contrato de Dados. Schema Evolution.
+Validação de Schema e Contratos de Dados

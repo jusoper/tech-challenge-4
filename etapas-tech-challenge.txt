@@ -1,0 +1,107 @@
+Tech Challenge — Fase 4
+Entrega obrigatória: Repositório GitHub + Vídeo de 5 minutos (método STAR).
+Atividade em grupo · Obrigatória · Avaliada (vale 90% da nota de todas as disciplinas da fase).
+
+Tema Central: Observabilidade Contínua, Detecção de Drift, Qualidade de Dados e Governança em Produção
+Contexto: Uma fintech de concessão de crédito possui um modelo de Credit Scoring em produção. Mudanças econômicas (inflação, novos perfis de clientes) levam à suspeita de degradação silenciosa. O projeto foca a camada de Sustentação e Confiabilidade: modelo de classificação simples + contratos de qualidade + simulação de Data/Concept Drift + detecção com observabilidade + governança/LGPD + análise causal.
+
+Requisitos Obrigatórios:
+Repositório GitHub:
+• Pipeline de validação de dados (data contracts) configurado.
+• Scripts para simulação e detecção estatística de Drift.
+• Dashboards ou relatórios HTML comprovando o monitoramento.
+• Documentação consolidada de Governança no README.md.
+• Histórico de commits semântico e organizado.
+  — Orientação do grupo: commitar ao concluir cada tarefa (ou bloco coerente), com mensagem objetiva (chore / docs / feat / refactor / test); evitar fechar a etapa inteira em um único commit.
+
+Vídeo (5 minutos — método STAR):
+• Situation: risco da degradação silenciosa de modelos de crédito no mundo real.
+• Task: interceptar dados ruins, detectar drift, garantir compliance.
+• Action: ferramentas de validação/observabilidade, simulação de drift e plano de governança.
+• Result: relatório apontando drift, alertas gerados e lições aprendidas.
+
+Bibliotecas Requeridas:
+• Scikit-Learn / XGBoost — modelo base de risco de crédito.
+• Great Expectations ou Pandera — Data Contracts / qualidade de dados.
+• Evidently AI (ou Alibi Detect) — Data/Concept Drift + relatórios.
+• Opcional: Prometheus-client (integração com Fase 3).
+
+Boas Práticas Obrigatórias:
+• Separação clara: Dataset de Referência (treino) vs. Dataset de Análise/Produção (drift).
+• ≥ 3 regras rígidas de qualidade (ex.: sem nulos, range de idade, limites de renda).
+• Relatório estatístico de mudança de distribuição (ex.: PSI ou Kolmogorov-Smirnov).
+• Documentação de compliance com plano de privacidade (LGPD).
+
+Dataset Sugerido:
+Classificação binária financeira com ≥ 5.000 amostras.
+Exemplos: German Credit Data (Kaggle/UCI), Home Credit Default Risk (Kaggle), Lending Club Loan Data.
+
+---
+
+Etapas de Desenvolvimento (4 Etapas)
+
+Etapa 1 — Validação de Dados e Contratos (Disciplina 03 — Validação de Dados e Bibliotecas de Qualidade)
+Foco: Garantir que lixo não entre no modelo.
+Tarefas e Referência
+1. Escolher dataset de crédito (≥ 5k amostras) e separar Dataset de Referência limpo. Validação, Aulas 01–02
+2. Treinar classificador base (Scikit-Learn ou XGBoost) de risco de crédito. Validação, Aula 01 / Drift Aula 01
+3. Criar data contract com Great Expectations ou Pandera (≥ 3 regras: nulos, ranges, duplicatas). Validação, Aulas 05 / 07
+4. Injetar lote com erros e demonstrar falha do contrato bloqueando a ingestão. Validação, Aulas 03 / 06 / 08
+Entregável: Script de validação operante + modelo baseline treinado.
+
+Etapa 2 — Simulação e Detecção de Drift (Disciplina 01 — Data Drift)
+Foco: Diagnosticar a degradação do modelo ao longo do tempo.
+Tarefas e Referência
+1. Criar Dataset de Produção alterando distribuição de ≥ 2 features importantes. Data Drift, Aulas 01 / 06
+2. Gerar predições do modelo baseline nesse dataset de produção. Data Drift, Aula 01
+3. Comparar Referência vs. Produção com Evidently AI (ou Alibi Detect). Data Drift, Aula 08 / Validação Aula 04
+4. Identificar features com drift via PSI, Kolmogorov-Smirnov (e afins) e gerar relatório HTML. Data Drift, Aulas 02 / 04
+Entregável: Relatório de Drift apontando claramente as variáveis degradadas.
+
+Etapa 3 — Observabilidade de Pipelines e Modelos (Disciplina 02 — Monitoramento de Pipelines e Infraestrutura)
+Foco: Visibilidade operacional dos pipelines, da infraestrutura e dos modelos.
+Tarefas e Referência
+1. Centralizar logs de execução do pipeline (sucesso/falha em ingestão/transformação) + resultados de drift. Monitoramento, Aulas 01 / 03 / 05
+2. Rastrear ciclo de vida/experimentos com MLflow e/ou exportar métricas para dashboard (Datadog / Cloud / open-source). Monitoramento, Aulas 02 / 06 / 07
+3. Documentar métricas de saúde: status das tarefas, latência, volume processado, alertas de falha/drift. Monitoramento, Aulas 04 / 08
+4. (Opcional) Integrar Prometheus-client se reaproveitar stack da Fase 3. Monitoramento, Aula 05
+Entregável: Dashboard ou ambiente de rastreamento evidenciando saúde do pipeline, estabilidade e alertas de degradação.
+
+Etapa 4 — Governança e Entrega (Disciplina 04 — Privacy By Design e By Default)
+Foco: Documentação arquitetural, compliance e prescrição.
+Tarefas e Referência
+1. Plano LGPD: tratamento de PII, base legal da decisão de crédito e plano de retenção. Privacy, Aulas 01 / 03
+2. Documentar análise causal da degradação (por que o drift ocorreu e impacto no negócio). Privacy, Aulas 02 / 04 / Data Drift Aula 06
+3. Consolidar README com governança, vieses, mitigação e instruções de execução. Privacy, Aulas 04–05
+4. Gravar vídeo STAR de 5 minutos. —
+Entregável: Documentação completa de Governança e Causalidade no README + link do vídeo.
+
+---
+
+Critérios de Avaliação
+- Validação de Dados — peso 25%: Contratos (Great Expectations/Pandera) interceptando anomalias.
+- Detecção de Drift — peso 25%: Simulação correta + relatório claro com Evidently AI.
+- Observabilidade e Logs — peso 20%: Métricas de saúde e alertas de drift (dashboard/relatórios).
+- Governança (LGPD) — peso 15%: Privacidade, base legal e mitigação de vieses.
+- Vídeo STAR — peso 15%: Demonstração técnica da degradação e impacto (≤ 5 min).
+
+---
+
+Passo a Passo Resumido
+• [Etapa 1] Treinar modelo base + regras de validação (Pandera/Great Expectations).
+• [Etapa 2] Alterar dados propositalmente + testes estatísticos com Evidently.
+• [Etapa 3] Consolidar logs e expor dashboards/rastreamento de monitoramento.
+• [Etapa 4] Documentação LGPD + causalidade no README + vídeo STAR.
+
+---
+
+Mapa rápido das disciplinas (extracts em disciplinas/*/extracts/)
+01-data-drift — Aulas 01–08 (intro drift, testes estatísticos, mitigação, métricas, embeddings, concept vs covariate/label, Data SLOs, Evidently/ferramentas)
+02-monitoramento-pipelines-infraestrutura — Aulas 01–08 (observabilidade, Airflow/Datadog, alertas, drift em produção, logs/métricas/traces, MLflow, cloud/open-source, AIOps)
+03-validacao-de-dados-bibliotecas-qualidade — Aulas 01–08 (fundamentos, dimensões de qualidade, duplicatas/nulos, drift, schema/contratos, outliers, frameworks, validação contínua/MLOps)
+04-privacy-by-default-by-design — Aulas 01–05 (PbD/PbDefault, data-driven society, GDPR/LGPD, dados sintéticos, desafios/tecnologias)
+
+Orientação de commits (grupo / TC1–TC3):
+• Commitar ao concluir cada tarefa ou bloco coerente.
+• Mensagem objetiva (chore / docs / feat / refactor / test).
+• Evitar fechar a etapa inteira em um único commit.

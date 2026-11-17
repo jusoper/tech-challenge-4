@@ -1,0 +1,199 @@
+Detecção de Outliers e Anomalias
+## | Aula 06 - Machine Learning Engineering
+
+## Fase 4 Detecção De
+
+### Outliers E Anomalias
+Detecção de Outliers e Anomalias
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Detecção de Outliers e Anomalias
+### O Que Vem Por Aí?
+Um modelo de machine learning treinado para prever o preço de apartamentos em São Paulo pode, ocasionalmente, gerar previsões absurdas em produção. Por exemplo, sugerir R$ 50.000 para um triplex no Jardins ou R$ 3,8 milhões para uma quitinete em local afas tado. Isso geralmente ocorre porque outliers nos dados de treinamento contaminaram o aprendizado, e nenhum pipeline de detecção de anomalias estava ativo para identificar esses pontos problemáticos. Esta aula é sobre exatamente isso: entender o que são out liers e anomalias, como detectá -los com ferramentas estatísticas e de ML, e tomar decisões inteligentes sobre o que fazer com eles.
+Ao longo desta aula, você vai dominar desde os métodos estatísticos mais clássicos — como Z -score e IQR — até abordagens sof isticadas de machine learning como Isolation Forest e One -Class SVM, chegando ao estado da arte com
+Autoencoders em deep learning. Vamos explorar a biblioteca PyOD, uma das mais completas para detecção de outliers em Python, entender como construir pipelin es de detecção em tempo real, e aprender o raciocínio por trás da decisão mais delicada:
+remover, transformar ou manter um ponto anômalo? Prepare -se para uma aula densa,
+prática e repleta de insights que farão diferença nos seus projetos de ML. Vamos lá!
+Detecção de Outliers e Anomalias
+### Hands On
+Nesta s videoaula s prática s, você vai acompanhar a implementação de um pipeline completo de detecção de outliers e anomalias utilizando Python com scikit -
+learn, PyOD e PyTorch. Partimos de um dataset sintético de transações financeiras
+(400 regist ros normais e 20 anomalias injetadas de forma controlada, com as features valor_transacao e frequencia_diaria; o rótulo anomalia_real existe apenas para a avaliação final e nenhum algoritmo o usa para treinar ou calibrar thresholds),
+separamos os dados em treino e teste — para que a avaliação seja justa e não haja data leakage — e padronizamos as features com o StandardScaler , já que valor_transacao (centenas/milhares) dominaria o cálculo de distâncias e densidades sobre frequencia_diaria (unidades/dezenas) .
+Em seguida aplicamos, na ordem, os métodos estatísticos clássicos — Z-score
+(com zmap do scipy.stats, que padroniza o teste com a média e o desvio do treino,
+limiar |Z| > 3) e IQR (k = 1,5), ambos com thresholds aprendidos no treino e reaplicados no tes te —, os métodos baseados em densidade e isolamento — LOF do
+PyOD (n_neighbors=20) e Isolation Forest do scikit -learn, ambos com contaminação fixada em 5% por questões didáticas — e, por fim, um Autoencoder em PyTorch treinado sobre o "núcleo" normal dos d ados, cujo threshold é o percentil 99 do erro de reconstrução em uma validação não rotulada. Na avaliação no conjunto de teste,
+comparamos precisão, recall e F1 de cada método contra o ground truth: Z -score, LOF e Isolation Forest têm excelente desempenho neste dataset simples de duas variáveis com anomalias bem separadas, enquanto o Autoencoder — que exige mais ajuste fino de arquitetura, épocas, regularização e threshold — costuma superar os métodos tradicionais apenas em dados mais complexos e de alta di mensionalidade.
+Encerramos com a decisão estratégica sobre os outliers identificados: remover
+(erros de medição/digitação, como idade de 250 anos), transformar (valores legítimos mas extremos — demonstramos o winsorizing com winsorize , substituindo os extremos pelos percentis p5 e p95 calculados no treino) ou manter (quando o outlier é o próprio fenômeno de interesse, como fraudes e falhas industriais), lembrando que a taxa de contaminação usada como hipótese é um ajuste de sensibilidade que, em produção, deve ser estimado e monitorado ativamente.
+Detecção de Outliers e Anomalias
+O código desenvolvido está disponível no repositório do curso para que você possa reproduzir os resultados e adaptar ao seu próprio contexto. Antes de começar,
+certifique -se de ter as biblioteca s instaladas — pip install numpy pandas scipy scikit -
+learn pyod torch matplotlib — e execute todas as células em ordem, pois o estado
+(dataset, split, scaler, predições de cada método) é compartilhado entre os blocos; a comparação final de F1 entre os méto dos é gerada ao término e comentada na videoaula.
+Detecção de Outliers e Anomalias
+### Saiba Mais
+O Problema dos Outliers e Anomalias em Machine Learning
+Em sistemas de machine learning em produção, poucos desafios são tão sutis e impactantes quanto os outliers e anomalias. Um único ponto ext remo no treinamento pode distorcer os parâmetros de uma regressão, enviesar os limites de um classificador ou contaminar as estatísticas de normalização de uma pipeline; por outro lado, em detecção de fraude, monitoramento industrial e segurança cibernétic a, são os pontos anômalos que carregam o maior valor informacional — precisamos detectá -
+los, não eliminá -los. A questão central não é 'existe um outlier?', mas 'o que este ponto representa no meu problema de negócio?' — o que exige definições precisas, uma taxonomia e um framework de decisão antes de qualquer algoritmo.
+Definições: Outliers, Anomalias e Novelties
+Os termos são frequentemente usados como sinônimos, mas têm nuances que impactam a abordagem. Hawkins (1980) oferece a definição mais citada: um outlier é uma observação que se desvia tanto das outras a ponto de levantar suspeita de que foi gerada por um mecanismo diferente — erro de medição, evento raro legítimo ou comportamento anômalo. Na prática, um outlier é um ponto que se afasta significativamente da distribuição geral; uma anomalia é um padrão fora do comportamento normal esperado que, em muitas aplicações, é o que queremos detectar (fraudes, falhas de equipamentos); e uma novelty é uma observação nova que difere do treinamento, m as pode ser um padrão legítimo a incorporar ao modelo
+— um novo tipo de cliente. No aprendizado semi -supervisionado, anomalias são indesejáveis; novelties, novidades a aprender.
+Taxonomia de Anomalias
+Chandola, Banerjee e Kumar (2009), em influente survey no ACM Computing
+Surveys, classificam as anomalias em três categorias. As anomalias de ponto são o tipo mais simples — uma instância individual anômala em relação ao restante, como
+Detecção de Outliers e Anomalias um salário de R$500.000/mês onde a média é R$8.000 —, e a maioria dos algor itmos
+(Z-score, IQR, Isolation Forest) foi projetada para elas. As anomalias contextuais são anômalas em um contexto específico, mas não globalmente: 35°C é normal em agosto em Recife e anômalo em julho em Curitiba; R$10.000 é normal para um cliente de alt o valor e suspeito para quem nunca gastou mais de R$200 — detectá -las exige atributos contextuais (tempo, localização, perfil). As anomalias coletivas ocorrem quando um conjunto de instâncias relacionadas é anômalo, mesmo que cada uma não seja: transações de R$49,90 a cada 3 horas podem ser card testing; típicas de dados temporais, costumam requerer aprendizado profundo (LSTMs, Autoencoders temporais). Importante : classificar o tipo de anomalia é o passo mais crítico antes de escolher o algoritmo — um métod o para anomalias de ponto aplicado a anomalias coletivas terá taxa de detecção muito baixa, independentemente da implementação.
+Métodos Estatísticos Clássicos
+Os métodos estatísticos são os mais antigos e bem estabelecidos, com interpretabilidade direta — é possível explicar por que um ponto foi flagrado, essencial em contextos regulados —, mas assumem distribuições específicas (geralmente normalidade) e falham em dados multidimensionais complexos.
+Z-score
+O Z-score mede quantos desvios padrão uma observaçã o está da média: para x com média μ e desvio σ, Z = (x − μ) / σ. O critério usual considera outlier qualquer ponto com |Z| > 3, pela regra dos três sigmas (≈99,7% de uma normal fica em ±3σ).
+Sua limitação é a sensibilidade aos próprios outliers: extremos inflam média e desvio e mascaram outros outliers. A variante modificada, com a mediana e o MAD (Median
+Absolute Deviation), é mais resistente: Mi = 0.6745 (xi − x̃) / MAD , onde x̃ é a mediana e 0.6745 é o percentil 75% da normal padrão.
+IQR — Intervalo In terquartil
+O método IQR baseia -se em percentis e é inerentemente robusto a extremos:
+o IQR é a diferença entre o terceiro quartil (Q3) e o primeiro (Q1), e os limites de
+Detecção de Outliers e Anomalias detecção são Limite Inferior = Q1 − k × IQR e Limite Superior = Q3 + k × IQR,
+com k = 1.5 como padrão proposto por John Tukey (1977), criador do boxplot (k = 3.0 identifica outliers extremos). Funciona bem mesmo sem normalidade, sendo a escolha robusta para a exploração inicial; sua limitação é ser univariado — aplicá -lo dimensão a dimensão gera muitos falsos positivos.
+Métodos Baseados em Distância e Densidade
+Em vez de assumir uma distribuição, esses métodos consideram anômalo o ponto distante de seus vizinhos ou em região de baixa densidade relativa — mais flexíveis, capturam formas arbit rárias, a um custo computacional maior. O KNN para outliers usa a distância ao k -ésimo vizinho mais próximo como pontuação de anormalidade, distk(x): outliers isolados têm vizinhos distantes. A escolha de k é crítica — pequeno, sensível a ruído local; gran de, perde outliers em clusters moderados.
+Local Outlier Factor (LOF)
+O LOF, proposto por Breunig et al. (2000), introduziu o conceito de localidade:
+compara a densidade local de cada ponto com a de seus vizinhos, e não com uma densidade global — LOF ≈ 1 in dica região normal; LOF >> 1, candidato a outlier.
+Calcula -se a reachability distance entre pares (que suaviza distâncias locais) e a local reachability density de cada ponto (inverso da distância média de reachability aos k vizinhos); o LOF de p é a raz ão média entre a densidade dos vizinhos e a sua própria.
+Sua grande vantagem é detectar outliers em clusters de densidades variadas —
+limitação crítica dos métodos estatísticos.
+Os métodos de machine learning aprendem automaticamente as estruturas dos dado s sem assumir distribuições pré -definidas; dois algoritmos de grande impacto são o Isolation Forest e o One -Class SVM.
+Detecção de Outliers e Anomalias
+Isolation Forest
+O Isolation Forest isola diretamente os outliers, em vez de modelar o comportamento normal: outliers são facilmente isoláveis — poucos cortes aleatórios os separam do restante —, enquanto pontos normais exigem muitos cortes. O algoritmo constrói um ensembl e de árvores de isolamento: seleciona aleatoriamente uma feature e um valor de corte e particiona os dados recursivamente até isolar cada ponto; o path length (número de cortes) é inversamente proporcional à anormalidade,
+e o anomaly score é a média dos pa th lengths normalizados nas árvores, mapeada para [0, 1] (próximo de 1 = anomalia). É eficiente e escalável, robusto à dimensionalidade e a features não normalizadas; suas limitações são a dificuldade com anomalias coletivas e a dependência do hiperparâmet ro de contaminação
+(proporção esperada de outliers). Nota : implementações como o Scikit -learn podem inverter a escala para que anomalias recebam scores negativos — verifique a convenção da biblioteca antes de definir limiares.
+One-Class SVM (OCSVM)
+O One -Class SVM, de Schölkopf et al. (2001), estende as Support Vector
+Machines ao aprendizado de uma classe única: encontra, no espaço de features
+(mapeado via kernel), uma hipersuperfície que envolve a maioria dos pontos de treinamento com máxima margem em rela ção à origem — pontos fora dela são anomalias. Minimiza um funcional que balanceia a compacidade da hipersuperfície e a fração de pontos tratados como outliers (hiperparâmetro nu ∈ (0, 1]); o kernel RBF é o mais usado, com gamma controlando a largura da gaussiana (maior = mais flexível e sujeito a overfitting). É eficaz em alta dimensão e com treinamento limpo; sua desvantagem é o custo computacional em datasets grandes — alternativa: o SGD
+One-Class SVM ( sklearn.linear_model.SGDOneClassSVM ).
+Deep Learnin g para Detecção de Anomalias: Autoencoders
+Os Autoencoders são o estado da arte para dados de alta dimensionalidade e padrões complexos: uma rede neural treinada, sem supervisão, para reconstruir suas entradas através de um gargalo (bottleneck) latente de dimensão muito menor, com
+Detecção de Outliers e Anomalias um encoder e um decoder que minimizam a perda de reconstrução (MSE para dados contínuos, binary cross -entropy para binários). A detecção emerge naturalmente: a rede reconstrói bem os padrões normais vistos no treinamento e erra no s incomuns,
+que o espaço latente não representa; o anomaly score é o erro de reconstrução, e pontos acima de um threshold são anomalias. Definir esse threshold envolve um trade -off (baixo, mais sensibilidade e mais falsos positivos; alto, o oposto): sem ró tulos,
+usa-se um percentil alto (90%, 95% ou 99%) do erro no treinamento; com rótulos parciais, otimiza -se com curvas ROC ou Precision -Recall.
+Comparação de Métodos e a Biblioteca PyOD
+Não existe algoritmo universalmente superior — a escolha depende do problema, do dataset e dos requisitos de produção. A revisão de Boukerche, Zheng e
+Alfandi (2020) conclui que a performance relativa varia substancialmente com as características dos dados, sendo altamente recomendado testar múltiplas abordagens
+— e é aí que entra o PyOD (Python Outlier Detection), de Zhao et al. (2019), publicado no Journal of Machine Learning Research: mais de 50 algoritmos em uma API consistente e compatível com o Scikit -learn (todos compartilham fit(), predict(),
+decision_function() e pred ict_proba()), o que permite comparações justas e pipelines modulares, como na seção HANDS ON. A tabela a seguir sumariza os métodos estudados:
+Método Interpretabilidade Escalabilidade Melhor caso de uso Limitação principal
+Z-score / IQR Alta Alta Análise exploratória,
+dados normais univariados Assume normalidade;
+sensível a outliers extremos (Z -score)
+LOF Média Média Dados com clusters de densidades diferentes Lento para grandes datasets; sensível a k
+Isolation Forest Média Alta Dados tabulares em larga escala; uso geral Dificuldade com anomalias em clusters;
+mascaramento
+One-Class SVM Baixa Baixa Alta dimensionalidade;
+dados de treinamento limpos Lento; sensível à normalização e hiperparâmetros
+Autoencoder Baixa Alta (GPU) Dados complexos e de alta dimensionalidade Requer muitos dados;
+threshold subjetivo;
+caixa -preta
+Detecção de Outliers e Anomalias
+Tabela 1 — Comparação dos métodos de detecção de outliers e anomalias
+Fonte: Elaborado pelo autor com base em Boukerche, Zheng e Alfandi (2020) e Goldstein e
+Uchida (2016).
+A Decisão Estratégica: Remover, Transformar ou Manter?
+Identificados os outliers, vem a decisão mais crítica e subestimada: o que fazer com eles? Não é puramente técnica — envolve o domínio e os objetivos do modelo;
+errar pode de gradar a performance (ao remover sinais importantes) ou introduzir viés
+(ao manter erros de medição).
+Quando remover: quando há evidências sólidas de erro de medição, entrada incorreta ou falha de equipamento — -999°C em um sensor industrial é um código de erro; 150 anos em um cadastro é erro de digitação —, pois o ponto só introduz ruído.
+Também quando os outliers estão fora do escopo de uso do modelo: um modelo de precificação de imóveis residenciais comuns pode excluir mansões acima de R$50 milhões, desd e que a restrição seja documentada.
+Quando transformar: quando os outliers contêm informação legítima, mas sua magnitude distorce o aprendizado. As transformações mais comuns são a logarítmica
+(log(x) ou log(1+x), para skewness positivo), a raiz quadrada, a Box -Cox e o winsorizing (clipping): substitui os valores abaixo do p -ésimo percentil inferior e acima do q -ésimo superior pelos próprios percentis — com p=5 e q=95, tudo abaixo do percentil 5 vira o percentil 5 e tudo acima do 95, o percentil 95.
+Quando manter: quando os outliers são o fenômeno de interesse — o caso de praticamente todo sistema de detecção de anomalias: em detecção de fraude, as fraudes são os 'outliers', e removê -las destruiria o objetivo. Também é prudente manter quando há incerteza e o custo de descartar uma observação legítima supera o de manter um possível erro; uma prática eficaz é treinar o modelo com e sem os outliers e comparar as métricas em um teste independente, documentando a decisão.
+Pipeline de Detecção de Anomalias em Tempo Real
+Detecção de fraude, monitoramento de equipamentos industriais e detecção de ataques em redes exigem pipelines em tempo real ou near -real-time (latências de milissegundos a segundos), o que impõe requisitos além do algoritmo: modelos
+Detecção de Outliers e Anomalias persistidos e rec arregados eficientemente, dados pré -processados com os mesmos parâmetros do treinamento e tratamento do data drift, como vimos em aulas anteriores. Importante : em produção, monitore regularmente o drift dos dados — um detector treinado há meses pode ter performance degradada se a distribuição dos dados normais mudou — e implemente re -treinamento periódico ou acionado por gatilhos de drift detection.
+Detecção de Outliers e Anomalias
+### Mercado, Cases E Tendências
+A detecção de anomalias é um dos campos de aplicação de ML com maior impacto me nsurável em negócios reais. No setor financeiro, empresas como PayPal e Stripe utilizam sistemas sofisticados de detecção de anomalias que processam milhões de transações por hora. O PayPal, por exemplo, documenta em seu blog técnico os detalhes de sua pla taforma de detecção de fraudes, que combina técnicas de aprendizado supervisionado, não supervisionado e semi -supervisionado para identificar padrões fraudulentos em tempo real. Um dos principais desafios relatados é justamente o equilíbrio entre a taxa de detecção e a taxa de falsos positivos, uma vez que cada transação legítima bloqueada incorretamente representa impacto negativo na experiência do cliente (ZUO et al., 2021; PAYPAL, 2024).
+Na indústria manufatureira, a aplicação de algoritmos de detecção d e anomalias para manutenção preditiva tem gerado resultados expressivos. A Siemens,
+por meio de sua plataforma Senseye Predictive Maintenance, reportou reduções em paradas não planejadas de equipamentos ao implementar sistemas baseados em inteligência arti ficial que monitoram sensores de vibração e temperatura de motores industriais. O sistema analisa séries temporais multivariadas em tempo real e alerta a equipe de manutenção horas ou dias antes de uma falha catastrófica, permitindo intervenções planejadas que custam uma fração do reparo emergencial (SIEMENS,
+2024).
+Na área de segurança cibernética, a detecção de anomalias em logs de rede é fundamental para a identificação de intrusões e ataques avançados (APTs —
+Advanced Persistent Threats). O programa DAR PA Transparent Computing criou conjuntos de dados de referência contendo rastros de atividade de APTs para avaliação de sistemas de detecção, e a literatura acadêmica documenta amplamente o uso de Autoencoders LSTM e One -Class SVM para modelar o comportame nto normal de tráfego de rede e identificar desvios que possam indicar atividade maliciosa
+(PANG et al., 2021; GOPALAKRISHNA et al., 2024).
+Detecção de Outliers e Anomalias
+## O Que Você Viu Nesta Aula?
+Nesta aula, você mergulhou no fascinante e crítico mundo da detecção de outliers e anom alias em Machine Learning. Iniciamos com as definições fundamentais
+— distinguindo outliers, anomalias e novelties — e exploramos a taxonomia que classifica as anomalias em pontuais, contextuais e coletivas, cada uma demandando abordagens de detecção difer entes.
+Você aprendeu a implementar os métodos estatísticos clássicos (Z -score e
+IQR), compreendendo suas forças interpretativas e limitações de escala. Em seguida,
+avançou para os métodos baseados em densidade (LOF) e machine learning
+(Isolation Forest e O ne-Class SVM), entendendo os trade -offs entre complexidade,
+escalabilidade e interpretabilidade. Também exploramos a implementação de
+Autoencoders para detecção de anomalias — o estado da arte para dados de alta dimensionalidade. Finalizamos com o framewor k de decisão estratégica (remover,
+transformar ou manter) e a construção de um pipeline de detecção em tempo real pronto para uso em produção. Agora é hora de praticar! Acesse as atividades da disciplina e coloque em prática o que aprendeu. Até a próxima a ula!
+Detecção de Outliers e Anomalias
+### Referências
+AGGARWAL, C. C. Outlier Analysis . 2. ed. New York: Springer, 2017. ISBN: 978 -3-
+### 319-47577 -6. Doi: 10.1007/978 -3-319-47578 -3.
+BOUKERCHE, A.; ZHENG, L.; ALFANDI, O. Outlier Detection: Methods, Models,
+and Classification . ACM Computing Surveys, New York, v. 53, n. 3, artigo 55, p. 1 -
+37, maio 2020. DOI: 10.1145/3381028.
+BREUNIG, M. M. et al. LOF: Identifying Density -Based Local Outliers . In: ACM
+SIGMOD INTERNATIONAL CONFERENCE ON MANAGEMENT OF DATA, 2000,
+Dallas. Proceedings... New York: ACM, 2000. p. 93 -104. DOI:
+10.1145/342009.335388.
+CHANDOLA, V.; BANERJEE, A.; KUMAR, V. Anomaly Detection: A Survey . ACM
+Computing Surveys, New York, v. 41, n. 3, artigo 15, p. 1 -58, jul. 2009. DOI:
+10.1145/1541880.1541882.
+GOLDSTEIN, M.; UCHIDA, S. A Comparative Evaluation of Unsupervised
+Anomaly Detection Algorithms for Multivariate Data . PLOS ONE, v. 11, n. 4, p.
+e0152173, 2016. DOI: 10.1371/journal.pone.0152173.
+GOPALAKRISHNA, S. et al. Machine Learning Approaches for Anomaly
+Detection: A Comp rehensive Review . In: INTERNATIONAL CONFERENCE ON
+COMMUNICATIONS AND CYBER PHYSICAL ENGINEERING, 7., 2024. Lecture
+Notes in Electrical Engineering, v. 1466. Singapore: Springer, 2025. DOI: 10.1007/978 -
+981-95-0269 -1_104. Disponível em: https://link.springer.com/chapter/10.1007/978 -
+981-95-0269 -1_104 . Acesso em: 14 abr. 2026.
+HAWKINS, D. M. Identification of Outliers . London: Chapman and Hall, 1980. ISBN:
+978-94-015-3996 -8. DOI: 10 .1007/978 -94-015-3994 -4.
+IGLEWICZ, B.; HOAGLIN, D. C. How to Detect and Handle Outliers . Milwaukee:
+ASQC Quality Press, 1993. (ASQC Basic References in Quality Control, v. 16).
+LIU, F. T.; TING, K. M.; ZHOU, Z. -H. Isolation Forest . In: IEEE INTERNATIONAL
+CONFERENCE ON DATA MINING, 8., 2008, Pisa. Proceedings... Los Alamitos: IEEE,
+2008. p. 413 -422. DOI: 10.1109/ICDM.2008.17.
+PANG, G. et al. Deep Learning for Anomaly Detection: A Review . ACM Computing
+Surveys, New York, v. 54, n. 2, artigo 38, p. 1 -38, maio 2021. DOI: 10.1145/3439950.
+PAYPAL. Machine Learning Fraud Detection Technologies . PayPal Business
+Resource Center, 2024. Disponível em:
+https://www.paypal.com/us/brc/article/payment -fraud -detection -machine -learning .
+Acesso em: 05 abr. 2026.
+Detecção de Outliers e Anomalias
+RUFF, L. et al. A Unifying Review of Deep and Shallow Anomaly Detection .
+Proceedings of the IEEE, v. 109, n. 5, p. 756 -795, maio 2021. DOI:
+### 10.1109/Jpr Oc.2021.3052449.
+SCHÖLKOPF, B. et al. Estimating the Support of a High -Dimensional Distribution .
+Neural Computation, Cambridge, v. 13, n. 7, p. 1443 -1471, jul. 2001. DOI:
+10.1162/089976601750264965.
+SIEMENS. Senseye Predictive Maintenance . Siemens Digital Enterprise Services,
+2024. Disponível em: https://www.siemens.com/global/en/produ cts/services/digital -
+enterprise -services/analytics -artificial -intelligence -services/senseye -predictive -
+maintenance.html . Acesso em: 14 abr. 2026.
+TUKEY, J. W. Exploratory Data Analysis . Reading, MA: Addison -Wesley, 1977.
+### Isbn: 978 -0-201-07616 -5.
+ZHAO, Y. e t al. PyOD: A Python Toolbox for Scalable Outlier Detection . Journal of
+Machine Learning Research, v. 20, n. 96, p. 1 -7, 2019. ISSN: 1533 -7928. Disponível em: http://jmlr.org/papers/v20/19 -011.html . Acesso em: 29 mar. 2025.
+ZUO, Q. et al. Multi -Domain Fraud Detection While Reducing Good User Declines .
+The PayPal Technology Blog, dez. 2021. Disponível em: https://medium.com/paypal -
+tech/multi -domain -fraud -detection -while -reducing -good -user-declines -part-i-
+e8bba5b07da8 . Acesso em: 15 abr. 2026.
+Detecção de Outliers e Anomalias
+### Palavras -Chave
+Detecção de Outliers. Anomalias. Machine Learning.
+Detecção de Outliers e Anomalias

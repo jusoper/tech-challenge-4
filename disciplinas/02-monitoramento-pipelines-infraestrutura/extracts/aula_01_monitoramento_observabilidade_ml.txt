@@ -1,0 +1,162 @@
+Por que Monitorar Pipelines e Infraestrutura?
+## | Aula 01 - Machine Learning Engineering
+
+## Fase 4 Por Que Monitorar
+
+### Pipelines E Infraestrutura?
+Por que Monitorar Pipelines e Infraestrutura?
+### Sumário
+
+### O Que Vem Por Aí? Saiba Mais
+
+### Mercado, Cases E Tendências O Que Você V Iu Nesta Aula?
+
+### Referências
+Por que Monitorar Pipelines e Infraestrutura?
+### O Que Vem Por Aí?
+Imagine que você treinou um modelo de machine learning com 95% de acurácia. Os stakeholders aprovaram, o deploy foi feito, e o modelo está servindo predições em prod ução. Três meses depois, a equipe de negócios percebe que as conversões caíram 20%. Investigando, descobrem que o modelo está fazendo predições cada vez piores — mas ninguém percebeu porque não havia monitoramento.
+Essa situação é mais comum do que parece. Diferente de software tradicional,
+onde um bug geralmente causa um erro visível, modelos de ML podem degradar silenciosamente. Os dados mudam, o comportamento dos usuários evolui, e o modelo que era excelente ontem pode ser inadequado hoje.
+Nesta aula, va mos entender por que o monitoramento de pipelines e infraestrutura de ML não é opcional — é uma necessidade fundamental para qualquer sistema de ML em produção. Vamos explorar os conceitos de MLOps e observabilidade, entender como princípios de Site Reliab ility Engineering (SRE) se aplicam a sistemas de ML, e conhecer as métricas essenciais que precisamos acompanhar.
+Por que Monitorar Pipelines e Infraestrutura?
+### Hands On
+Nessa aula, veremos MLOps e o ciclo de vida do modelo, por que sistemas de
+ML exigem monitoramento especial, os três pilares da obs ervalidade e SER aplicado a sistemas de ML.
+Também estudaremos métricas essenciais para pipelines de ML, uma introdução ao Amazon CloudWatch, monitoramento tradicional vs monitoramento de
+ML e toil em ML.
+Por que Monitorar Pipelines e Infraestrutura?
+### Saiba Mais
+MLOps e o Ciclo de Vida do Modelo
+O term o MLOps (Machine Learning Operations) surgiu da necessidade de aplicar práticas de DevOps ao ciclo de vida de modelos de machine learning.
+Enquanto DevOps se preocupa com o ciclo código → build → test → deploy → monitor, MLOps adiciona complexidade ao incl uir dados e modelos nesse ciclo.
+Kreuzberger, Kühl e Hirschl (2023) definem MLOps como um paradigma que inclui melhores práticas, conjuntos de conceitos e cultura de desenvolvimento para o ciclo de vida de ML. Os autores identificam princípios fundamentais como automação,
+versionamento, monitoramento contínuo e reprodutibilidade.
+O ciclo de vida de um modelo em produção pode ser representado como:
+Dados → Feature Engineering → Treino → Validação → Deploy → Monitoramento → Retreino
+ ↑ ↑
+ └──────────────────── ─── ─┘
+O ponto crítico é que esse ciclo não termina no deploy. O monitoramento fecha o loop, alimentando decisões sobre quando e como atualizar o modelo.
+Por que sistemas de ML exigem monitoramento especial?
+Sculley et al. (2015), em seu influente artigo sobre dívida técnica em sistemas de ML, argumentam que o código do modelo em si representa ape nas uma pequena fração de um sistema de ML real. Ao redor dele existe uma vasta infraestrutura de coleta de dados, feature engineering, configuração, monitoramento e serving que precisa ser mantida.
+Os autores identificam riscos específicos de sistemas de ML que não existem em software tradicional:
+Por que Monitorar Pipelines e Infraestrutura?
+• Erosão de fronteiras: Modelos de ML misturam sinais de diferentes fontes de dados, tornando difícil isolar o impacto de mudanças.
+• Emaranhamento (entanglement): Alterar uma feature pode afetar o comportamento de todas as outras, pois o modelo aprendeu correlações entre elas.
+• Feedback loops ocultos: O modelo influencia o ambiente que gera os dados que alimentam o próprio modelo.
+• Dependências de dados não declaradas: Mudanças em sistemas upstream podem alterar silen ciosamente a distribuição dos dados de entrada.
+Sem monitoramento adequado, esses problemas se acumulam como dívida técnica, degradando progressivamente a qualidade do sistema.
+Os Três Pilares da Observabilidade
+O conceito de observabilidade, originado na teoria de controle, foi adaptado para sistemas de software e é particularmente relevante para ML. Observabilidade é a capacidade de entender o estado interno de um sistema a partir de suas saídas externas. Os três pilares da observabilidade são:
+Logs: Regi stros discretos de eventos que ocorrem no sistema. Em ML, logs capturam eventos como início/fim de treino, predições realizadas, erros de validação de dados, e decisões de re -treino. Logs estruturados (em formato JSON, por exemplo)
+facilitam a busca e anál ise.
+Métricas: Valores numéricos agregados ao longo do tempo. Para ML, incluem métricas de infraestrutura (CPU, memória, latência), métricas de modelo (acurácia,
+precisão, recall em produção), e métricas de dados (volume, distribuição,
+completude).
+Traces: Representações do caminho de uma requisição através de um sistema distribuído. Em pipelines de ML, traces permitem seguir o fluxo desde a chegada de dados brutos até a predição final, passando por todas as transformações intermediárias.
+Por que Monitorar Pipelines e Infraestrutura?
+ Shankar e Parames waran (2022) propõem que a observabilidade para pipelines de ML deve ir além desses três pilares tradicionais, incluindo capacidades de detecção de bugs específicos de ML, diagnóstico assistido e reação automatizada.
+SRE Aplicado a Sistemas de ML
+Site Reli ability Engineering (SRE) é uma disciplina criada pelo Google que aplica princípios de engenharia de software à operação de sistemas. O livro seminal de Beyer et al. (2016) estabelece conceitos que são diretamente aplicáveis a sistemas de ML.
+SLIs (Service Level Indicators): Métricas quantitativas que medem aspectos do serviço. Para ML, SLIs podem incluir:
+• Latência de inferência (p50, p95, p99) .
+• Taxa de erro de predição .
+• Throughput de requisições .
+• Freshness do modelo (tempo desde o último retreino) .
+SLOs (Service Level Objectives): Metas para os SLIs. Exemplo: "99.5% das inferências devem ter latência menor que 200ms" ou "A acurácia do modelo em produção deve ser superior a 85%".
+Error Budgets: A diferença entre 100% e o SLO. Se o SLO de disponibilida de é
+99.9%, o error budget é 0.1%. Esse conceito permite equilibrar velocidade de inovação com confiabilidade — enquanto houver error budget, a equipe pode fazer deploys mais arriscados.
+Chen et al. (2022), no livro "Reliable Machine Learning", expandem es ses conceitos especificamente para ML, argumentando que a confiabilidade de sistemas de ML requer uma abordagem holística que considere dados, modelo, infraestrutura e processos organizacionais.
+Por que Monitorar Pipelines e Infraestrutura?
+ Métricas Essenciais para Pipelines de ML
+Para monitorar efet ivamente um pipeline de ML, precisamos acompanhar métricas em diferentes camadas:
+Camada de Infraestrutura:
+• Utilização de CPU/GPU .
+• Consumo de memória .
+• I/O de disco e rede .
+• Custos computacionais .
+Camada de Pipeline:
+• Duração de cada etapa (ingestão, transfo rmação, treino) .
+• Taxa de sucesso/falha de tasks .
+• Volume de dados processados .
+• Latência end -to-end.
+Camada de Modelo:
+• Métricas de performance (acurácia, F1, AUC) .
+• Distribuição de predições .
+• Latência de inferência .
+• Taxa de erros .
+Camada de Dados:
+• Completude dos dados .
+• Distribuição de features .
+• Schema compliance .
+Por que Monitorar Pipelines e Infraestrutura?
+• Freshness dos dados .
+Introdução ao Amazon CloudWatch
+O Amazon CloudWatch é um serviço de monitoramento e observabilidade que permite coletar, acessar e correlacionar dados de performance. P ara sistemas de ML,
+o CloudWatch oferece:
+• Namespaces: Agrupamentos lógicos de métricas (ex: MLPipeline/Training,
+MLPipeline/Inference) .
+• Dimensions: Pares nome -valor que identificam uma métrica (ex:
+ModelName=fraud -detector, Environment=production) .
+• Alarms: Alertas baseados em thresholds ou anomalias detectadas .
+• Dashboards: Visualizações customizáveis para acompanhamento em tempo real .
+• Logs Insights: Queries sobre logs centralizados .
+A arquitetura de coleta de métricas pode seguir dois padrões:
+• Push: A aplic ação envia métricas ativamente para o CloudWatch (via SDK ou agente) .
+• Pull: Um coletor busca métricas expostas pela aplicação (padrão
+Prometheus) .
+Monitoramento Tradicional vs Monitoramento de ML
+Uma distinção importante é que o monitoramento de software t radicional foca em "o sistema está funcionando?" (disponibilidade, latência, erros), enquanto o monitoramento de ML precisa responder também "o sistema está funcionando corretamente?" — uma pergunta muito mais difícil.
+Um endpoint de ML pode estar retornan do respostas HTTP 200 com latência aceitável, mas as predições podem estar completamente erradas. Isso acontece porque:
+Por que Monitorar Pipelines e Infraestrutura?
+• Dados de entrada mudam: A distribuição dos dados em produção diverge dos dados de treino (data drift) .
+• Relações mudam: A relação entre f eatures e target evolui (concept drift) .
+• Feedback delayed: Em muitos casos, só sabemos se a predição estava correta dias ou semanas depois .
+Toil em ML
+O conceito de "toil" em SRE refere -se a trabalho manual, repetitivo,
+automatizável e sem valor duradouro. Em ML, exemplos de toil incluem:
+• Retreinar modelos manualmente quando a performance cai .
+• Validar dados de entrada manualmente antes de cada treino .
+• Investigar alertas que não são acionáveis .
+• Gerar relatórios de performance manualmente .
+A redução de toil é um objetivo central de MLOps — automatizar o que pode ser automatizado para que engenheiros e cientistas de dados foquem em trabalho de alto valor.
+Por que Monitorar Pipelines e Infraestrutura?
+### Mercado, Cases E Tendências
+O mercado de MLOps está em rápida expansão. Segundo relatórios da indústria, organizações que implementam práticas de MLOps reportam redução significativa no tempo de deploy de modelos e aumento na confiabilidade de sistemas de ML.
+Empresas como Google, Netflix e Uber publicaram extensivamente sobre suas práticas de moni toramento de ML. O Google, por exemplo, desenvolveu o TFX
+(TensorFlow Extended) com componentes dedicados a validação de dados e monitoramento de modelos. A Netflix utiliza sistemas de monitoramento para detectar drift em seus modelos de recomendação, que servem centenas de milhões de usuários.
+A tendência atual é a convergência entre observabilidade de software e observabilidade de ML, com ferramentas como Datadog, New Relic e Dynatrace adicionando capacidades específicas para ML, enquanto ferramentas nati vas de ML como Evidently AI e WhyLabs expandem para observabilidade mais ampla.
+Por que Monitorar Pipelines e Infraestrutura?
+## O Que Você Viu Nesta Aula?
+Vimos que s istemas de ML em produção degradam silenciosamente sem monitoramento adequado — diferente de software tradicional, onde bugs geralmente causam erros visíveis. O MLOps aplica práticas de DevOps ao ciclo de vida de ML,
+com ênfase em automação, versionamento e monitoramento contínuo.
+A dívida técnica em ML vai além do código: inclui dependências de dados,
+feedback loops ocultos e erosão de fro nteiras entre componentes. Os três pilares da observabilidade (logs, métricas, traces) são fundamentais, mas ML exige capacidades adicionais de detecção e diagnóstico.
+Por fim, p rincípios de SRE como SLIs, SLOs e error budgets podem ser adaptados para sist emas de ML, definindo metas claras de confiabilidade e o monitoramento deve cobrir múltiplas camadas: infraestrutura, pipeline, modelo e dados .
+Por que Monitorar Pipelines e Infraestrutura?
+### Referências
+BEYER, B.; JONES, C.; PETOFF, J.; MURPHY, N. R. Site Reliability Engineering:
+How Google Runs Pro duction Systems. Sebastopol: O'Reilly Media, 2016.
+CHEN, C.; MURPHY, N. R.; K., P.; SCULLEY, D.; UNDERWOOD, T. Reliable
+Machine Learning: Applying SRE Principles to ML in Production. Sebastopol:
+O'Reilly Media, 2022.
+INTERNATIONAL ORGANIZATION FOR STANDARD IZATION. ISO/IEC
+33001:2015: Information technology: Process assessment: Concepts and terminology. Geneva: ISO, 2015. Disponível em:
+https://www.iso.org/standard/54175.html . Acesso em: 27 ago. 2026.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps): Overview, Definition, and Architectur e. IEEE Access, v. 11, p. 31866 –
+31879, 2023.
+PWC. Experience is everything: Here’s how to get it right. 2018. Disponível em:
+https://www.pwc.com/us/en/advisory -services/publications/consumer -intelligence -
+series/pwc -consumer -intelligence -series -customer -experience.pdf . Acesso em: 27 ago. 2026.
+RICCIARDI, G. GapAnalysis_IT4IT_Valu e Stream Flows: Gianni Ricciardi: para fins didáticos. 2023. Disponível em:
+https://1drv.ms/x/s!AteDfZdQAPwHhuovcPYjiNE_2x8CPA?e=U2hevf . Acesso em: 27 ago. 2 026.
+SCULLEY, D. et al. Hidden Technical Debt in Machine Learning Systems. In:
+ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS (NeurIPS), v. 28,
+2015.
+SHANKAR, S.; PARAMESWARAN, A. G. Towards Observability for Production
+Machine Learning Pipelines. arXiv preprint arXiv:2108.13557, 2022.
+Por que Monitorar Pipelines e Infraestrutura?
+### Palavras -Chave
+MLOps . Observabilidade . SER. SLI. SLO. Error Budget . Dívida Técnica .
+Monitoramento . CloudWatch . Pipelines de ML.
+Por que Monitorar Pipelines e Infraestrutura?

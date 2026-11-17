@@ -1,0 +1,181 @@
+Fundamentos e Importância da Validação de Dados em ML
+## | Aula 01 - Machine Learning Engineering
+
+## Fase 4 Fundamentos E Importância Da
+
+### Validação De Dados Em Ml
+Fundamentos e Importância da Validação de Dados em ML
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências…………………………………………………………………………… 15
+Fundamentos e Importância da Validação de Dados em ML
+### O Que Vem Por Aí?
+Imagine que você acabou de treinar um modelo de machine learning com performance impressionante nos seus dados de teste — 97% de acurácia. Você está satisfeito, orgulhoso, pronto para colocar esse sistema em produção. Mas então algo estranho acontece: ao longo dos primeiros dias em operação real, as previsões começam a desmoronar. O que deu errado? A resposta, com uma frequência surpreendente, não está no algoritmo. Está nos dados.
+Nesta aula, vamos explorar um dos temas mais relevantes — e frequentemente subestimados — do ciclo de v ida de um sistema de Machine Learning: a qualidade dos dados e sua validação. Você vai descobrir por que líderes da área argumentam que investir em dados de qualidade pode ser mais rentável do que procurar o próximo algoritmo revolucionário. Vamos entender os fundamentos de Data -centric AI, os custos reais de dados problemáticos em produção e as ferramentas e frameworks que profissionais utilizam para garantir que os dados que alimentam seus modelos sejam confiáveis, representativos e prontos para uso. Prep are-se: a jornada começa pelos dados.
+Fundamentos e Importância da Validação de Dados em ML
+### Hands On
+Nesta aula, você vai acompanhar demonstrações práticas em Python que ilustram os fundamentos da validação de dados em ML, alinhadas aos temas de Data -
+Centric AI e às seis dimensões de qualidade que veremos na sequência.
+Na primeira demonstração, Impacto da Qualidade — Data -Centric vs. Model -
+Centric, inspirada nos estudos de Andrew Ng, carregamos o dataset Breast Cancer
+(569 amostras e 30 features, amplamente utilizado em classificação para prever a presença ou ausência de câncer de mama) e criamos as funções introduzir_ruido e introduzir_valores_ausentes para simular um conjunto com problemas de qualidade
+— ruído gaussiano em cerca de 20% das amostras e valores ausentes imputados pela mediana da coluna; em segu ida, com a função avaliar_modelo (padronização com StandardScaler e cálculo de acurácia), comparamos o ganho obtido ao trocar o algoritmo sobre os dados sujos, de Logistic Regression para Random Forest
+(abordagem model -centric), com o ganho obtido ao trata r os dados mantendo o mesmo modelo (abordagem data -centric); o gráfico comparativo mostra que, neste cenário simulado, melhorar a qualidade dos dados teve impacto maior do que trocar por um modelo mais robusto, reproduzindo o padrão observado por Ng.
+Na s egunda demonstração, As Seis Dimensões de Qualidade, construímos com pandas um dataset sintético que concentra problemas representativos das dimensões definidas por Zhou et al. (2024) — IDs duplicados, idades e datas de nascimento inválidas, renda com outl ier, gênero com representações distintas, cidade abreviada e valores ausentes — e escrevemos um diagnóstico automático por dimensão: Completude (valores ausentes), Unicidade (IDs duplicados), Validade
+(idades fora do domínio [0, 120]), Consistência (repres entações distintas de gênero)
+e Acurácia (outliers de renda com |z| > 3); a Atualidade não é medida, por se tratar de dados sintéticos, e o resultado é visualizado como uma taxonomia dos problemas de qualidade encontrados.
+Encerramos com a simulação de Da ta Cascades: variando de 0% a 50% a proporção de dados corrompidos do mesmo dataset Breast Cancer — com ruído,
+valores ausentes imputados e inversão de rótulos — e retreinando uma Regressão
+Logística a cada nível, traçamos com Matplotlib a curva de degrada ção da acurácia
+Fundamentos e Importância da Validação de Dados em ML frente ao baseline com dados limpos, evidência visual de como problemas de dados se propagam pelo pipeline até o desempenho final do modelo.
+Os exemplos estão disponíveis, em formato de notebook, no repositório da disciplina e podem ser exe cutados em qualquer ambiente Python com suporte a notebooks, como o Google Colab ou o Jupyter Notebook. As dependências são as bibliotecas científicas usadas nos códigos — NumPy, pandas, scikit -learn (que já traz o dataset Breast Cancer) e Matplotlib —, instaláveis com pip install numpy pandas scikit -learn matplotlib . Execute as células na ordem em que aparecem, pois o dataset carregado, as funções auxiliares e os modelos são reaproveitados entre os blocos;
+ao final de cada demonstração você deverá obter os mesmos gráficos exibidos na videoaula — a comparação Model -Centric vs. Data -Centric, a taxonomia de problemas de qualidade e a curva de Data Cascades —, que retomaremos na discussão teórica a seguir.
+Fundamentos e Importância da Validação de Dados em ML
+### Saiba Mais
+A qualidade dos dados é, hoje, um dos temas mais críticos — e ainda subestimados nos projetos de Machine Learning em produção. Nas próximas páginas, você vai explorar os fundamentos teóricos que explicam por que validar dados sistematicamente é condição necessária para construir sistemas de IA robustos, justos e confiáveis. O fio condutor desta seção é o survey de Zhou et al.
+(2024), que sistematiza dimensões e ferramentas de qualidade de dados especificamente para o contexto de ML.
+O Paradigma da Inteligência Artificial Centrada em Dados
+Duran te grande parte da história do Machine Learning, o esforço da comunidade científica foi concentrado na arquitetura dos modelos: novos algoritmos,
+novas funções de perda, novas técnicas de regularização, redes neurais cada vez mais profundas. Os dados eram tratados como um insumo fixo — algo a ser coletado uma vez e entregue ao modelo. Esse paradigma ficou conhecido como Model -Centric
+AI.
+Em 2021, Andrew Ng — co-fundador do Google Brain e um dos pesquisadores mais influentes em IA aplicada — propôs uma inver são radical nessa lógica. Em vez de iterar sobre o modelo mantendo os dados fixos, a abordagem Data -Centric AI propõe manter o modelo fixo e iterar sistematicamente sobre a qualidade dos dados.
+A pergunta central muda de "qual é o melhor modelo para estes dados?" para "quais são os melhores dados para este problema?".
+Em um estudo demonstrativo que se tornou referência na área, Ng apresentou um problema de detecção de defeitos em manufatura com apenas 500 imagens.
+Equipes que seguiram a abordagem Model -Cent ric — testando diferentes arquiteturas com os dados originais — obtiveram ganhos médios de acurácia de 0,4 pontos percentuais. Equipes que seguiram a abordagem Data -Centric — mantendo o mesmo modelo e corrigindo erros de rótulo, removendo exemplos ambíguos e padronizando as anotações — obtiveram ganhos de até 3,2 pontos percentuais, um aumento oito vezes maior a partir do mesmo esforço.
+Fundamentos e Importância da Validação de Dados em ML
+Ponto -chave: Em aplicações práticas com datasets de tamanho moderado
+(abaixo de 100.000 exemplos), a qualidade dos dados t em impacto sistematicamente maior na performance final do que a escolha do algoritmo.
+Modelos sofisticados treinados em dados ruins produzem resultados ruins — com alta confiança.
+Dimensões de Qualidade de Dados em ML
+Uma revisão sistemática recente das dimensões de qualidade de dados especificamente adaptadas ao contexto de Machine Learning foi publicada no IEEE
+AITest 2024. O estudo analisou 17 ferramentas de avaliação e melhoria de dados lançadas nos últimos cinco anos e propôs um roadmap para o desenv olvimento de ferramentas open -source de qualidade de dados para ML. O framework de Zhou et al.
+(2024) organiza a qualidade de dados em seis dimensões fundamentais. A
+Completude (Completeness) refere -se ao grau em que todos os dados necessários estão presen tes — datasets incompletos forçam o modelo a aprender padrões a partir de informações parciais, comprometendo tanto a acurácia quanto a generalização.
+A Acurácia (Accuracy) mede o grau em que os dados representam corretamente a realidade — erros de mediçã o, transcrição incorreta de rótulos e imprecisões de sensores são fontes comuns de baixa acurácia que o modelo aprende a reproduzir, não a corrigir.
+A Consistência (Consistency) avalia se os dados seguem as mesmas regras e convenções em todo o dataset — inconsistências de formatação, unidades de medida conflitantes e convenções de codificação divergentes podem confundir o processo de aprendizado. A Atualidade (Timeliness) mede quão recentes são os dados em relação ao fenômeno que se deseja modelar — dados d esatualizados podem não refletir a distribuição real do ambiente de produção, criando uma discrepância perigosa entre treinamento e inferência.
+A Unicidade (Uniqueness) diz respeito à ausência de registros duplicados —
+duplicatas criam viés ao representar em excesso certos exemplos no treinamento e podem causar data leakage quando ocorrem entre os conjuntos de treino e teste. Por fim, a Validade (Validity) verifica se os valores estão dentro dos domínios esperados
+Fundamentos e Importância da Validação de Dados em ML para cada campo — valores fora dos limites definidos pelas regras de negócio podem indicar erros de coleta, corrupção de dados ou anomalias genuínas que requerem tratamento diferenciado.
+Em Zhou et al. (2024), os autores destacam que nenhuma dimensão pode ser avaliada isoladamente: um dataset com a lta completude mas baixa acurácia nos rótulos é potencialmente mais prejudicial do que um dataset incompleto com rótulos corretos. A avaliação sistemática das seis dimensões em conjunto é o que diferencia a engenharia de dados profissional da simples colet a de dados.
+Data Cascades: Quando Problemas de Dados se Tornam Catástrofes em
+Produção
+Um dos trabalhos de pesquisa mais impactantes sobre qualidade de dados em
+ML foi conduzido por Sambasivan et al. (2021) do time do Google Research . Os pesquisadores entr evistaram 53 profissionais de ML de cinco países em desenvolvimento e documentaram um fenômeno que nomearam de Data Cascades:
+problemas de qualidade de dados que se amplificam ao longo do pipeline de ML,
+causando falhas sistêmicas difíceis de diagnosticar e ainda mais difíceis de corrigir.
+Os resultados do estudo são alarmantes: 92% dos profissionais entrevistados relataram ter experimentado pelo menos um Data Cascade em sua carreira. Ainda mais preocupante, esses eventos compostos raramente são visíveis no início do projeto — eles se manifestam semanas ou meses após a coleta dos dados, muitas vezes apenas quando o modelo é colocado em produção e começa a gerar resultados inesperados. O custo médio para identificar e corrigir um Data Cascade foi estimado em dezenas de milhares de dólares em retrabalho.
+A pesquisa identificou que os Data Cascades emergem de três fontes principais: práticas inadequadas de coleta de dados (instrumentos mal calibrados,
+protocolos inconsistentes entre coletores), incentivos organi zacionais que priorizam a quantidade de dados sobre a qualidade, e a inexistência de processos formais de validação de dados nos pipelines de ML. A conclusão dos autores é que a qualidade de dados é fundamentalmente um problema sócio -técnico , ou seja, não apenas
+Fundamentos e Importância da Validação de Dados em ML técnico e que requer mudanças de processo e cultura organizacional, não apenas ferramentas melhores.
+O Custo Econômico de Dados de Má Qualidade
+O argumento para investir sistematicamente em qualidade de dados é, antes de tudo, econômico. Estudos de mercado de referência estimam que dados de má qualidade custam um valor substancial às empresas anualmente. Por exemplo, uma pesquisa de 2020 do Gartner indicou que a má qualidade dos dados custa às organizações, em média, pelo menos US$ 12,9 mi lhões por ano. Em nível organizacional, é estimado que cada empresa perde uma quantia significativa de dólares anuais por causa de problemas de qualidade de dados — uma cifra que inclui retrabalho de engenharia, decisões equivocadas baseadas em dados incor retos e custos de compliance.
+No contexto específico de ML em produção, o custo se manifesta de formas ainda mais diretas. Modelos re -treinados com dados de má qualidade precisam ser monitorados com muito mais frequência, gerando custos contínuos de infrae strutura.
+Sistemas que falham por causa de dados inadequados criam riscos regulatórios,
+especialmente em setores como saúde, crédito e contratação — onde decisões automatizadas incorretas têm consequências legais. E o custo de reputação associado a falhas públicas de sistemas de IA é difícil de quantificar, mas costuma superar os custos diretos.
+Frameworks de Avaliação de Qualidade de Dados para ML
+Reconhecendo a necessidade de abordagens sistemáticas, Zhou et al. (2024)
+analisam 17 ferramentas de avaliação e melhoria de qualidade de dados desenvolvidas nos últimos cinco anos para o contexto de ML. Os autores categorizam essas ferramentas em quatro grupos funcionais: ferramentas de profiling (que geram relatórios exploratórios automatizados), ferramentas de validação (que aplicam regras e restrições declarativas sobre os dados), ferramentas de limpeza e anotação (que detectam e corrigem problemas), e ferramentas de monitoramento (que acompanham a qualidade dos dados em produção).
+Fundamentos e Importância da Validação de Dados em ML
+Para o contexto desta aula, o importante é compreender que cada uma dessas categorias corresponde a uma etapa diferente do pipeline de ML: o profiling ocorre na fase exploratória, a validação faz parte do pipeline de ingestão, a limpeza e anotação precedem o treinamento, e o monitoram ento é contínuo em produção. Em aulas posteriores desta disciplina, você vai usar ferramentas como Great Expectations,
+MLflow e Evidently AI — que se encaixam nessas categorias — de forma prática e integrada a pipelines de MLOps.
+O uso de Modelos de Lingua gem de Grande Escala (LLMs) também é uma tendência emergente para avaliação e melhoria automática de qualidade de dados. LLMs podem detectar anomalias semânticas, sugerir regras de validação e até imputar valores ausentes com base no contexto — tarefas que eram exclusivamente humanas até recentemente.
+Representatividade dos Dados e Viés Algorítmico
+Uma dimensão da qualidade de dados frequentemente negligenciada em frameworks tradicionais é a representatividade . Um dataset pode ter completude perfeita, zero duplicatas e alta acurácia nos valores individuais, mas ainda assim ser profundamente inadequado para treinar um modelo justo se não refletir a diversidade da população que o sistema vai atender.
+Uma pesquisa sobre esta problemática é o trabalho de Buolamw ini e Gebru
+(2018), pesquisadoras do MIT e da Microsoft Research . Foram avaliados sistemas comerciais de reconhecimento facial de grandes empresas de tecnologia e descobriram que a taxa de erro para mulheres de pele escura chegava a 34,7%,
+enquanto para ho mens de pele clara era de apenas 0,8%. A causa raiz não era o algoritmo — era o dataset de treinamento, composto majoritariamente por rostos de homens de pele clara. O modelo aprendeu perfeitamente o que os dados ensinaram.
+Para endereçar problemas de repr esentatividade, praticantes de ML devem realizar, antes de qualquer treinamento, uma análise demográfica e de distribuição do dataset. Isso inclui verificar se os subgrupos relevantes para a aplicação (por gênero,
+etnia, faixa etária, região geográfica, et c.) estão presentes em proporções adequadas,
+Fundamentos e Importância da Validação de Dados em ML e se a performance do modelo pode variar significativamente entre esses subgrupos
+— o que caracteriza viés algorítmico.
+Qualidade de Dados e Inteligência Artificial Confiável
+O conceito de Trustworthy AI — Inteligência Artificial Confiável — foi formalizado pelo NIST AI Risk Management Framework (AI RMF 1.0, 2023) e adotado como princípio orientador por reguladores em todo o mundo, incluindo o AI Act da
+União Europeia. Para que um sistema de IA seja considerado c onfiável, ele deve ser válido e verificável, confiável, seguro, explicável, interpretável, privacidade -
+respeitoso, justo e gerenciável.
+A conexão com a qualidade de dados é direta e indissociável. Um modelo treinado com dados incompletos não pode ser verif icável, porque seus limites de operação são desconhecidos. Um modelo com rótulos ruidosos não pode ser confiável, porque sua performance real em produção será sistematicamente pior do que a estimada em validação. Um modelo com dados não -representativos não pode ser justo, independentemente de qual algoritmo tenha sido utilizado.
+Zhou et al. (2024) reforçam essa perspectiva ao argumentar que, com o crescimento do volume e da complexidade dos dados em projetos de Data -Centric AI,
+os métodos tradicionais de av aliação exploratória — como Exploratory Data Analysis
+(EDA) e Cross -Validation — são necessários mas insuficientes. É preciso adotar frameworks sistemáticos de avaliação de qualidade de dados, integrados ao pipeline de desenvolvimento, e não como verificaç ões pontuais executadas apenas no início do projeto.
+Reflexão: A qualidade de dados em ML não é uma preocupação técnica de engenharia de dados — é uma responsabilidade ética. Sistemas de IA que tomam decisões sobre pessoas (crédito, saúde, contratação, segurança pública)
+precisam ser treinados com dados que representem adequadamente todos os grupos afetados. A validação sistemática de dados é o primeiro passo para garantir que isso aconteça.
+Fundamentos e Importância da Validação de Dados em ML
+### Mercado, Cases E Tendências
+O interesse em qualida de de dados e na abordagem Data -Centric AI transcende rapidamente o ambiente acadêmico e se tornou uma das prioridades estratégicas da indústria de tecnologia. Em 2022, a Landing AI — empresa fundada por Andrew Ng após sua saída da Baidu — lançou o Data -Centric AI Resource Hub,
+consolidando ferramentas, benchmarks e melhores práticas para organizações que desejam adotar esse paradigma. Hoje, empresas como Google, Meta, Amazon e
+Microsoft mantêm times dedicados à engenharia de qualidade de dados, tratando -a como uma disciplina de engenharia de software com processos, métricas e pipelines próprios.
+Um caso emblemático dos últimos anos sobre o custo de ignorar a qualidade dos dados foi protagonizado pela Unity Technologies em 2022. A empresa divulgou que dados incorretos em seu pipeline de machine learning de anúncios haviam causado prejuízos de aproximadamente 110 milhões de dólares. O problema não era o algoritmo de otimização de anúncios — eram os dados com que ele havia sido treinado. O sistema aprendeu padr ões equivocados a partir de dados coletados de forma incorreta, e quando esses padrões foram aplicados em produção em escala, o resultado foi um sistema que literalmente prejudicava o desempenho das campanhas dos clientes. O caso Unity virou referência no setor como prova concreta de que Data
+Cascades existem e têm custo mensurável.
+Um caso igualmente revelador, embora anterior, é o do sistema de recrutamento da Amazon, desenvolvido entre 2014 e 2018. A empresa construiu um sistema de triagem de currículos baseado em ML com o objetivo de automatizar a seleção de candidatos a posições técnicas. O sistema foi treinado com currículos de contratações passadas — a maioria de homens, dado o histórico demográfico da indústria de tecnologia. O modelo aprendeu que te rmos associados ao gênero feminino, como referências a faculdades exclusivamente femininas, eram preditivos
+de não -contratação. O projeto foi cancelado quando a discriminação foi descoberta,
+mas o dano já havia sido feito: o modelo havia operado por períod o suficiente para influenciar decisões reais de contratação. A raiz do problema era o viés nos dados de treinamento, não o algoritmo.
+Fundamentos e Importância da Validação de Dados em ML
+Na área da saúde, o IBM Watson Oncology é possivelmente o caso mais documentado de falha por qualidade de dados em sistema s de IA de alto risco. O sistema foi treinado com casos hipotéticos gerados por oncologistas do Memorial
+Sloan Kettering — não com casos reais de pacientes. Quando implantado em hospitais parceiros, o Watson passou a recomendar tratamentos considerados perigosos ou inadequados por oncologistas locais, que contavam com contexto clínico real não disponível no dataset de treinamento. O caso evidenciou um problema de representatividade: o dataset utilizado não refletia a diversidade de apresentações clínicas en contradas na prática médica real.
+No campo das tendências, o survey de Zhou et al. (2024) identifica o uso de
+Modelos de Linguagem de Grande Escala como a próxima fronteira para automação da avaliação de qualidade de dados. LLMs demonstram capacidade de co mpreender o contexto semântico dos dados, detectar inconsistências que métodos puramente estatísticos não identificam, sugerir regras de validação adequadas ao domínio de negócio e até imputar valores ausentes com raciocínio contextual. Esta tendência não elimina a necessidade de engenheiros de qualidade de dados — ela eleva o nível de automação das tarefas repetitivas, permitindo que os profissionais foquem em decisões de maior complexidade.
+No mercado brasileiro, a demanda por profissionais capazes de implementar pipelines de validação de dados em ML cresce em ritmo acelerado, impulsionada por três fatores convergentes: a expansão de projetos de IA em setores regulados como financeiro e saúde, a entrada em vigor de regulações como a LGPD que impõem responsabilidades sobre a qualidade dos dados utilizados em decisões automatizadas, e a adoção crescente de MLOps como disciplina de engenharia —
+que por sua definição inclui validação contínua de dados como parte do ciclo de vida dos modelos. Dominar os funda mentos apresentados nesta aula é o ponto de partida para atuar nesse mercado com competência e responsabilidade.
+Fundamentos e Importância da Validação de Dados em ML
+## O Que Você Viu Nesta Aula?
+Nesta aula, você percorreu o terreno fundamental que sustenta toda a disciplina de Validação de Dados e Bibliotecas de Qualidade. Você descobriu por que a qualidade dos dados é o fator mais crítico em sistemas de ML modernos e por que a abordagem Data -centric AI representa uma mudança de paradigma em relação ao modelo -centrismo tradicional.
+Você conheceu a taxonomia dos seis principais problemas de qualidade de dados (completude, acurácia, consistência, atualidade, unicidade e validade),
+entendeu o conceito de Data Cascades e como problemas de dados se propagam e amplificam ao longo das pipelines de ML, e tomou contato c om os custos financeiros e éticos concretos de sistemas construídos sobre dados inadequados. Você também aprendeu sobre representatividade e as dimensões essenciais da qualidade de dados para IA responsável.
+No aspecto prático, você viu aspectos básicos de avaliação de qualidade de dados em Python, e como o ecossistema Python oferece ferramentas especializadas para esse trabalho. Nas próximas aulas, você vai aprofundar cada um desses aspectos, explorando técnicas mais avançadas, ferramentas específicas e ca sos de uso do mundo real.
+Reflexão final: Na próxima vez que você for iniciar um projeto de ML,
+reserve tempo explícito para análise e validação dos dados antes de treinar qualquer modelo. Pergunte -se: De onde vêm esses dados? Quem e como foram coletados? Para qual população são representativos? Quais vieses podem estar embutidos neles? Estes questionamentos sistemáticos são essenciais para garantir a implementação de boas práticas de ML.
+Fundamentos e Importância da Validação de Dados em ML
+### Referências
+BUOLAMWINI, J.; GEBRU, T. Gender Shades: Intersectional A ccuracy
+Disparities in Commercial Gender Classification . In: CONFERENCE ON
+FAIRNESS, ACCOUNTABILITY AND TRANSPARENCY (FAT*), 2018. Proceedings of Machine Learning Research, v. 81, p. 1 -15.
+DASTIN, J. Amazon scraps secret AI recruiting tool that showed bias against women . Reuters, 10 out. 2018. Disponível em: https://www.reuters.com/article/us -
+amazon -com-jobs-automation -insight -idUSKCN1MK08G/ . Acess o em: 27 ago. 2026.
+GARTNER. Data Quality: Best Practices for Accurate Insights . Gartner Research,
+2020. Disponível em: https://www.gartner.com/en/data -analytics/topics /data -quality .
+Acesso em: 27 ago. 2026.
+IBM. Data Observability: The Impact of Bad Data and Why Observability is Now
+Imperative . IBM Think Insights. Disponível em:
+https://www.ibm.com/think/insights/observability -data-benefits . Acesso em: 27 ago.
+2026.
+IBM. The True Cost of Poor Data Quality . IBM Think Insights, 2022. Disponível em :
+https://www.ibm.com/analytics/data -quality . Acesso em: 27 ago. 2026.
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO 8000 -8:2015
+Data quality: Part 8: Information and data quality: Concepts and measuring .
+Geneva: ISO, 2015.
+JAKUBIK, J. et al. Data -Centric Artificial Intelligence . arXiv preprint arXiv:2212.11854v4, 2022. Disponível em: https://arxiv.org/abs/2212.11854 . Acesso em: 27 ago. 2026.
+NATIONAL INSTITUTE OF STANDARDS AND TECHNOLOGY (NIST). Artificial
+Intelligence Risk Management Framework (AI RMF 1.0) . NIST AI 100 -1.
+Gaithersburg, MD: NIST, 2023. DOI: 10.6028/NIST.AI.100 -1.
+NORTHCUTT, C. G.; ATHALYE, A.; MUELLER, J. Pervasive Label Errors in Test
+Sets Destabilize Machine Learning Benchmarks . In: ADVANCES IN NEURAL
+INFORMATION PROCESSING SYSTEMS (NeurIPS), 2021. arXiv:2103.14749.
+PRESS, G. Andrew Ng Launches A Campaign For Data -Centric AI . Forbes, 16 jun.
+2021. Disponível em: https://www.forbes.com/sites/gilpress/2021/06/16/andrew -ng-
+launches -a-campaign -for-data-centric -ai/?sh=664bf5 6374f5 . Acesso em: 27 ago.
+2026.
+SAMBASIVAN, N.; KAPANIA, S.; HIGHFILL, H.; AKRONG, D.; PARITOSH, P.;
+AROYO, L. M. Everyone wants to do the model work, not the data work: Data
+Cascades in High -Stakes AI . In: ACM CHI CONFERENCE ON HUMAN FACTORS
+IN COMPUTING SYSTEMS, 2021. DOI: 10.1145/3411764.3445518.
+Fundamentos e Importância da Validação de Dados em ML
+SCULLEY, D. et al. Hidden Technical Debt in Machine Learning Systems . In:
+ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS (NIPS), 2015. v.
+28.
+STRICKLAND, E. IBM Watson Health: How IBM Watson Overpromised and
+Underdelivered on AI Health Care . IEEE Spectrum, 2019. Disponível em:
+https://spectrum.ieee.org/biomedical/diagnost ics/how -ibm-watson -overpromised -
+and-underdelivered -on-ai-health -care. Acesso em: 27 ago. 2026.
+WANG, R. Y.; STRONG, D. M. Beyond accuracy: What data quality means to data consumers . Journal of Management Information Systems, v. 12, n. 4, p. 5 -33, 1996.
+### Doi: 10.1080/07421222.1996.11518099.
+ZHOU, Y.; TU, F.; SHA, K.; DING, J.; CHEN, H. A Survey on Data Quality
+Dimensions and Tools for Machine Learning . In: IEEE INTERNATIONAL
+CONFERENCE ON ARTIFICIAL INTELLIGENCE TESTING (AITEST), 2024.
+University of North Texas. Disponível em: https://arxiv.org/abs/2406.19614 . Acesso em: 27 ago. 2026.
+Fundamentos e Importância da Validação de Dados em ML
+### Palavras -Chave
+Data -Centric AI . Validação de Dados . Qualidade de Dados.
+Fundamentos e Importância da Validação de Dados em ML

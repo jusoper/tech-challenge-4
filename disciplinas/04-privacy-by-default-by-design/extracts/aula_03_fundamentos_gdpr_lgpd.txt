@@ -1,0 +1,213 @@
+Fundamentos da LGPD e do GDPR
+## | Aula 03 - Machine Learning Engineering
+
+## Fase 4 Fundamentos Da Lgpd
+
+### E Do Gdpr
+Fundamentos da LGPD e do GDPR
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Fundamentos da LGPD e do GDPR
+### O Que Vem Por Aí ?
+Imagine um cenário onde cada passo on -line que você d á é monitorado e registrado. Sim, isso é a realidade! A cada clique, a cada postagem, a cada pesquisa, geramos uma avalanche de dados que nos torna alvos em potencial. É nesse contexto que o Regulamento Geral de Proteção de Dados (GDPR) e a Lei
+Geral de Proteção de Dados Pessoais (LGP D) entram em cena, como guardiões da nossa privacidade.
+Nesta aula, vamos desvendar os fundamentos do GDPR e da LGPD ,
+entendendo como essas leis funcionam na prática e qual o seu impacto no dia a dia das empresas e dos cidadãos. Preparem -se para compreend er a proteção de dados pessoais e construir um futuro digital mais seguro e transparente!
+Fundamentos da LGPD e do GDPR
+### Hands On
+Já parou para pensar como seus dados são usados no mundo digital?
+Vivemos em uma era onde a informação é o novo "ouro", compartilhada a cada instante, moldando nossas interações, hábitos e decisões. Nesse contexto, o GDPR e a LGPD surgem como respostas par a regular o uso de dados pessoais e proteger a privacidade dos cidadãos.
+Vamos explorar os fundamentos dessas legislações, entendendo como elas foram criadas para equilibrar os benefícios de uma sociedade orientada por dados,
+como personalização e inovaçã o, com os desafios éticos e legais de proteger as informações dos indivíduos. Vamos mergulhar em um tema crucial para entender o futuro das relações digitais!
+Fundamentos da LGPD e do GDPR
+### Saiba Mais
+Desvendando o GDPR
+O GDPR (General Data Protection Regulation ) surge como uma resposta robusta a preocupações com relação à privacidade , estabelecendo um novo padrão global para a proteção de dados pessoais. É um regulamento que estabelece regras sobre o processamento de dados pessoais e sobre os direitos dos titulares de dados , e se aplica a todas as empresas que coletam ou processam dados de cidadãos da UE, independentemente de onde estejam localizadas.
+Exemplo prático : imagine uma startup brasileira de delivery que expande suas operações para Portugal. Mesmo estando fora da UE, ela precisa se adequar ao
+GDPR para processar os dados dos seus clientes portugueses. Ao falarmos sobre a
+GDPR, é preciso ter em mente alguns conc eitos essenciais , que veremos a seguir.
+Dados pessoais : qualquer informação relativa a uma pessoa singular identificada ou identificável ( o titular dos dados) . Uma pessoa singular identificável é aquela que pode ser identificada, direta ou indiretamente, em particular por referência a um identificador, como um nome, um número de identificação, dados de localização , um identificador on -line ou a um ou mais fatores específicos da identidade física, fisiológica, genética, mental, econ ômica, cultural ou social dessa pessoa singular .
+Dados genéticos : dados pessoais relativos às características genéticas herdadas ou adqu iridas de uma pessoa singular que fornecem informações únicas sobre a fisiologia ou a saúde dessa pessoa e que resultam, nomeadamente, de uma análise de uma amostra biológica da pessoa singular em questão .
+Dados biométricos : dados pessoais resultantes de um tratamento técnico específico relativo às características físicas, fisiológicas ou comportamentais de uma pessoa singular, que permitem ou confirmam a identificação única dessa pessoa,
+tais como imagens faciais ou dados datiloscópicos .
+Dados relativos à saúde : dados pessoais relacionados com a saúde física ou mental de uma pessoa singular, incluindo a prestação de serviços de saúde, que revelem informações sobre o seu estado de saúde .
+Fundamentos da LGPD e do GDPR
+Controlador : pessoa singular ou coletiva, autoridade pública, agência ou outro organismo que, individualmente ou em conjunto com outros, determina as finalidades e os meios do tratamento de dados pessoais . Quando as finalidades e os meios desse tratamento forem determinados pelo direito da União ou dos Estados -
+Membro s, o responsável pelo tratamento ou os critérios específicos para a sua nomeação podem ser previstos pelo direito da União ou dos Estados -Membros .
+Processador : pessoa singular ou coletiva, autoridade pública, agência ou outro organismo que processa dados pessoais em nome do responsável pelo tratamento.
+Princípios do GDPR
+Figura 1–Princípios do GDPR
+Fonte: Matomo (2023)
+Licitude, justiça e transparência: a coleta e o uso de dados devem ter base legal (consentimento, contrato, obrigação legal etc. ), ser justos e informados de forma clara e acessível aos titulares. Por exemplo, é preciso s olicitar consentimento explícito e informado para usar dados em campanha s de marketing personalizadas,
+explicando como os dados serão utilizados.
+Fundamentos da LGPD e do GDPR
+Limitação da finalidade: os dados devem ser coletados para finalidades determinadas, explícitas e legítimas, e não podem ser usados para outros fins incompatíveis. Uma rede social , por exemplo, não pode usar dados coletados para fins de autenticação para exibir publicidade direcionada sem o consentimento do usuário.
+Minimização de dados: coletar apenas os dados estritamente necessários para a finalidade. "Menos é mais" quando se trata de dados pessoais. Exemplo: para um cadastro em um e -commerce, pedir apenas dados essenciais como nome,
+endereço e e-mail, ao invés de informações como estado civil ou número de documentos.
+Exatidão: manter os dados precisos e atualizados, permitindo que os titulares os corrijam quando necessário , por exemplo, o ferece ndo aos usuários uma área em suas contas para atualizar informações de contato e preferências.
+Limitação do armazenamento: armazenar os dados apenas pelo tempo necessário para a finalidade. Exemplo: definir políticas de retenção de dados e excluir dados de clientes inativos após um período determinado.
+Integridade e confidencialidade: proteger os dados contra acessos não autorizados, uso indevido ou divulgação. Implementar medidas de segurança como criptografia, controle de acesso, firewalls e treinamentos para funcionários.
+Responsabilização: o controlador deve ser capaz de demonstrar a conformidade com o GDPR. A palavra -chave aqui é documentação. Isso é possível mantendo registros das atividades de tratamento de dados, realiza ndo auditorias de privacidade e implementa ndo políticas de segurança da informação.
+Legalidade do processamento
+O processamento será lícito somente se, e na medida em que , pelo menos uma das seguintes situações se aplique:
+Consentimento : o titular dos dados dá seu consentimento livre, específico,
+informado e inequívoco para o tratamento de seus dados pessoais para uma ou mais finalidades específicas. Exemplo : um site de notícias solicita o consentimento do usuário para coletar dados sobre s eus hábitos de leitura e oferecer conteúdo personalizado.
+Fundamentos da LGPD e do GDPR
+Requisitos importantes:
+• O consentimento deve ser demonstrado por meio de uma declaração ou ação afirmativa clara ;
+• Deve ser tão fácil retirar o consentimento quanto dá -lo;
+• Não pode ser usado como ba se legal em situações em que existe uma relação de poder desigual ( por exemplo : empregador -empregado).
+Execução de um contrato : o tratamento de dados é necessário para a execução de um contrato do qual o titular dos dados é parte ou para tomar medidas a pedido do titular dos dados antes da celebração de um contrato. Exemplo: uma loja on -line coleta o endereço do cliente para entregar o produto comprado.
+Cumprimento de uma obrigação legal : o tratamento é necessário para o cumprimento de uma obrigação legal a que o controlador está sujeito. Exemplo: um empregador coleta dados dos funcionários para fins de previdência social.
+Proteção dos interesses vitais do titular dos dados ou de outra pessoa singular : o tratamento é necessário para proteger os interesses vitais do titular dos dados ou de outra pessoa quando o titular dos dados está física ou legalmente incapaz de dar o seu consentimento. Exemplo: um hospital processa dados de um paciente inconsciente par a fornecer tratamento médico de emergência.
+Execução de uma tarefa de interesse público ou no exercício de autoridade pública : o tratamento é necessário para o desempenho de uma tarefa realizada no interesse público ou no exercício de autoridade pública co nferida ao controlador. Exemplo: uma prefeitura coleta dados para fins de planejamento urbano.
+Interesses legítimos do controlador ou de terceiros : o tratamento é necessário para os fins dos interesses legítimos do controlador ou de terceiros,
+exceto quand o tais interesses forem sobrepostos pelos interesses ou direitos e liberdades fundamentais do titular dos dados , que exigem proteção de dados pessoais, em particular quando o titular dos dados for uma criança.
+Requisitos importantes:
+Fundamentos da LGPD e do GDPR
+• Realizar um teste de balanceamento para garantir que os interesses legítimos do controlador não sejam sobrepostos pelos direitos e liberdades do titular dos dados ;
+• Não pode ser usado como base legal para o tratamento de dados por autoridades públicas no desempenho das suas fun ções.
+Direitos dos titulares
+Figur a 2 – Direitos dos titulares
+Fonte: elaborado pel a autor a (2024)
+O GDPR garante aos titulares uma série de direitos sobre seus dados pessoais e as empresas precisam estar preparadas para atendê -los:
+• Direito de acesso: os titulares podem solicitar acesso aos seus dados e saber como estão sendo utilizados ;
+• Direito de retificação: corrigir dados incorretos ou incompletos ;
+• Direito à eliminação ("Direito ao Esquecimento"): solicitar a exclusão de seus dados em determinadas circunstâncias, como quando os dados não são mais necessários ou o consentimento foi retirado ;
+Fundamentos da LGPD e do GDPR
+• Direito à limitação do tratamento: restringir o uso dos seus dados em situações específicas, como quando a exatidão dos dados é contestada ;
+• Direito à portabilidade dos dados: receber seus dados em um formato estruturado e transferi -los para outro serviço ;
+• Direito de oposição: opor-se ao uso de seus dados para fins de marketing direto ou decisões automatizadas ;
+• Direito de não ser submetido a d ecisões automatizadas: proteção contra decisões baseadas unicamente em processamento automatizado,
+incluindo a definição de perfis .
+O custo da não conformidade
+O GDPR prevê multas pesadas para violações, que podem chegar a 20 milhões de euros ou 4% do fatu ramento global anual da empresa (o que for maior ).
+Além disso, i ncidentes de segurança e vazamentos de dados podem prejudicar a reputação da empresa e impactar a confiança dos clientes . Titulares de dados também podem entrar com ações judiciais contra empr esas que violarem seus direitos.
+Logo, c umprir o GDP R é essencial para as empresas , pois garante a proteção dos dados pessoais dos indivíduos, promove a confiança de clientes e parceiros,
+além de evitar sanções. Em complemento , o GDPR é essencial para que empresa s que operam no mercado europeu (ou que processam dados de cidadãos da União
+Europ eia, permaneçam competitivas e evitem restrições legais ).
+A conformidade também reduz o risco de vazamentos de dados, melhora os processos internos de governança e facilita o alinhamento com outras legislações globais de privacidade, como a LGPD no Brasil e o CCPA nos Estados Unidos , por exemplo .
+### Conhecendo A Lgpd
+A LGPD (Lei nº 13.709/2018) é a legislação brasileira que regula o tratamento de dados pessoais, com o objetivo de proteger a privacidade e os direitos fundamentais. Inspirada no GDPR europeu, é aplicável a qualquer organização que trate dados pessoais no Brasil, independentemente de onde esteja sediada.
+Fundamentos da LGPD e do GDPR
+Conceitos essenciais:
+• Dado pessoal: informação relacionada a pessoa natural identificada ou identificável;
+• Dado pessoal sensível: dado pessoal sobre origem racial ou étnica,
+convicção religiosa, opinião política, filiação a sindicato ou a organização de caráter religioso, filosófico ou político, dado referente à saúde ou vida sexual e dado genético ou biométrico, quando vinculado a uma pessoa natural;
+• Controlador: pessoa natural ou jurídica, de direito público ou privado, a quem competem as decisões referentes ao tratamento de dados pessoais;
+• Operador: pessoa natural ou jurídica, de direito público ou privado, que realiza o tratament o de dados pessoais em nome do controlador .
+Princípios da LGPD
+A LGPD estabelece 10 princípios que devem ser observados no tratamento de dados pessoais:
+Figura 3 – Princípios da LGPD
+Fonte: Gartner (2019)
+• Finalidade: os dados devem ser coletados para finalidades legítimas,
+específicas, explícitas e informadas ao titular.
+Fundamentos da LGPD e do GDPR
+• Adequação: o tratamento deve ser compatível com as finalidades informadas.
+• Necessidade: coletar apenas os dados estritamente necessários.
+• Livre acess o: garantir aos titulares acesso facilitado às informações sobre o tratamento de seus dados.
+• Qualidade dos dados: os dados devem ser exatos, claros, relevantes e atualizados.
+• Transparência: fornecer informações claras e acessíveis sobre o tratamento de dad os.
+• Segurança: implementar medidas para proteger os dados contra acessos não autorizados e incidentes de segurança.
+• Prevenção: adotar medidas para prevenir a ocorrência de danos em virtude do tratamento de dados.
+• Não discriminação: o tratamento de dados nã o pode ser utilizado para fins discriminatórios.
+• Responsabilização e prestação de contas: o controlador deve demonstrar a conformidade com a LGPD.
+Hipóteses de tratamento
+O tratamento de dados pessoais somente poderá ser realizado nas seguintes hipóteses:
+Consentimento : o titular dos dados consente com o tratamento de forma livre, informada e inequívoca .
+Cumprimento de obrigação legal ou regulatória pelo controlador : o tratamento é necessário para cumprir uma lei ou regulamento .
+Execução de políticas públi cas: o tratamento é necessário para a execução de políticas públicas previstas em leis ou regulamentos .
+Estudos por órgão de pesquisa : o tratamento é necessário para a realização de estudos por órgão de pesquisa, garantida a anonimização dos dados sempre q ue possível .
+Fundamentos da LGPD e do GDPR
+Execução de contrato ou diligências preliminares : o tratamento é necessário para a execução de um contrato ou para tomar medidas preliminares à celebração de um contrato .
+Exercício regular de direitos em processo judicial, administrativo ou arbitral : o tratamento é necessário para o exercício de direitos em processos judiciais, administrativos ou arbitrais .
+Proteção da vida ou da incolumidade física do titular ou de terceiro : o tratamento é necessário para proteger a vida ou a integridade física do titular dos dados ou de outra pessoa .
+Tutela da saúde : o tratamento é necessário para a prestação de serviços de saúde, diagnóstico médico ou tratamento de saúde .
+Legítimo interesse do controlador : o tratamento é necessário para atender aos interesses legítimos do controlador, desde que não prevaleçam direitos e liberdades fundamentais do titular .
+Proteção ao crédito : permite que informações sejam tratadas com a finalidade de proteger operações de crédito, viabiliz ando a análise de riscos financeiros, concessão de crédito e combate à inadimplência.
+Já o tratamento de dados pessoais sensíveis somente poderá ocorrer quando o titular ou seu responsável legal consentir, de forma específica e destacada, para finalidades específicas . Sem o consentimento do titular, apenas nas hipóteses em que for indispensável para:
+a) cumprimento de obrigação legal ou regulatória pelo controlador;
+b) tratamento compartilhado de dados necessários à execução, pela administração pública, de políticas públicas previstas em leis ou regulamentos;
+c) realização de estudos por órgão de pesquisa, garantida, sempre que possível, a anonimização dos dados pessoais sensíveis;
+d) exercício regular de direitos, inclusive em contrato e em processo judicia l,
+administrativo e arbitral, este último nos termos da Lei nº 9.307, de 23 de setembro de 1996 (Lei de Arbitragem) ;
+e) proteção da vida ou da incolumidade física do titular ou de terceiro;
+Fundamentos da LGPD e do GDPR f) tutela da saúde, em procedimento realizado por profissionais da área da saúde ou por entidades sanitárias; ou f) tutela da saúde, exclusivamente, em procedimento realizado por profissionais de saúde, serviços de saúde ou autoridade sanitária; ou g) garantia da prevenção à fraude e à segurança do titular, nos processo s de identificação e autenticação de cadastro em sistemas eletrônicos, resguardados os direitos mencionados no art. 9º da Lei e exceto no caso de prevalecerem direitos e liberdades fundamentais do titular que exijam a proteção dos dados pessoais.
+Direitos dos Titulares
+Figura 4 – Direitos dos Titulares
+Fonte: serpro.gov.br (2025)
+Os titulares de dados pessoais possuem uma série de direitos assegurados pela Lei Geral de Proteção de Dados, que garantem maior controle sobre o uso de suas informações. Entre esses direitos, está o de confirmar a existência de tratamento de seus dados, o u seja, verificar se há coleta e uso de suas informações por parte de determinada organização. Eles t ambém têm o direito de acessar esses dados e obter detalhes sobre como estão sendo tratados.
+Fundamentos da LGPD e do GDPR
+Caso identifiquem informações incompletas, incorretas ou desat ualizadas, os titulares podem solicitar a correção. Além disso, podem requerer a anonimização, o bloqueio ou até mesmo a eliminação de dados que sejam desnecessários,
+excessivos ou que estejam sendo tratados em desacordo com a LGPD.
+Outro direito important e é o da portabilidade, que permite a transferência dos dados pessoais a outro fornecedor de serviço ou produto, mediante requisição expressa. Se os dados foram coletados com base no consentimento, o titular também pode solicitar sua eliminação a qualquer momento.
+A LGPD assegura ainda o direito de ser informado sobre quais entidades públicas ou privadas tiveram acesso aos seus dados por meio de compartilhamento realizado pelo controlador. Além disso, o titular deve ser informado sobre a possibilidade de ne gar o fornecimento do consentimento e sobre as consequências dessa negativa.
+Por fim, é garantido ao titular o direito de revogar, a qualquer momento, o consentimento previamente concedido para o tratamento de seus dados.
+O custo da não conformidade com a LGPD pode ser bastante alto e impactar as empresas de diversas formas. Ele vai muito além das multas, que podem chegar a R$ 50 milhões por infração, incluindo :
+Sanções administrativas
+• Advertência: uma chamada de atenção formal, com a determinação de um prazo para a empresa se adequar.
+• Multa simples: de até 2% do faturamento da empresa, limitada a R$ 50 milhões por infração. O valor da multa varia de acordo com a gravidade da infração, a natureza do s dados violados, a boa -fé da empresa e a sua capacidade econômica.
+• Multa diária: aplicada em caso de descumprimento de ordem da ANPD,
+com valor definido pela autoridade.
+• Publicização da infração: divulgação da infração em meios de comunicação, o que pode gerar grande repercussão negativa para a empresa.
+Fundamentos da LGPD e do GDPR
+• Bloqueio dos dados pessoais a que se refere a infração: impedimento de utilizar os dados pessoais envolvidos na infração.
+• Eliminação dos dados pes soais a que se refere a infração: obrigação de apagar os dados pessoais envolvidos na infração.
+• Suspensão parcial do funcionamento do banco de dados: a empresa fica impedida de realizar determinadas operações com os dados pessoais.
+• Proibição parcial ou tot al do exercício de atividades relacionadas a tratamento de dados: em casos extremos, a empresa pode ser proibida de tratar dados pessoais.
+Assim, c umprir a LGPD é fundamenta l, pois ela assegura a proteção dos dados pessoais dos indivíduos, promove a transp arência no tratamento dessas informações e evita penalidades severas. A demais , a LGPD fortalece a confiança de clientes e parceiros ao demonstrar o compromisso da empresa com a privacidade e a ética no uso de dados.
+A conformidade é essencial para organiz ações que desejam competir em um mercado cada vez mais orientado por dados, além de facilitar o alinhamento com regulamentações internacionais, como o GDPR, possibilitando a expansão global.
+Fundamentos da LGPD e do GDPR
+### Mercado, Cases E Tendênc Ias
+Primeira multa aplicada pela ANPD
+Em julho de 2023, a Autoridade Nacional de Proteção de Dados (ANPD)
+aplicou sua primeira multa por descumprimento da LGPD . A empresa Telekall
+Infoservice, do setor de telefonia, foi multada em R$ 14.400 por comercializar dados pessoais sem consentimento e por não possuir um encarregado pelo tratamento de dados pessoais.
+Decisão do STJ sobre Vazamento de Dados
+Em dezembro de 2024, o Superior Tribunal de Justiça (STJ) julgou o caso da
+Enel, empresa do setor de energia, responsabilizando -a pelo vazame nto de dados pessoais não sensíveis de uma consumidora, mesmo alegando ataque hacker. O
+STJ reforçou que a segurança de dados é uma obrigação legal, independentemente da origem do incidente.
+Meta Platforms (Facebook) – multa de €1,2 bilhão
+Em maio de 2023, a Meta Platforms, controladora do Facebook, foi multada em €1,2 bilhão pela Comissão de Proteção de Dados da Irlanda. A penalidade decorreu da transferência de dados de usuários europeus para os Estados Unidos sem garantias adequadas de proteção, violando as disposições do GDPR sobre transferência internacional de dados.
+Fundamentos da LGPD e do GDPR
+## O Que Você Viu Nes Ta Aula ?
+Ao concluirmos esta aula sobre os fundamentos do GDPR e da LGPD,
+esperamos que você tenha compreendido a importância dessas legislações na construção de uma sociedade digital mais ética, segura e centrada nos direitos dos cidadã os. Essas normas vão além da simples conformidade: elas estabelecem um novo padrão de respeito à privacidade e proteção de dados pessoais .
+Lembre -se de que aplicar os princípios dessas regulamentações não é apenas uma exigência legal, mas uma oportunidade de contribuir para um ambiente digital mais transparente e confiável, onde a privacidade é assegurada como um direito fundamental.
+Fundamentos da LGPD e do GDPR
+### Referên Cias
+AUTORIDADE NACIONAL DE PROTEÇÃO DE DADOS (ANPD). Página institucional . 2025. Disponível em: https://www.gov.br/anpd/pt -br. Acesso em: 11 jun 2025.
+BRASIL. Constituição da República Federativa do Brasil de 1988 . 2025.
+Disponível em: https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm .
+Acesso em: 11 jun 2025.
+BRASIL. Lei nº 13.709, de 14 de agosto de 2018 . 2025. Lei Geral de Proteção de
+Dados Pessoais (LGPD). Disponível em:
+http://www.planalto.gov.br/ccivil_03/_ato2015 -2018/2018/lei/L13709.htm . Acesso em:
+11 jun 2025.
+EUROPEAN DATA PROTECTION BOARD (EDPB). 1,2 billion euro fine on
+Facebook: Result of EDPB binding decision . Disponível em:
+https://www.edpb.europa.eu/news/news/2023/12 -billion -euro-fine-facebook -result -
+edpb -binding -decision_en . Acesso em: 11 jun 2025.
+GDPR. Artigos sobre penalidades GDPR . Disponível em: https://gdpr.eu/fines/ .
+Acesso em: 11 jun 2025.
+SINCOR . STJ responsabiliza Enel por vazamento de dados de cliente após ataque hacker . Disponível em: https://www.sincor.org.br/stj -reforca -
+responsabilidade -das-empresas -por-vazamento -de-dados -em-ataques -ciberneticos/ .
+Acesso em: 11 jun 2025.
+SOLOVE, D. Digital person: Technology and privacy in the information age .
+Nova Iorque: NYU Press, 2008.
+UOL. Primeira multa aplicada pela LGPD no Brasil: Caso Telekall . Dispon ível em: https://www.uol.com.br/tilt/noticias/redacao/2023/07/10/primeira -multa -aplicada -
+lgpd-brasil.htm . Acesso em: 11 jun 2025.
+UNIÃ O EUROPEIA. Regulamento Geral de Proteção de Dados (GDPR) .
+Disponível em: https://eur -lex.europa.eu/legal -
+content/PT/TXT/?uri=CELEX%3A32016R0679 . Acesso em: 11 jun 2025.
+WESTIN, A. Privacy and freedom . Nova Iorque: Atheneum, 1967.
+ZUBOFF, S. The age of surveillance capitalism: The fight for a human future at the new frontier of power . Nova Iorque: PublicAffairs, 2019.
+Fundamentos da LGPD e do GDPR
+### Palavras -Chave
+Fundamentos. GDPR. Princípios . LGPD. Titulares.
+Fundamentos da LGPD e do GDPR

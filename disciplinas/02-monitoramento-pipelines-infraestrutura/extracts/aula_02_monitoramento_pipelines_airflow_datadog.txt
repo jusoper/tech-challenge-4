@@ -1,0 +1,172 @@
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+## | Aula 02 - Machine Learning Engineering
+
+## Fase 4 Monitoramento De
+
+### Pipelines De Dados (Airflow + Datadog)
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Mercado, Cases E Tendências O Que Você Viu Nesta Aula?
+
+### Referências Palavras -Chave
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+### O Que Vem Por Aí?
+Você construiu um modelo de ML que funciona perfeitamente no notebook. Os dados chegam, as features são calculadas, o modelo é treinado e as métricas são ótimas. Mas e quando esse processo precisa rodar automaticamente, todos os dias,
+às 3h da manhã, sem intervenção humana?
+É aí que entram os orquestradores de pipelines. E com eles, uma nova camada de complexidade: tasks que falham silenciosamente, dados que chegam at rasados,
+dependências que quebram e recursos que se esgotam. Sem monitoramento adequado do pipeline, você só descobre o problema quando o modelo em produção começa a servir predições ruins — ou pior, quando o cliente reclama.
+Nesta aula, vamos mergulhar no Apache Airflow como orquestrador de pipelines de ML, entender como monitorar suas operações, e integrar com o Datadog para ter observabilidade centralizada e alertas inteligentes.
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+### Hands On
+DAGs: O Modelo de Orquestração
+Um DAG (Directed Acyclic Graph) é u m grafo direcionado sem ciclos — ou seja,
+um conjunto de tarefas com dependências entre elas, onde nenhuma tarefa depende indiretamente de si mesma. Esse modelo é a base da maioria dos orquestradores de pipelines modernos.
+Em um pipeline de ML típico, um D AG pode representar:
+ingest_data → validate_data → feature_engineering → train_model → evaluate_model → deploy_model
+ └── alert_on_failure └── register_model
+Cada nó é uma task que executa uma operação específica, e as arestas representam dependências. O orquestrador garante que as tasks executem na ordem correta, gerencia retries em caso de falha , e fornece visibilidade sobre o estado do pipeline.
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+### Saiba Mais
+Apache AIrflow: Arquitetura e Conceitos
+O Apache Airflow é o orquestrador de pipelines mais utilizado na indústria. Sua arquitetura é composta por:
+Scheduler: O cérebro do Airflow. Monitora t odos os DAGs e tasks, determina quais estão prontas para execução, e as envia para o executor. O scheduler é um processo contínuo que verifica dependências, horários e estados.
+Executor: Responsável por executar as tasks. Existem diferentes tipos:
+• LocalExe cutor: Executa tasks como processos locais (bom para desenvolvimento) .
+• CeleryExecutor: Distribui tasks para workers via fila de mensagens
+(produção) .
+• KubernetesExecutor: Cria pods Kubernetes para cada task (escalabilidade) .
+Workers : Processos que efetivamente executam o código das tasks. Em configurações distribuídas, workers podem rodar em máquinas diferentes.
+Metadata Database: Banco de dados (geralmente PostgreSQL) que armazena o estado de DAGs, tasks, variáveis, conexões e logs.
+Web Server: Interface web para visualização e gerenciamento de DAGs.
+Conceitos fundamentais do airflow
+Operators: Definem o que uma task faz. Exemplos:
+• PythonOperator: Executa uma função Python .
+• BashOperator: Executa um comando bash .
+• S3ToRedshiftOperator: Transfere dados do S3 para Redshift .
+Sensors: Operators especiais que esperam por uma condição ser satisfeita:
+• S3KeySensor: Espera um arquivo aparecer no S3 .
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+• ExternalTaskSensor: Espera uma task de outro DAG completar .
+• HttpSensor: Espera uma resposta HTTP específica .
+XComs (Cross -Communications): Mecanismo para tasks trocarem pequenas quantidades de dados entre si.
+Pools: Limitam a concorrência de tasks que competem por recursos compartilhados.
+Connections: Armazenam credenciais e configuraçõe s de conexão com sistemas externos.
+Métricas Nativas do Ai Rflow
+O Airflow expõe métricas via StatsD que são essenciais para monitoramento operacional .
+Métricas do Scheduler:
+• scheduler_heartbeat: Indica que o scheduler está vivo e funcionando .
+• dag_processin g.total_parse_time: Tempo para parsear todos os DAGs .
+• dag_processing.processes: Número de processos de parsing ativos .
+Métricas de Tasks:
+• ti.finish.<dag_id>.<task_id>.<state>: Contagem de tasks por estado final .
+• ti.duration.<dag_id>.<task_id>: Duração de e xecução de cada task .
+• ti.start.<dag_id>.<task_id>: Timestamp de início de tasks .
+Métricas de Pool:
+• pool.open_slots.<pool_name>: Slots disponíveis em cada pool .
+• pool.used_slots.<pool_name>: Slots em uso .
+• pool.starving_tasks.<pool_name>: Tasks esperando por slots .
+Métricas de DAG:
+• dagrun.duration.success.<dag_id>: Duração de DAG runs bem -sucedidas .
+• dagrun.duration.failed.<dag_id>: Duração de DAG runs com falha .
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+• dag.callback_exceptions: Exceções em callbacks .
+Monitoramento de SLAs no Airflow
+O Airflow permite definir SLAs (Service Level Agreements) para tasks e DAGs.
+Um SLA define o tempo máximo esperado para uma task completar. Se o SLA é violado, o Airflow pode:
+• Enviar notificações por email .
+• Executar callb acks customizados .
+• Registrar a violação no metadata database .
+Exemplo de configuração:
+task = PythonOperator ( task_id='train_model',
+ python_callable=train_fn,
+ sla=timedelta(hours=2), # Deve completar em até 2 horas on_failure_callback=alert_team,
+)
+Vuppu e Achanta (2025) destacam que a definição de SLAs para pipelines de dados é fundamental para garantir que os dados estejam disponíveis no tempo esperado para consumidores downstream, incluindo modelos de ML que depen dem de features atualizadas.
+Padrões de Falha Comuns
+Dependency Hell: Tasks que dependem de sistemas externos que ficam indisponíveis. Mitigação: timeouts, retries com backoff exponencial, circuit breakers.
+Resource Starvation: Muitas tasks competindo por recursos limitados (CPU,
+memória, conexões de banco). Mitigação: pools, prioridades, resource quotas.
+Zombie Tasks: Tasks que o scheduler acredita estarem rodando, mas cujo processo morreu. O Airflow tem um mecanismo de detecção de zombies, mas pode levar tempo para detectar.
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+Sensor Deadlocks: Sensors que nunca são satisfeitos, ocupando slots indefinidamente. Mitigação: timeout e mode='reschedule' em vez de mode='poke'.
+Integração Airflow com Datadog
+O Datadog oferece uma integração nativa com o Airflow que permite:
+Coleta de Métricas via DogStatsD:
+O Airflow pode ser configurado para enviar métricas StatsD para o agente
+Datadog:
+# airflow.cfg
+[metrics]
+statsd_on = True statsd_host = localhost statsd_port = 8125 statsd_prefix = airflow
+Tags para contexto - o Datadog permite adicionar tags às métricas para filtrar e agrupar:
+• dag_id: Identificador do DAG .
+• task_id: Identificador da task .
+• environment: Ambiente (dev, staging, production)
+Dashboards no Datadog - com as métricas coletadas, é possível cons truir dashboards que mostram:
+• Heatmap de execução de DAGs ao longo do tempo .
+• Top N tasks mais lentas .
+• Taxa de sucesso/falha por DAG .
+• Utilização de pools .
+• Tendências de duração de tasks .
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+Alertas Inteligentes
+O Datadog oferece capacidades avançadas de alerti ng que vão além de thresholds estáticos:
+Anomaly Detection: Usa algoritmos de ML para aprender o padrão normal de uma métrica e alertar quando há desvios significativos. Útil para detectar tasks que estão demorando mais que o usual sem precisar definir um threshold fixo.
+Forecast Alerts: Prevê o valor futuro de uma métrica e alerta se a previsão indica um problema. Exemplo: prever que o disco vai encher antes da próxima janela de manutenção.
+Composite Alerts: Combinam múltiplas condições. Exemplo: alertar a penas quando a duração do DAG excede o SLA E o volume de dados processados é menor que o esperado.
+Correlação de Métricas de Pipeline com Qualidade de Modelo
+Uma prática avançada é correlacionar métricas operacionais do pipeline com métricas de qualidade d o modelo. Por exemplo:
+• Se a task de feature engineering demorou 3x mais que o normal, os dados podem ter mudado significativamente — vale verificar se houve data drift.
+• Se o volume de dados ingeridos caiu 50%, o modelo pode estar sendo treinado com dados i nsuficientes.
+• Se uma task de validação de dados foi pulada (skip), features podem estar com valores inesperados.
+Essa correlação permite detectar problemas de qualidade de modelo antes que eles se manifestem em métricas de performance.
+Airflow vs Alternativas
+Embora o Airflow seja o orquestrador mais popular, existem alternativas relevantes:
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+• Prefect: Foco em simplicidade e experiência do desenvolvedor, com orquestração baseada em Python puro.
+• Dagster: Orientado a assets de dados, com tipagem forte e integração nativa com ferramentas de data quality.
+• Argo Workflows: Nativo de Kubernetes, ideal para workloads containerizados.
+• AWS Step Functions: Serverless, integrado ao ecossistema AWS.
+A escolha depende do contexto: tamanho da equipe, i nfraestrutura existente,
+complexidade dos pipelines e requisitos de escalabilidade.
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+### Mercado, Cases E Tendências
+O Apache Airflow é utilizado por empresas como Airbnb (onde foi criado),
+Spotify, Twitter, e centenas de outras organizações para orquestrar pip elines de dados e ML. A Astronomer, empresa que oferece Airflow como serviço gerenciado, reporta crescimento consistente na adoção.
+A tendência atual é a convergência entre orquestração e observabilidade.
+Ferramentas como o Astro Observe da Astronomer inte gram monitoramento de qualidade de dados diretamente no orquestrador, eliminando a necessidade de ferramentas separadas.
+Outra tendência é o uso de orquestradores para gerenciar não apenas ETL,
+mas o ciclo completo de ML — incluindo treino, avaliação, regi stro e deploy de modelos — criando pipelines de ML verdadeiramente end -to-end.
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+## O Que Você Viu Nesta Aula?
+Vimos que DAGs são o modelo fundamental de orquestração de pipelines,
+representando tasks e suas dependências ; o Apache Airflow é o orquestrador mai s utilizado, com arquitetura baseada em Scheduler, Executor, Workers e Metadata DB ;
+e que m étricas nativas do Airflow (via StatsD) fornecem visibilidade sobre a saúde operacional do pipeline.
+Também aprendemos que SLAs no Airflow permitem definir expectati vas de tempo e alertar quando são violadas ; a integração com Datadog centraliza métricas e habilita alertas inteligentes baseados em anomaly detection ; e correlacionar métricas de pipeline com qualidade de modelo permite detecção precoce de problemas.
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+### Referências
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO/IEC
+33001:2015: Information technology: Process assessment: Concepts and terminology. Geneva: ISO, 2015. Disponível em:
+https://www.iso.org/standard/54175.html . Acesso em: 27 ago. 2026.
+INTORF, D.; VAN DOORN, K.; STOREY, D. Apache Airflow Best Practices.
+Birmingham: Packt Publishing, 2024.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps): Overview, Definition, and Architecture. IEEE Access, v. 11, p. 31866 –
+31879, 2023.
+PWC. Experience is everything: Here’s how to get it right. 2018. Disponível em:
+https://www.pwc.com/us/en/advisory -services/publications/consumer -intelligence -
+series/pwc -consumer -intelligence -series -customer -experience.pdf . Acesso em: 27 ago. 2026.
+RICCIARDI, G. GapAnalysis_IT4IT _Value Stream Flows: Gianni Ricciardi: para fins didáticos. 2023. Disponível em:
+https://1drv.ms/x/s!AteDfZdQAPwHhuovcPYjiNE_2x8CPA?e=U2hevf . Acesso em: 27 ago. 2026.
+SCULLEY, D. e t al. Hidden Technical Debt in Machine Learning Systems. In:
+ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS (NeurIPS), v. 28,
+2015.
+VUPPU, S.; ACHANTA, V. Building Robust Data Pipelines. International Journal of
+Computer Trends and Technology (IJCTT), 2 025.
+Monitoramento de Pipelines de Dados (Airflow + Datadog)
+### Palavras -Chave
+Apache Airflow . DAG . Orquestração . Datadog . StatsD . SLA. Pipeline de
+Dados . Monitoramento Operacional . DogStatsD . Anomaly Detection.
+Monitoramento de Pipelines de Dados (Airflow + Datadog)

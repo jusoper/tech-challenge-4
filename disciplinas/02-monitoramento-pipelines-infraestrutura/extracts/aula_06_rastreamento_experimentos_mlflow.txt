@@ -1,0 +1,177 @@
+Rastreamento de Experimentos e Modelos com MLflow
+## | Aula 06 - Machine Learning Engineering
+
+## Fase 4 Rastreamento De
+
+### Experimentos E Modelos Com Mlflow
+Rastreamento de Experimentos e Modelos com MLflow
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Rastreamento de Experimentos e Modelos com MLflow
+### O Que Vem Por Aí?
+"Qual modelo está em produção agora? Quem treinou? Com quais hiperparâmetros? Usando quais dados? E aquele modelo que testamos semana passada com learning rate 0.001 — qual era a acurácia dele mesmo?"
+Se você já se fez essas perguntas, sabe que gerenciar experimentos de ML sem uma ferramenta adequada é caótico. Planilhas, notebooks com nomes como
+"model_final_v2_FINAL_realmente_final.ipynb", e modelos salvos em pastas aleatórias são receitas para perda de reprodutibilidade.
+Nesta aula, vamos explorar o MLflow — a plataforma open -source mais utilizada para gerenciamento do ciclo de vida de ML. Vamos cobrir experiment tracking, model registry, e integração com CI/CD para automação completa.
+Rastreamento de Experimentos e Modelos com MLflow
+### Hands On
+Nesta aula, veremos o problema da reprodutibilidade, MLflow tracking, a comparação de runs e model registry.
+Também analisaremos model signatures e input examples, versionamento completo e integração com CI/CD.
+Rastreamento de Experimentos e Modelos com MLflow
+### Saiba Mais
+O Problema da Reprodutibilidade
+Zaharia et al. (2018) identificaram que o ciclo de vida de ML envolve desafios únicos que ferramentas de software tradicionais não resolvem , como e xperimentação massiva (cientistas de dados testam centenas de combinações de hip erparâmetros,
+features e algoritmos ), múltiplos ambientes (código que funciona no notebook pode não funcionar em produção ), dependências complexas (modelos dependem de versões específicas de bibliotecas, dados e código ) e colaboração (múltiplas pessoas trabalhando nos mesmos modelos precisam compartilhar resultados ).
+O MLflow foi criado para resolver esses problemas com uma plataforma modular e extensível.
+MLflow tracking
+O componente de Tracking é o coração do MLflow. Ele permite registrar e consultar expe rimentos de ML.
+Conceitos fundamentais:
+• Experiment: Agrupamento lógico de runs relacionados ( ex.: "fraud -
+detection -model") .
+• Run: Uma execução específica de código de ML, com seus parâmetros,
+métricas e artefatos .
+• Parameters: Inputs do experimento (hiperparâmetros, configurações) .
+• Metrics: Outputs numéricos (acurácia, loss, F1) .
+• Artifacts: Arquivos produzidos (modelo treinado, gráficos, datasets) .
+• Tags: Metadados adicionais (autor, versão do dataset, objetivo) .
+Exemplo de uso:
+import mlflow
+Rastreamento de Experimentos e Modelos com MLflow mlflow.set_experiment("fraud -detection")
+with mlflow.start_run(run_name="xgboost -v1"):
+ # Log de parâmetros mlflow.log_param("learning_rate", 0.01)
+ mlflow.log_param("max_depth", 6)
+ mlflow.log_param("n_estimators", 100)
+ mlflow.log_param("dataset_version", "2026 -01-15")
+ # Treinar modelo model = train_model(X_train, y_train, params)
+
+# Log de métricas mlflow.log_metric("accuracy", 0.95)
+ mlflow.log_metric("f1_score", 0.92)
+ mlflow.log_metric("au c_roc", 0.98)
+ # Log de artefatos mlflow.log_artifact("confusion_matrix.png")
+ mlflow.sklearn.log_model(model, "model")
+MLflow Tracking Server
+O Tracking Server pode ser configurado de diferentes formas:
+Local: Armazena dados no filesystem l ocal. Bom para desenvolvimento individual.
+Remoto: Servidor centralizado acessível por toda a equipe. Componentes:
+backend store (banco de dados como PostgreSQL, MySQL para parâmetros e métricas ) e a rtifact store (storage como S3, GCS, Azure Blob para arte fatos e modelos ).
+Configuração típica de produção:
+Rastreamento de Experimentos e Modelos com MLflow mlflow server \
+ --backend -store -uri postgresql://user:pass@host:5432/mlflow \
+ --default -artifact -root s3://mlflow -artifacts/ \
+ --host 0.0.0.0 \
+ --port 5000
+Comparando Runs
+A UI do MLflow permite comparar runs visualmente:
+• Tabela com parâmetros e métricas lado a lado .
+• Gráficos de métricas ao longo de épocas .
+• Scatter plots de parâmetros vs métricas .
+• Filtros e ordenação por qualquer campo .
+Programaticamente, é possível consultar runs v ia API:
+from mlflow.tracking import MlflowClient client = MlflowClient()
+runs = client.search_runs( experiment_ids=["1"],
+ filter_string="metrics.f1_score > 0.9",
+ order_by=["metrics.f1_score DESC"],
+ max_results=10
+)
+Model Registry
+O Model R egistry é o componente do MLflow para gerenciamento de modelos em produção.
+Conceitos incluem Registered Model (um modelo nomeado no registry como
+"fraud -detector") , Model Version (uma versão específica do modelo como versão 3) ,
+Rastreamento de Experimentos e Modelos com MLflow
+Stages/Aliases (estados do modelo no ciclo de vida ) e Descriptions (documentação do modelo e suas versões ).
+Workflow de promoção: Development → Staging → Production → Archived
+• Cientista de dados treina modelo e registra no registry .
+• Modelo é promovido para Staging para testes de integração .
+• Após validação, modelo é promovido para Production .
+• Modelo anterior é movido para Archived .
+Registrando um modelo:
+# Registrar modelo a partir de um run
+mlflow.register_model( model_uri="runs:/abc123/model",
+ name="fraud -detector"
+)
+# Promover para produção
+client.transition_model_version_stage( name="fraud -detector",
+ version=3,
+ stage="Production"
+)
+Model Signatures e Input Examples
+Model signatures documentam o contrato de entrada/saída do modelo:
+from mlflo w.models import infer_signature signature = infer_signature(X_train, model.predict(X_train))
+mlflow.sklearn.log_model(model, "model", signature=signature)
+A signature inclui:
+• Schema de entrada: nomes, tipos e shapes das features .
+• Schema de saída: tipo e sh ape da predição .
+Rastreamento de Experimentos e Modelos com MLflow
+Input examples fornecem dados de exemplo para teste:
+mlflow.sklearn.log_model( model, "model",
+ signature=signature,
+ input_example=X_train[:5]
+)
+Versionamento Completo
+Para reprodutibilidade total, precisamos versionar não apena s o modelo, mas todo o contexto:
+• Código: Git (commit hash registrado automaticamente pelo MLflow) .
+• Dados: DVC (Data Version Control) ou referência ao dataset no artifact store .
+• Modelo: MLflow Model Registry .
+• Ambiente: Conda environment ou requirements.txt (registrado pelo MLflow) .
+• Configuração: Parâmetros logados no MLflow .
+Integração com CI/CD
+A integração do MLflow com pipelines de CI/CD permite automação completa:
+CI para ML: Push de código → trigger de pipeline ; executar testes de dados
+(validação de schema, qualidade) ; treinar modelo com MLflow tracking ; executar testes de modelo (performance mínima, fairness) e registrar modelo no registry se testes passam .
+CD para ML: modelo promovido para production no registry → trigger de deploy ;
+build de container com modelo ; deploy em staging para smoke tests ; deploy em produção (canary ou blue -green) e monitoramento pós -deploy .
+O MLflow suporta múltiplos "flavors" para empacotamento de modelos:
+Rastreamento de Experimentos e Modelos com MLflow
+• python_function: Formato gené rico que funciona com qualquer modelo
+Python .
+• sklearn: Modelos scikit -learn .
+• pytorch: Modelos PyTorch .
+• tensorflow: Modelos TensorFlow/Keras .
+• xgboost: Modelos XGBoost .
+• transformers: Modelos Hugging Face .
+Cada flavor permite serving do modelo de diferentes formas:
+• mlflow models serve: Servidor REST local
+• Docker container: Para deploy em qualquer infraestrutura
+• Cloud endpoints: SageMaker, Azure ML, Databricks
+Os autores de "Beginning MLOps with MLflow" destacam que o MLflow não é apen as uma ferramenta de tracking — é uma plataforma que conecta experimentação com produção. A chave é usar o Model Registry como ponto de controle entre desenvolvimento e operação, garantindo que apenas modelos validados cheguem à produção.
+Rastreamento de Experimentos e Modelos com MLflow
+### Mercado, Cases E Tendências
+O MLflow é mantido pela Databricks e tem uma comunidade open -source ativa com milhões de downloads mensais. Alternativas incluem Weights & Biases (W&B),
+Neptune.ai, Comet ML e ClearML, cada uma com foco diferente.
+A tendência é a integração cada vez mais profunda entre experiment tracking e model serving, com plataformas oferecendo deploy com um clique a partir do registry. O MLflow 2.x introduziu o MLflow Deployments Server (anteriormente AI
+Gateway) para gerenciar endpoints de modelos, incluind o LLMs.
+Outra tendência é o uso de feature stores (como Feast e Tecton) integrados com MLflow para garantir que as mesmas features usadas no treino sejam usadas na inferência, eliminando o problema de training -serving skew.
+Rastreamento de Experimentos e Modelos com MLflow
+## O Que Você Viu Nesta Aula?
+Vimo s que o MLflow resolve o problema de reprodutibilidade em ML com tracking de experimentos, parâmetros, métricas e artefatos , o Tracking Server centralizado permite colaboração entre equipes e consulta histórica de experimentos e o Model Registry gerencia o ciclo de vida de modelos com versionamento e promoção entre stages.
+Também analisamos como m odel signatures documentam contratos de entrada/saída, prevenindo erros de integração , a integração com CI/CD automatiza o pipeline de treino → validação → registr o → deploy e o v ersionamento completo
+(código + dados + modelo + ambiente) é essencial para reprodutibilidade.
+Rastreamento de Experimentos e Modelos com MLflow
+### Referências
+ALLA, S.; ADARI, S. K. Beginning MLOps with MLflow. Berkeley: Apress, 2021.
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO/IEC
+33001:2015: Information technology: Process assessment: Concepts and terminology. Geneva: ISO, 2015. Disponível em:
+https://www.iso.org/standard /54175.html . Acesso em: 27 ago. 2026.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps): Overview, Definition, and Architecture. IEEE Access, v. 11, p. 31866 –
+31879, 2023.
+PWC. Experience is everything: Here’s how to get it right. 2018. Disponível em:
+https://www.pwc.com/us/en/advisory -services/publications/consumer -intelligenc e-
+series/pwc -consumer -intelligence -series -customer -experience.pdf . Acesso em: 27 ago. 2026.
+RICCIARDI, G. GapAnalysis_IT4IT_Value Stream Flows: Gianni Ricciardi: para fins didáticos. 2023. Disponível em:
+https://1drv.ms/x/s!AteDfZdQAPwHhuovcPYjiNE_2x8CPA?e=U2hevf . Acesso em: 27 ago. 2026.
+SCULLEY, D. et al. Hidden Technical Debt in Machine Learning Systems. In:
+ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS (NeurIPS), v. 28,
+2015 .
+ZAHARIA, M.; CHEN, A.; DAVIDSON, A. et al. Accelerating the Machine Learning
+Lifecycle with MLflow. IEEE Data Engineering Bulletin, v. 41, n. 4, 2018.
+Rastreamento de Experimentos e Modelos com MLflow
+### Palavras -Chave
+MLflow . Experiment Tracking . Model Registry . Reprodutibilidade . CI/CD para
+ML. Model Signatures . Versionamento . Artifacts . Runs . Deploy de Modelos.
+Rastreamento de Experimentos e Modelos com MLflow

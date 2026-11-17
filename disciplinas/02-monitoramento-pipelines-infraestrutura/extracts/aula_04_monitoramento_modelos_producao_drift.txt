@@ -1,0 +1,134 @@
+Monitoramento de Modelos em Produção e Detecção de Drift
+## | Aula 04 - Machine Learning Engineering
+
+## Fase 4 Monitoramento De Modelos Em
+
+### Produção E Detecção De Drift
+Monitoramento de Modelos em Produção e Detecção de Drift
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Monitoramento de Modelos em Produção e Detecção de Drift
+### O Que Vem Por Aí?
+Um modelo de detecção de fraude foi treinado com dados de 2024 e implantado em produção com 97% de acurácia. Seis meses depois, a taxa de fraudes não detectadas trip licou. O que aconteceu? Os fraudadores mudaram suas táticas — os padrões que o modelo aprendeu não refletem mais a realidade.
+Esse fenômeno é conhecido como drift, e é um dos maiores desafios de manter modelos de ML em produção. Diferente de software tradi cional, que funciona da mesma forma até que alguém mude o código, modelos de ML podem degradar simplesmente porque o mundo ao redor mudou.
+Nesta aula, vamos entender como monitorar a performance de modelos em produção, os diferentes tipos de drift, técnica s estatísticas para detecção, e estratégias para mitigar o impacto quando drift é detectado.
+Monitoramento de Modelos em Produção e Detecção de Drift
+### Hands On
+Nessa aula, estudaremos métricas de produção vs métricas de treino,
+monitoramento de distribuição de predições, tipos de drift e testes estatísticos para detecção de drift.
+Também analisaremos estratégias de mitigação de drift e a diferença entre drift gradual e drift abrupto.
+Monitoramento de Modelos em Produção e Detecção de Drift
+### Saiba Mais
+ Métricas de Produção vs Métricas de Treino
+Uma distinção fundamental é que as métricas calculadas durante o treino (em dados de validação/teste) não necessariamente refletem a performance real em produção. As razões incluem distribuição diferente (dados de produção podem ter distribuição diferente dos dados de treino ), escala diferente (o volume e a velocidade dos dados em produção são diferentes ) e d eedback delayed (em produção, muitas vezes não temos o ground truth imediatamente ).
+Métricas de produção essenciais incluem m étricas de performance (quando ground truth está disponível):
+• Acurá cia, Precisão, Recall, F1 -Score .
+### • Auc -Roc, Auc -Pr.
+• RMSE, MAE (para regressão) .
+E métricas de proxy (quando ground truth não está disponível):
+• Distribuição de predições (histograma de scores) .
+• Confiança média das predições .
+• Taxa de predições em zonas de incerteza .
+• Proporção de classes preditas .
+Monitoramento de distribuição de predições
+Mesmo sem ground truth, podemos detectar problemas monitorando a distribuição das predições do modelo .
+Histogramas de scores: Se um modelo de classificação binária normalm ente produz scores bimodais (concentrados perto de 0 e 1), e de repente os scores se concentram no meio, algo mudou.
+Percentis: Monitorar p50, p90, p95, p99 dos scores de predição ao longo do tempo. Mudanças significativas indicam que o modelo está se comp ortando diferente.
+Monitoramento de Modelos em Produção e Detecção de Drift
+Alertas de anomalia: Configurar alertas quando a distribuição de predições desvia significativamente da distribuição de referência (baseline).
+Tipos de drift
+Pulicharla (2019) e Gama et al. (2014) categorizam drift em três tipos principa is.
+Data Drift (Covariate Shift): A distribuição das features de entrada muda, mas a relação entre features e target permanece a mesma. Exemplo: um modelo de crédito treinado com clientes de 25 -45 anos começa a receber requisições de clientes de 18 -
+25 anos .
+Formalmente: P(X) muda, mas P(Y|X) permanece constante.
+Concept Drift: A relação entre features e target muda. Exemplo: o que define um email como spam muda ao longo do tempo conforme spammers adaptam suas táticas.
+Formalmente: P(Y|X) muda, mesmo que P(X ) permaneça constante.
+Feature Drift: Uma ou mais features específicas mudam sua distribuição. Pode ser causado por mudanças em sistemas upstream, bugs em pipelines de feature engineering, ou mudanças no comportamento dos usuários.
+Testes Estatísticos para Detecção de Drift
+Kolmogorov -Smirnov (KS) Test: Teste não -paramétrico que compara duas distribuições. Calcula a distância máxima entre as funções de distribuição cumulativa
+(CDFs). Útil para features contínuas.
+• Hipótese nula: as duas amostras vêm da mesma distribuição .
+• Se p-value < threshold ( ex.: 0.05), rejeitamos H0 → drift detectado .
+Population Stability Index (PSI): Mede a mudança na distribuição de uma variável entre dois períodos. Amplamente usado na indústria financeira.
+• PSI < 0.1: Sem mudança signi ficativa
+• 0.1 ≤ PSI < 0.25: Mudança moderada, investigar
+Monitoramento de Modelos em Produção e Detecção de Drift
+• PSI ≥ 0.25: Mudança significativa, ação necessária
+• Cálculo: PSI = Σ (P_atual - P_referência) × ln(P_atual / P_referência)
+Chi-Squared Test: Para features categóricas, compara a distribuição observada com a distribuição esperada.
+Jensen -Shannon Divergence: Versão simétrica da divergência KL, mede a similaridade entre duas distribuições de probabilidade. Valores entre 0 (idênticas) e 1
+(completamente diferentes) .
+Janelas de Referência e Análise
+Para detectar drift, precisamos comparar dados atuais com dados de referência. A escolha das janelas é crítica:
+Janela de Referência (Baseline): Dados representativos do período em que o modelo performava bem. Pode ser dados de treino/validação , dados do primeiro mês em produção ou janela deslizante dos últimos N dias
+Janela de Análise (Current): Dados recentes que queremos comparar com a referência. Pode ser últimas 24 horas , última semana e último batch de dados .
+Trade -offs: janelas muito pequenas (alta sensibilidade, muitos falsos positivos ),
+janelas muito grandes (baixa sensibilidade, detecção tardia ) e janelas deslizantes
+(adaptam -se a mudanças graduais, mas podem mascarar drift lento ).
+Ferramentas de Monitoramento de Modelos
+Evidently AI: Framework op en-source que gera relatórios de monitoramento de dados e modelos. Suporta detecção de drift, qualidade de dados e performance de modelos. Pode ser integrado em pipelines como step de validação.
+WhyLogs: Biblioteca de logging estatístico que captura perfis de dados de forma eficiente. Permite comparar perfis ao longo do tempo para detectar mudanças.
+Monitoramento de Modelos em Produção e Detecção de Drift
+NannyML: Focado em estimativa de performance sem ground truth. Usa técnicas como CBPE (Confidence -Based Performance Estimation) para estimar métricas de perfor mance quando labels não estão disponíveis.
+Estratégias de Mitigação de Drift
+Retraining Triggers: Definir quando retreinar o modelo:
+• Schedule -based: Retreinar periodicamente ( ex.: semanalmente) .
+• Performance -based: Retreinar quando métricas caem abaixo de u m threshold .
+• Drift-based: Retreinar quando drift significativo é detectado .
+• Event -based: Retreinar quando eventos específicos ocorrem ( ex.: nova fonte de dados) .
+Shadow Models (Champion/Challenger): Manter múltiplos modelos em paralelo:
+• Champion: Modelo at ual em produção, servindo predições reais .
+• Challenger: Novo modelo recebendo os mesmos dados, mas sem servir predições .
+Comparar performance e promover o challenger quando supera o champion .
+A/B Testing para Modelos: Dividir tráfego entre modelos diferente s e comparar métricas de negócio. Requer cuidado com tamanho da amostra para significância estatística duração do teste e métricas de decisão (técnicas vs negócio) .
+Case: Detecção de Drift em Modelo de Fraude
+Um cenário comum na indústria financeira ilustr a a importância da detecção de drift: modelo treinado com dados históricos de transações fraudulentas e legítimas ;
+deploy em produção com performance excelente nos primeiros meses ; fraudadores adaptam suas táticas — novos padrões de fraude surgem ; concept drift ocorre: a relação entre features e fraude muda ; sem monitoramento: taxa de fraude não
+Monitoramento de Modelos em Produção e Detecção de Drift detectada aumenta gradualmente ; e c om monitoramento: drift é detectado em semanas, modelo é retreinado com dados recentes
+A diferença entre os cenários com e sem m onitoramento pode representar milhões em perdas evitadas.
+Drift Gradual vs Drift Abrupto
+Gama et al. (2014) distinguem entre:
+• Drift abrupto: Mudança repentina ( ex.: mudança de política, evento externo) .
+• Drift gradual: Mudança lenta ao longo do tempo ( ex.: mudança de comportamento do consumidor) .
+• Drift recorrente: Padrões que se repetem ( ex.: sazonalidade) .
+Cada tipo requer estratégias de detecção diferentes. Drift abrupto é mais fácil de detectar com testes estatísticos simples, enquanto drift gradual pode requerer análise de tendências de longo prazo.
+Monitoramento de Modelos em Produção e Detecção de Drift
+### Mercado, Cases E Tendências
+O mercado de monitoramento de modelos está em expansão, com ferramentas como Evidently AI, Arize AI, Fiddler AI e WhyLabs competindo por espaço. A tendência é a integra ção dessas capacidades em plataformas de MLOps mais amplas.
+Regulamentações como a EU AI Act estão impulsionando a adoção de monitoramento de modelos, pois exigem que organizações demonstrem que seus sistemas de IA continuam funcionando conforme esperado a pós o deploy.
+A fronteira atual da pesquisa inclui detecção de drift em dados não estruturados
+(imagens, texto), monitoramento de modelos de linguagem (LLMs), e técnicas de adaptação contínua que ajustam o modelo automaticamente sem retreino completo.
+Monitoramento de Modelos em Produção e Detecção de Drift
+## O Que Você Viu Nesta Aula?
+Vimos que m étricas de produção diferem de métricas de treino — monitorar a distribuição de predições é essencial mesmo sem ground truth , data drift, concept drift e feature drift são fenômenos distintos que requerem abordagens difer entes de detecção e testes estatísticos como KS test, PSI e Chi -squared permitem quantificar drift de forma objetiva.
+Também compreendemos como a escolha de janelas de referência e análise impacta diretamente a sensibilidade da detecção , ferramentas como Evidently AI,
+WhyLogs e NannyML facilitam a implementação de monitoramento de drift e estratégias de mitigação incluem retraining triggers, shadow models e A/B testing.
+Monitoramento de Modelos em Produção e Detecção de Drift
+### Referências
+GAMA, J.; ŽLIOBAITĖ, I.; BIFET, A.; PECHENIZKIY, M.; BOUCHACHI A, A. A Survey on Concept Drift Adaptation. ACM Computing Surveys, v. 46, n. 4, p. 1 –37, 2014.
+INTERNATIONAL ORGANIZATION FOR STANDARDIZATION. ISO/IEC
+33001:2015: Information technology: Process assessment: Concepts and terminology. Geneva: ISO, 2015. Disponível em:
+https://www.iso.org/standard/54175.html . Acesso em: 27 ago. 2026.
+KREUZBERGER, D.; KÜHL, N.; HIRSCHL, S. Machine Learning Operations
+(MLOps): Overview, Definition, a nd Architecture. IEEE Access, v. 11, p. 31866 –
+31879, 2023.
+PULICHARLA, M. R. Detecting and Addressing Model Drift: Automated
+Monitoring and Real -Time Retraining in ML Pipelines. World Journal of Advanced
+Research and Reviews (WJARR), 2019.
+PWC. Experience is everything: Here’s how to get it right. 2018. Disponível em:
+https://www.pwc.com/us/en/advisor y-services/publications/consumer -intelligence -
+series/pwc -consumer -intelligence -series -customer -experience.pdf . Acesso em: 27 ago. 2026.
+RICCIARDI, G. GapAnalysis_IT4IT_Value Stream Flows: Gianni Ricciardi: para fins didáticos. 2023. Disponível em:
+https://1drv.ms/x/s!AteDfZdQAPwHhuovcPYjiNE_2x8CPA?e=U2hevf . Acesso em: 27 ago. 2026.
+SHANKAR, S.; PARAMESWARAN, A. G. Towards Observability for Production
+Machine Learning Pipelines. arXiv preprint arXiv:2108.13557, 2022.
+Monitoramento de Modelos em Produção e Detecção de Drift
+### Palavras -Chave
+Data Drift . Concept Drift . Feature Drift . KS Test . PSI. Evidently AI . NannyML .
+WhyLogs . Shadow Models . A/B Testing . Champion/Challenger.
+Monitoramento de Modelos em Produção e Detecção de Drift

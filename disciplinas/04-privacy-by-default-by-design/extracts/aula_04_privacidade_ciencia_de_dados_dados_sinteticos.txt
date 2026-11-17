@@ -1,0 +1,175 @@
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+## | Aula 04 - Machine Learning Engineering
+
+## Fase 4 Privacidade Na Era Da Ciência
+
+### De Dados: O Papel Dos Dados Sintéticos Em Análises
+
+### Seguras
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+### O Que Vem Por Aí ?
+Na era digital, cada clique, postagem e pesquisa deixa rastros digitais que formam um retrato detalhado de nossas vidas. Essa imensa quantidade de dados,
+embora valiosa para impulsionar a inovação e o desenvolvimento, também nos torna vulneráveis a violações de privacidade e usos indevidos. Felizmente, leis como o
+GDPR e a LGPD surgem como protetor as, estabelecendo di reitos e responsabilidades para garantir o uso ético e seguro dos dados. Mas como conciliar o avanço da ciência de dados com a proteção da privacidade? Nesta aula, vamos explorar uma solução inovadora: os dados sintéticos. Preparem -se para mergulhar em um universo onde a privacidade e a inovação convergem .
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+### Hands On
+Hoje, vivemos de dados! E tais dados alimentam tecnologias avançadas como inteligência artificial e Big Data, tendo potencial para transformar vidas, mas também para colocar a privacidade em risco. É nesse cenário que surgem soluções como os dados sintéticos, uma ferramenta inovadora que pode ajudar a equilibrar a inovação com a proteção da privacidade.
+Nesta aula, abordaremos o papel transformador dos dados sintéticos,
+mostrando como eles pod em ser utilizados para análises seguras e eficazes em diversos setores, desde saúde até finanças. Prepare -se para entender como essa abordagem pode proteger direitos individuais, cumprir regulações como a LGPD e o
+GDPR, e ainda impulsionar a inovação de ma neira ética e transparente .
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+### Saiba Mais
+A era do big data e os desafios da privacidade
+Os dados estão sendo gerados em uma quantidade cada vez maior a cada dia, impulsionados por várias fontes e tecnologias. A Internet das Coisas (IoT), que inclui dispositivos conectados , como sensores, câmeras e aparelhos domésticos inteligentes, contribui significativamente para essa produção maciça de dados. Em complemento , as mídias sociais, onde milhões de pessoas postam fotos, vídeos e interagem dia riamente, e os dispositivos móveis, como smartphones e tablets,
+também são grandes fontes de dados. Esse aumento exponencial na geração de dados cria vastas oportunidades, mas também desafios na coleta, armazenamento e análise desses dados.
+E por que isso é importante? A coleta e análise de dados são cruciais para impulsionar a inovação, a tomada de decisão e o desenvolvimento em diversas áreas. Por exemplo , na área dos n egócios , as empresas utilizam dados para entender o comportamento do consumidor, otimiza r operações e desenvolver novos produtos e serviços. A análise de dados pode identificar tendências de mercado e fornecer insights que ajudam na criação de estratégias empresariais eficazes .
+No setor de saúde, a análise de dados pode melhorar diagnóstico s e tratamento s, prever surtos de doenças e personalizar tratamentos médicos com base em dados individuais dos pacientes . Já n a educação, os dados são usados para personalizar o aprendizado, monitorar o progresso dos alunos e identificar áreas que precisam d e intervenção.
+Conceito de big data e suas características
+O termo big data refere -se a conjuntos de dados tão grandes e complexos que exigem ferramentas e técnicas especializadas para serem analisados. Suas principais características são conhecidas como " Cinco Vs":
+• Volume: refere -se à enorme quantidade de dados gerados, que podem chegar a petabytes ou exabytes ;
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+• Velocidade: diz respeito à alta velocidade com que os dados são gerados e processados. Isto é crucial para aplicações que exigem análises em tempo real ;
+• Variedade: envolve diferentes tipos de dados que podem ser estruturados
+(como dados em tabelas), não estruturados (como e -mails ou vídeos) e semiestruturados (como arquivos XML) ;
+• Veracidade: refere -se à confiabilidade e qualidade dos dados. É importante garantir que os dados sejam precisos e úteis para que as análises sejam válidas ;
+• Valor: é a capacidade de extrair insights significativos e gerar valor a partir dos dados, ajudando a tomar decisões informadas e estratégicas.
+Esses elementos são fundamentais para entender como a ciência de dados pode ser aplicada de maneira eficaz para resolver problemas e gerar valor em diversos setores da sociedade.
+Ciência de dados e seus componentes
+A ciência de dados é uma área interdisciplinar que combina estatística,
+informática e conhecimento de domínio para extrair insights valiosos a partir de dados. Os principais componentes da ciência de dados incluem coleta,
+processamento e análise de dados, bem como ferramentas e tecnologia.
+A coleta de dados é o primeiro passo no processo de ciência de dados.
+Envolve métodos variados como web scraping, uso de APIs, bancos de dados tradicionais e tecnologias modernas de IoT que capturam dados em tempo real . No entanto, o s dados coletados raramente estão prontos para análise imediata. É necessário um processo de limpeza e transformação, que inclui a remoção de valores ausentes, correção de inconsistências e normalização dos dados para garantir a integridade e a usabilidade .
+A análise de dad os, por sua vez, utiliza técnicas como mineração de dados,
+aprendizado de máquina, análise estatística e visualização de dados. Ferramentas como Python (com bibliotecas como Pandas, NumPy, Matplotlib) e R são amplamente utilizadas para essas tarefas.
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+Quant o a ferramentas e tecnologias , softwares e plataformas como Hadoop e
+Spark são usados para lidar com grandes volumes de dados. Bancos de dados
+NoSQL , como MongoDB e Cassandra , são preferidos para dados não estruturados,
+enquanto bancos de dados SQL , como M ySQL e PostgreSQL , são usados para dados estruturados.
+Figura 1 – Ciência de dados
+Fonte: elaborado pel a autor a (2025)
+Exemplos concretos de uso da ciência de dados incluem a Amazon , gigante do comércio eletrônico que utiliza a ciência de dados para recomendar produtos aos clientes com base em suas compras anteriores e padrões de navegação , a Netflix ,
+plataforma de streaming que analisa dados de visualização para oferecer recomendações personalizadas e até mesmo para decidir quais novos programas e filmes produzir , e o Google , que u sa dados para otimizar resultados de busca,
+melhorar serviços de publicidade e desenvolver tecnologias avançadas como carros autônomos.
+### Privacidade E Seus Dilemas
+Na era da ciência de dados, a privacidade se tornou um tema central e complexo. A capacidade de coletar, armazenar e analisar enormes volumes de dados trouxe benefícios significativos, mas também levantou preocupações sobre a proteção das informações pesso ais. Um dos principais dilemas é o equilíbrio entre a inovação e a privacidade. Por um lado, o uso de dados pode impulsionar avanços em saúde, educação e negócios. Por outro lado, a coleta e análise de dados
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras pessoais sem o devido consentimento ou proteção pode levar a abusos, violações de privacidade e perda de confiança dos indivíduos.
+Entre os principais dilemas está o uso indevido de dados pessoais. Em 2013,
+a Yahoo sofreu uma das maiores violações de dados da história, onde informações pessoais de aprox imadamente 3 bilhões de contas foram comprometidas. Essa violação incluiu nomes, endereços de e -mail, datas de nascimento e senhas criptografadas, que foram posteriormente descriptografadas .
+Em 2016, foi revelado que um ataque cibernético havia comprometid o os dados de 57 milhões de motoristas e passageiros de Uber. A empresa inicialmente tentou encobrir a violação e pagou um resgate para os hackers para apagar os dados, mas acabou revelando a violação meses depois.
+Já em 2017, a empresa de crédito Equifax anunciou uma violação que afetou mais de 147 milhões de pessoas. Dados pessoais, incluindo números de seguridade social, datas de nascimento e endereços, foram expostos, levando a uma série de ações judiciais e regulatórias contra a empresa .
+Outro dilema significativo envolve a anonimização de dados. Embora métodos de anonimização busquem proteger a identidade dos indivíduos, muitas vezes eles não são suficientes para garantir a privacidade total. Técnicas de reidentificação podem combinar dados anônimos c om outras fontes de informação para revelar identidades, como demonstrado em um estudo realizado pelo Instituto Nacional de
+Padrões e Tecnologia (NIST). A demais , a crescente sofisticação de algoritmos de análise de dados aumenta o risco de que dados aparentemente anônimos possam ser reidentificados, colocando a privacidade dos indivíduos em risco.
+A falta de transparência e controle por parte dos indivíduos també m é um problema central. Consumidores frequentemente desconhecem como seus dados são coletados e compartilhados, o que dificulta o consentimento informado.
+Iniciativas como o GDPR (Regulamento Geral de Proteção de Dados da União
+Europeia) e a LGPD (Lei Ger al de Proteção de Dados no Brasil) tentam lidar com esses dilemas ao impor regras para coleta, armazenamento e uso de dados. Por exemplo, o GDPR exige que empresas expliquem claramente como os dados são utilizados e oferece aos indivíduos o direito de soli citar a exclusão de suas informações. Apesar disso, a implementação dessas leis enfrenta dificuldades em
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras contextos globais, como empresas multinacionais que operam em diferentes jurisdições. O equilíbrio entre inovação tecnológica e proteção da privacidade continua sendo um dos maiores desafios do nosso tempo.
+E como minimizar os problemas? Uma sugestão é a utilização de dados sintéticos. Tais dados oferecem uma solução inovadora para mitigar diversos problemas relacionados à privacidade na era da ciência d e dados, ajudando a equilibrar o uso de informações para inovação com a proteção dos direitos individuais.
+### Dados Sintéticos: Uma Solução À Vista?
+Dados sintéticos são dados gerados artificialmente , que preservam as propriedades estatísticas dos dados originais, mas que não contêm informações que possam identificar indivíduos. Eles são criados usando modelos estatísticos ou algoritmos de machine learning que aprendem as características dos dados reai s e geram novos conjuntos de dados que imitam essas características. Essa abordagem permite a realização de análises e pesquisas sem comprometer a privacidade dos dados reais, tornando -os uma alternativa promissora para proteger a privacidade.
+Eles são fre quentemente comparados com outras técnicas de privacidade,
+como a anonimização, a pseudonimização e a privacidade diferencial. Vejamos:
+Figura 2 – Métodos de proteção
+Fonte: elaborado pel a autor a (2025)
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+A anonimização envolve a remoção de informações que podem identificar indivíduos, mas pode ser vulnerável à reidentificação se os dados forem cruzados com outras fontes . Já a p seudonimização substitui informações identificáveis por pseudônimos, reduzindo o ri sco de identificação direta, mas ainda pode ser vulnerável .
+A privacidade diferencia l, por sua vez, adiciona ruído matemático aos dados para garantir que as informações individuais não possam ser inferidas com precisão.
+É eficaz, mas pode ser complexo de i mplementar.
+Vantagens dos dados sintéticos
+Figura 3 – Dados Reais x Dados Sintéticos
+Fonte: elaborado pel a autor a (2025)
+Os dados sintéticos não contêm informações sensíveis reais, eliminando o risco de reidentificação e permit indo o compartilhamento de dados sem comprometer a privacidade dos indivíduos, tornando -os ideais para cenários onde a proteção de dados é crucial .
+Eles são flexíveis e podem ser gerados para atender a necessidades específicas, como aumentar a diversidade dos dados, simular cenários específicos ou corrigir vieses nos dados originais. Por exemplo, podem ser usados para criar conjuntos de dados equilibrad os para treinamento de modelos de machine learning .
+A escalabilidade é outra vantagem, pois a geração de dados sintéticos pode ser feita em grande escala, o que é útil para treinar modelos de IA que requerem
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras grandes conjuntos de dados. Isso pode ser feito de forma mais rápida e eficiente do que coletar dados reais, permitindo que as empresas escalem suas operações de análise de dados sem restrições de coleta de dados .
+Por fim, o s dados sintéticos podem ser mais baratos de gerar do que coletar e rotular dado s reais , pode ndo democratizar o acesso a dados para pesquisa e inovação, permitindo que organizações menores e pesquisadores independentes conduzam estudos que antes seriam inviáveis devido aos altos custos de coleta de dados.
+Métodos de geração de dados s intéticos
+As Redes Adversárias Generativas , conhecidas como GANs , utilizam inteligência artificial para criar dados realistas, como imagens ou textos. O processo envolve dois modelos de IA que competem entre si: o gerador e o discriminador. O gerador cria dados sintéticos, enquanto o discriminador avalia se os dados sã o reais ou falsos. O objetivo é que o gerador melhore continuamente a qualidade dos dados gerados para "enganar" o discriminador, resultando em dados sintéticos altamente realistas. Por exemplo, as GANs podem ser usadas para gerar imagens de rostos fictíci os que são utilizados para treinar sistemas de reconhecimento facial , sem utilizar dados reais.
+Já os modelos estatísticos geram dados baseados em distribuições estatísticas observadas nos dados originais. Esses métodos são amplamente utilizados em pesquis as acadêmicas e na modelagem de cenários. Por exemplo, um modelo estatístico pode analisar padrões de consumo em uma amostra de dados reais e gerar novos dados sintéticos que seguem a mesma distribuição , permit indo que pesquisadores e analistas realizem es tudos sem acessar dados reais,
+preservando a privacidade dos indivíduos.
+Por fim , a modelagem baseada em regras cria dados seguindo regras predefinidas para atender às necessidades específicas de um setor. Esse método é especialmente útil quando se precisa simular cenários específicos ou gerar dados que obedecem a certos critérios. Por exemplo, no setor financeiro, dados financeiros fictícios podem ser criados para simulações de risco bancário. Essas regras podem incluir limites, padrões e relações entre diferentes variáveis, permitindo a geração de dados que são realistas e úteis para testes e análises.
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+Figura 4 – Métodos de Geração de Dados Sintéticos
+Fonte: elaborado pel a autor a (2025)
+Aplicações dos dados sintéticos
+Dados sintéticos podem ser usados para treinar modelos de IA sem comprometer dados reais, permitindo o desenvolvimento de modelos mais robustos e precisos. Por exemplo, empresas podem usar dados sintéticos para treinar algoritmos de reconhecimento de voz sem expor dados reais dos usuários.
+Eles também permitem testar softwares em diferentes cenários sem a necessidade de usar dados reais, acelerando o processo de desenvolvimento e reduzindo custos. Empresas de tecnologia podem usar dados sintéticos para simular cenários de uso e identificar possíveis falhas antes do lançamento de um produto.
+Por fim, dados sintéticos podem ser usados para r ealizar pesquisas em áreas sensíveis, como saúde ou finanças, sem comprometer a privacidade dos participantes. Por exemplo, dados sintéticos de pacientes podem ser utilizados em estudos clínicos para desenvolver novos tratamentos médicos, preservando a privacidade dos pacientes reais.
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+Figura 5 – Aplicação dos Dados Sintéticos
+Fonte: elaborado pel a autor a (2025)
+Exemplos práticos:
+• Treinamento de carros autônomos: os dados sintéticos são usados para treinar carros autônomos, simulando diferentes cenários de trânsito sem colocar em risco vidas humanas , acelera ndo o desenvolvimento de carros mais seguros e permitindo que os algoritmos aprendam a lidar com situações complexas sem a necessidade de testes reais .
+• Pesquisas médicas: a criação de dados sintéticos de pacientes permite realizar pesquisas médicas preservando a privacidade dos pacientes reais.
+Por exemplo, pesquisadores podem usar dados sintéticos para testar novos medicamentos ou tratamentos, garantindo que os dados dos pacientes reai s permaneçam protegidos .
+• Empresas e organizações: empresas e organizações utilizam dados sintéticos para diferentes fins. Por exemplo, a American Express e o JP
+Morgan Chase usam dados sintéticos para treinar modelos de detecção de fraudes, enquanto o Depa rtamento de Defesa dos EUA utiliza dados sintéticos para simulações e treinamentos.
+Desafios no uso de dados sintéticos
+Embora os dados sintéticos sejam projetados para imitar os dados reais, eles podem não capturar todas as nuances e complexidades dos dad os originais ,
+podendo comprometer a precisão dos modelos de machine learning treinados com
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras esses dados. Por exemplo, ao gerar dados sintéticos para simular transações financeiras, pode ser difícil replicar completamente os padrões de comportamento humano, como fraudes complexas. Como resultado, os modelos treinados podem não ser tão eficazes na detecção de fraudes reais. Essa limitação na qualidade dos dados sintéticos é um desafio significativo, pois pode impactar a validade e a aplicabilidade das análises e previsões baseadas nesses dados.
+A criação de dados sintéticos realistas requer um alto nível de expertise em inteligência artificial e aprendizado de máquina, bem como recursos computacionais significativos. Desenvolver algoritmos que possam gerar dado s sintéticos de alta qualidade é um processo complexo e intensivo . Por exemplo, o uso de redes adversárias generativas para criar imagens realistas envolve treinamento contínuo de dois modelos de IA, o que demanda tempo, conhecimento técnico e infraestrutu ra computacional robusta.
+Além disso, a aceitação dos dados sintéticos em contextos regulamentados pode ser desafiadora. Regulamentações como o GDPR e a LGPD podem exigir auditorias detalhadas para comprovar que os dados sintéticos são seguros e eficazes. As organizações precisam demonstrar que os dados sintéticos não comprometem a privacidade e que mantêm a integridade dos dados originais ,
+envolve ndo processos de validação rigorosos e adiciona ndo uma camada adicional de complexidade e custo para a implementação de soluções baseadas em dados sintéticos. Por e xemplo , um banco que deseja usar dados sintéticos para análise de risco de crédito pode precisar passar por auditorias regulamentares para gar antir que os dados atendem aos padrões de privacidade e segurança exigidos pelas autoridades financeiras.
+Ética e transparência no uso de dados sintéticos
+Ética no uso de dados sintéticos significa garantir que a criação, o compartilhamento e a aplicação desses dados respeitem os direitos individuais,
+evitem discriminação e promovam o bem coletivo. Já a t ransparência no uso d os referidos dados significa que as organizações devem informar claramente quando utilizam esses dados, explicar como eles foram gerados e detalhar suas aplicações.
+Dados sintéticos podem ser utilizados para fins benéficos, como pesquisa médica e desenvolvimento de novas tecnologias, mas também podem ser
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras empregados para criar deepfakes e manipulações enganosas. É fundamental garantir que essa tecnologia não seja utilizada para fins maliciosos , como a criação de vídeos falsos de figuras públicas ou a disseminação de desinformação. A criação de deepfakes de políticos para influenciar eleições ou difamar oponentes é um exemplo de uso irresponsável de dados sintéticos. A disseminação de notícias falsas geradas por IA também representa uma ameaça à sociedade .
+Além disso, a s organizações devem ser transparentes com seus stakeholders (clientes, funcionários, parceiros etc.) sobre o uso de dados sintéticos.
+Informar quando e como os dados sintéticos estão sendo utilizados promove a confiança e evita mal -entendidos. A falta de transparência pode gerar desconfiança e prejudicar a reputaç ão da organização. Uma empresa que utiliza dados sintéticos para treinar um sistema de atendimento ao cliente , por exemplo, deve informar seus clientes sobre essa prática, explicando como os dados sintéticos protegem sua privacidade e garantem a qualidade do serviço.
+Portanto, a pesar dos benefícios que essa tecnologia oferece, como a proteção da privacidade, é crucial utilizá -la de forma responsável e transparente para evitar consequências negativas e garantir a confiança dos stakeholders.
+Diante do exposto , fica claro que , em uma era dominada pela ciência de dados, a privacidade se tornou uma preocupação central. Os dados sintéticos emergem como uma solução inovadora para es se desafio, permitindo que empresas e pesquisadores explorem o poder dos dados sem c omprometer informações confidenciais. Com o aumento das regulamentações de proteção de dados e a crescente conscientização sobre a privacidade, a utilização de dados sintéticos torna -se cada vez mais crucial.
+Apesar de ainda existirem desafios técnicos e é ticos a serem superados, os dados sintéticos representam um caminho promissor para conciliar a inovação tecnológica com a proteção da privacidade. É responsabilidade de todos, desde as organizações até os profissionais da área, garantir que essa ferramenta seja utilizada de forma ética e transparente, construindo um futuro em que a tecnologia e a privacidade caminhem juntas em harmonia.
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+### Mercado, Cases E Tendênc Ias
+Treinamento de Assistentes Virtuais
+A Amazon utiliza dados sintéticos para aprimorar o sistema de linguagem d a
+Alexa, permitindo que a assistente virtual compreenda e responda a uma variedade maior de comandos sem comprometer dados reais de usuários
+Treinamento de Inteligência Artificial
+Em janeiro de 2025, Elon Musk afirmou que a indústria de inteligência artificial atingiu um limite no uso de dados reais para treinamento de modelos, destacando que o fu turo da IA está nos dados sintéticos — informações geradas pelos próprios modelos para ampliar seus processos de aprendizado .
+Pesquisa clínica
+A farmacêutica Roche utiliza dados médicos sintéticos em pesquisas clínicas para desenvolver e testar novos tratamentos, assegurando a conformidade com regulament ações de privacidade e protegendo dados de pacientes .
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+## O Que Você Viu Nes Ta Aula ?
+Ao concluirmos esta aula, esperamos que você tenha compreendido como a proteção da privacidade é um dos pilares fundamentais em uma sociedade cada vez mais orientada por dados. A utilização de dados sintéticos se apresenta como uma solução inovadora, equilibrando a necessidade de inovação e análise com o respeito aos direitos individuais e a conformidade com legislações .
+Mais do que uma ferramenta tecnológica , os dados sintéticos representam um compromisso ético com a proteção das informações e com a construção de um futuro digital mais seguro. Com o conhecimento adquirido hoje, você poderá identificar e implementar práticas que aliam inovação e proteção de da dos,
+contribuindo para uma sociedade onde a ciência de dados evolui de forma ética e responsável.
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+### Referências
+BRASIL. Lei nº 13.709, de 14 de agosto de 2018 . Lei Geral de Proteção de Dados
+Pessoais (LGPD). Disponível em: http://www.planalto.gov.br/ccivil_03/_ato2015 -
+2018/2018/lei/L13709.htm . Acesso em: 11 jun 2025.
+G1. Equifax, empresa de crédito dos EUA, sofre ataque hacker e dados de 143 milhões de pessoas sã o expostos . Disponível em:
+https://g1.globo.com/tecnologia/noticia/equifax -empresa -de-credito -dos-eua-sofre -
+ataque -hacker -e-dados -de-143-milhoes -de-pessoas -sao-expostos.ghtml . Acesso em: 11 jun 2025.
+G1. Yahoo afirma que ciberataque de 2013 afetou todas as 3 bilhões de contas de usuários . Disponível em: https://g1.globo.com/tecnologia/noticia/yahoo -afirma -
+que-ciberataque -de-2013 -afetou -todas -as-3-bilhoes -de-contas -de-usuarios.ghtml .
+Acesso em: 11 jun 2025.
+GDPR. General Data Protection Regulation . Disponível em: https://eur -
+lex.europa.eu/legal -content/EN/TXT/?uri=CELEX%3A32016R0679 . Acesso em: 11 jun 2025.
+GOODFELLOW, I; et al . Generative adversarial nets . In: Advances i n Neural
+Information Processing Systems , 2014. p. 2672 -2680.
+IBM WATSON HEALTH. Uso de dados sintéticos em saúde . Disponível em:
+https://www.ibm.com/mysupport/s/topic/0TO50000000226hGAA/watson -platform -for-
+health . Acesso em: 11 jun 2025.
+SOLOVE, D. Digital person: Technology and privacy in the information age .
+Nova Iorque: NYU Press, 2008.
+SYNTHO. Synthetic data platform . Disponível em: https://www.syntho.ai/ . Acesso em: 11 jun 2025.
+THE GUARDIAN. Cambridge Analytica: how did it turn clicks into votes?
+Disponível em: https://www.theguardian.com/news/2018/mar/17/cambridge -
+analytica -facebook -influence -us-election . Acesso em: 11 jun 2025.
+ZUBOFF, S. The age of surveillance capitalism: The fight for a human future at the new frontier of power . Nova Iorque: PublicAffairs, 2019.
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras
+### Palavras -Chave
+Privacidade. Ciência de Dados . Dados Sintéticos. Big Data.
+Privacidade na Era da Ciência de Dados: O Papel dos Dados Sintéticos em Análises Seguras

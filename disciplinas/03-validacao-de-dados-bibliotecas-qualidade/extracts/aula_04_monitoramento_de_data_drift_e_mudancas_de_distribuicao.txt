@@ -1,0 +1,180 @@
+Monitoramento de Data Drift e Mudanças de Distribuição
+## | Aula 04 - Machine Learning Engineering
+
+## Fase 4 Monitoramento De Data Drift E
+
+### Mudanças De Distribuição
+Monitoramento de Data Drift e Mudanças de Distribuição
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Te Ndências
+
+## O Que Você Viu Nesta Aula? Referências ………………………………………………………………………15
+Monitoramento de Data Drift e Mudanças de Distribuição
+### O Que Vem Por Aí?
+Imagine o seguinte cenário: sua equipe treinou um modelo de Machine
+Learning para prever a probabilidade de churn de clientes. No primeiro mês, os resultados são excelentes — métricas de acurácia e recall acima de 90%,
+stakeholders satisfeitos, modelo em produção. Três meses depois, porém, sem que ninguém tenha alterado uma única linha de código, o modelo começa a errar cada vez m ais. As predições ficam imprecisas, os alertas de churn deixam de fazer sentido, e a confiança no sistema começa a desmoronar. O que aconteceu? A resposta mais provável está em um fenômeno silencioso e frequentemente invisível chamado Data Drift.
+Os dados que alimentam o modelo em produção mudaram de distribuição em relação aos dados com os quais ele foi treinado. Nesta aula, vamos investigar por que isso acontece, como detectar essas mudanças antes que causem danos reais e quais estratégias adotar para ma nter modelos saudáveis e confiáveis ao longo do tempo.
+Ao longo desta aula, você vai entender a taxonomia completa de drift —
+covariate shift, prior probability shift e concept drift —, dominar os principais testes estatísticos utilizados para detectar mud anças de distribuição
+(Kolmogorov -Smirnov, Chi -Square, Population Stability Index e divergência de
+Jensen -Shannon), aprender a implementar pipelines de monitoramento com sliding windows e explorar ferramentas como Evidently AI e MLflow para automatizar ess e processo em ambientes de produção. O monitoramento de drift é uma das competências mais valorizadas em times de MLOps modernos, e ao final desta aula você terá as ferramentas teóricas e práticas para aplicá -lo com confiança. Vamos nessa!
+Monitoramento de Data Drift e Mudanças de Distribuição
+### Hands On
+Nesta s videoaula s, vamos colocar a mão na massa e implementar um pipeline completo de detecção e monitoramento de Data Drift. O cenário: somos
+Engenheiros de ML em uma plataforma de e -commerce que colocou em produção, há 6 semanas, um modelo de predição de churn, e usaremos um único dataset sintético ao longo de todo o notebook.
+Começamos criando dois conjuntos com NumPy e pandas — df_ref
+(1.000 clientes de referência) e df_prod (600 clientes de produção ao longo de 6 semanas) —, em que um parâmetro tempor al t (0 no início, 1 na semana 6)
+controla a intensidade do drift: as features idade, gasto_mensal e nota_satisfacao se deslocam, dias_sem_compra e compras_90d permanecem estáveis, o plano migra para o básico e a taxa de churn cresce de 12% para 40%.
+Em s eguida, ilustramos os três tipos de drift com o mesmo dataset —
+Covariate Shift no histograma de gasto_mensal, Prior Probability Shift na taxa de churn semanal e Concept Drift na relação invertida entre gasto e churn — e fazemos a análise visual das distri buições de referência vs. produção
+(histogramas para numéricas, barras agrupadas para categóricas).
+Passamos então aos testes estatísticos: o KS ( ks_2samp , p-value < 0,05 indica drift , sem assumir normalidade), o PSI (função calcular_psi sobre histogramas: < 0,10 estável, 0,10 –0,20 moderado, ≥ 0,20 retreinar), a
+Divergência de Jensen -Shannon (simétrica e normalizada em [0, 1]) e o Chi -
+Quadrado para as features categóricas. Depois, dete ctamos drift temporal em fluxo com o ADWIN (ADaptive WINdowing) da biblioteca River — janela de tamanho variável com delta=0.002 , que dispara drift_detected quando há diferença estatística entre sub -janelas —, geramos o relatório automático do
+Evidently AI com Report(metrics=[DataDriftPreset()]) (que escolhe
+KS/Wasserstein para numéricas e Chi -Square para categóricas e devolve, por feature, teste, score, limiar e veredito) e, por fim, rastreamos cada execução de monitoramento como um run do MLflow ( set_trac king_uri('sqlite:///mlflow.db') ,
+set_experiment , log_metric para KS/PSI/JS por feature e search_runs para consultar o histórico auditável). O resultado é o ciclo completo de monitoramento
+Monitoramento de Data Drift e Mudanças de Distribuição de drift: dataset sintético, análise visual, testes estatísticos, de tecção online com
+ADWIN, relatório com Evidently e histórico no MLflow.
+O notebook está disponível no repositório da disciplina e pode ser executado no Google Colab ou em um Jupyter Notebook local. Além de NumPy,
+pandas, SciPy e Matplotlib, instale as bibl iotecas de monitoramento com pip install river evidently mlflow (o código usa a API evidently.legacy do Evidently e o backend SQLite do MLflow 3.x, recomendado em substituição ao backend de arquivos descontinuado). Execute as células em ordem — df_ref e df_prod alimentam todas as etapas seguintes — e, ao final, abra a UI do MLflow apontando para o mlflow.db para visualizar as métricas de drift registradas por feature, como mostrado na videoaula.
+Monitoramento de Data Drift e Mudanças de Distribuição
+### Saiba Mais
+Por que os Modelos Degradam em Produção?
+O mundo re al é dinâmico — clientes, economia, políticas e até a infraestrutura de coleta mudam — e, quando os dados recebidos em produção divergem significativamente dos de treinamento, ocorreu uma mudança de distribuição, ou distribution shift: a principal causa de degradação silenciosa de modelos. Formalmente, a distribuição conjunta P(X,Y) — onde X representa as features de entrada e Y a variável -alvo — pode ser diferente entre treinamento e produção: quando Ptrain (X,Y) difere de Pprod (X,Y), temos um dataset sh ift, e a maneira como essa diferença se manifesta determina o tipo de drift enfrentado.
+Considere um modelo de scoring de crédito treinado em período de estabilidade: numa recessão, o perfil dos solicitantes muda (covariate shift), a inadimplência aumenta (prior probability shift) e a relação entre características do cliente e inadimplência se altera (concept drift) — o modelo se torna perigosamente enganoso, com predições confiantes e sistematicamente erradas. Rabanser, Gunnemann e Lipton (2019) mostraram empiricamente que mesmo pequenas mudanças de distribuição degradam significativamente classificadores modernos, sobretudo em alta dimensionalidade — e, como nas data cascades , um drift não detectado se propaga pelo pipeline até decisões de negócio equivoca das. Cada tipo de drift tem causas, métodos de detecção e implicações distintas, e a formalização matemática explica por que certos testes são mais adequados a cada situação.
+Covariate Shift (Data Drift)
+O Covariate Shift, ou Data Drift/Feature Drift, ocor re quando a distribuição marginal das features de entrada P(X) muda, mas a relação condicional P(Y|X)
+permanece — formalmente, Ptrain (X) ≠ Pprod (X), porém Ptrain (Y|X) =
+ Pprod (Y|X). O mecanismo que conecta entradas à saída não mudou; a população de entradas é que difere da vista no treinamento (um modelo de diagnóstico treinado com adultos de meia -idade cujo hospital passa a atender idosos). É o
+Monitoramento de Data Drift e Mudanças de Distribuição tipo mais fácil de detectar, pois basta comparar as distribuições de entrada, sem labels de produção — para isso s ervem KS, PSI e JS Divergence.
+Prior Probability Shift (Label Drift)
+O Prior Probability Shift ocorre quando a distribuição da variável -alvo P(Y)
+muda, mas a condicional P(X|Y) permanece estável — formalmente, Ptrain (Y) ≠
+ Pprod (Y), porém Ptrain (X|Y) = Pprod (X|Y). É relevante em classificação, quando o balanceamento entre classes muda: um modelo de fraude treinado com taxa de 0,1% que, numa Black Friday, enfrenta 1% ou mais e gera menos alertas do que o necessário. Sua detecção exige as labels ve rdadeiras (ground truth) de produção, muitas vezes disponíveis com atraso (em crédito, a inadimplência só é conhecida meses depois) — o label delay torna o monitoramento retrospectivo,
+ao contrário do covariate shift, monitorável em tempo real.
+Concept Dri ft
+O Concept Drift é o mais desafiador e destrutivo: a relação condicional
+P(Y|X) entre features e target se altera — o conceito aprendido deixou de valer,
+e o modelo segue predizendo com confiança, mas sistematicamente errado (na pandemia de COVID -19, mod elos de demanda de varejo falharam mesmo com preço e sazonalidade inalterados). Gama et al. (2014) classificam seus padrões temporais em quatro categorias: abrupto/súbito (uma nova regulamentação muda de imediato os critérios de crédito), gradual (transiçã o lenta entre conceitos), incremental (pequenas mudanças que se acumulam, como a inflação) e recorrente (conceitos que voltam periodicamente, como a sazonalidade); Webb et al. (2016) expandiram a taxonomia com métricas de magnitude, velocidade e duração.
+Tipo de Drift Exemplo Prático Método de Detecção
+Covariate Shift (Data Drift) Perfil demográfico de clientes muda após nova campanha de marketing Testes estatísticos em features: KS,
+PSI, JS, Chi -Square
+Monitoramento de Data Drift e Mudanças de Distribuição
+Tipo de Drift Exemplo Prático Método de Detecção
+Prior Probability Shift (Label Drift) Taxa de fraude aumenta de 0,1% para 1% durante crise econômica Monitorar distribuição do target;
+requer labels de produção
+Concept Drift Pandemia altera padrões de consumo; nova regulamentação muda critérios de crédito Monitorar métricas do modelo
+(acurácia, F1, AUC) ao longo do tempo
+Tabela 1 — Taxonomia dos tipos de drift em sistemas de Machine Learning
+Fonte: Elaborado pelo autor (2026) com base em Moreno -Torres et al. (2012) e Gama et al.
+(2014)
+Causas Comuns de Data Drift em Sistemas de ML em Produção
+As causas raiz do drift se dividem em duas classes com mitigações diferentes: as mudanças intrínsecas ao ambiente (natural drift) demandam re -
+treino do modelo; as induzidas pela infraestrutura (technical drift) muitas vezes se corrigem ajustando o pipeline de dados. O natural drift inclui sazonalidade e tendências, eventos macroeconômicos (recessões, juros, pandemias),
+mudanças regulatórias (LGPD, GDPR) e a evolução comportamental dos usuários. O technical drift, mais sutil, i nclui alterações em pipelines de ETL, bugs em feature engineering, atualizações em APIs de terceiros (como a escala de um score de bureau de crédito), problemas de encoding e mudanças em schemas — e pode passar despercebido por longos períodos, degradando o modelo sem que ninguém perceba a causa; por isso o monitoramento automatizado de distribuições é uma camada essencial de proteção em MLOps.
+Testes Estatísticos para Detecção de Drift: Fundamentos Teóricos
+A base teórica é a de testes de hipóteses: dados dois conjuntos
+(referência e produção), testa -se a hipótese nula H0 de que provêm da mesma distribuição; rejeitá -la a um nível de significância pré -definido (tipicamente α =
+0.05) indica drift. A escolha do teste depende do tipo de feature, do tamanho da amostra e do contexto.
+Monitoramento de Data Drift e Mudanças de Distribuição
+Teste de Kolmogorov -Smirnov (KS Test)
+O teste de Kolmogorov -Smirnov, não -paramétrico, calcula a distância máxima entre as funções de distribuição cumulativa empíricas das duas amostras: D = sup|Fref(x) − Fprod (x)| , onde Fref e Fprod são as ECDFs
+(Empirical Cumulative Distribution Function) de referência e produção. D varia de 0 (idênticas) a 1 (disjuntas), e o teste é sensível a mudanças de localização e de forma, sem assumir forma paramétrica. A Evidently AI, em estudo comparativo, m ostrou que o KS gera mais falsos positivos em amostras muito grandes, em que diferenças significativas podem ser irrelevantes; por isso,
+complemente o p -value com a estatística D, com thresholds dependentes do contexto (D > 0.1 já preocupa em crédito; D > 0.2 em e -commerce).
+Population Stability Index (PSI): A Métrica da Indústria Financeira
+O Population Stability Index nasceu na indústria financeira, onde monitora scorecards de crédito desde os anos 1990, e foi adotado em MLOps como métrica geral de drift: compara as proporções de observações em bins definidos pela referência, PSI = Σ[(Pprod (i) − Pref(i)) × ln(Pprod (i) / Pref(i))] , onde Pref(i)
+e Pprod (i) são as proporções no bin i para referência e produção. A interpretação é consolidada (Tabela 2): PSI < 0.1, estabilidade; 0.1 a 0.2, mudança moderada a investigar; > 0.2, mudança significativa que pode exigir re -treino. Sua vantagem é a interpretabilidade e o valor escalar único que facilita alertas; a limitação, a sensibilidade ao número de bins (use 10 a 20, cada um com pelo menos 5% da amostra de referência).
+Faixa de PSI Interpretação Ação Recomendada
+PSI < 0.1 Sem mudança significativa Nenhuma ação; manter monitoramento regular
+0.1 ≤ PSI < 0.2 Mudança moderada Investigar causas; aumentar frequência de monitoramento
+PSI ≥ 0.2 Mudança significativa Retreinar modelo; investigar pipeline de dados
+Tabela 2 — Faixas de interpretação do Population Stability Index (PSI)
+Fonte: Elaborado pelo autor (2026)
+Monitoramento de Data Drift e Mudanças de Distribuição
+Teste Chi -Square e Divergência de Jense n-Shannon
+O teste Chi -Square é a escolha para variáveis categóricas: compara as frequências observadas em cada categoria da produção com as esperadas pela referência, χ² = Σ[(Oi − Ei)² / Ei] , onde Oi são as frequências observadas e Ei as esperadas; um p -value baixo indica que as distribuições diferem. Assume frequências esperadas > 5 por categoria — para categorias raras, agrupe -as ou use o teste exato de Fisher. Já a Divergência de Jensen -Shannon, métrica de teoria da informação derivada da Divergência de Kullback -Leibler (KL), é simétrica — JSD(P||Q) = JSD(Q||P) —, sempre finita e limitada a [0, 1] com logaritmo na base 2: JSD(P||Q) = (1/2)×KL(P||M) + (1/2)×KL(Q||M) , onde
+M = (1/2)×(P + Q) é a distribuição média e KL(P||Q) = Σ[P(x) × log(P(x)/
+Q(x))] é a divergênci a de KL. Ao usar a distribuição média M como intermediária,
+a JS evita a divergência infinita da KL quando uma distribuição atribui probabilidade zero a um evento possível na outra; JSD acima de 0.1 tipicamente indica drift significativo.
+Teste/Métrica Tipo de Feature Vantagem Principal Limitação Principal
+KS Test Numérica contínua Não-paramétrico;
+sensível a forma e localização Falsos positivos em amostras muito grandes
+PSI Numérica (discretizada) Interpretável;
+amplamente adotado na indústria financeira Dependente da escolha do número de bins
+Chi-Square Categórica Robusto para variáveis discretas;
+implementação simples Requer frequências mínimas por categoria
+(≥5)
+JS Divergence Numérica e categórica Simétrica, finita,
+comportamento estável em todos os cenários Thresholds menos consolidados que PSI na indústria
+Tabela 3 — Comparação dos principais testes e métricas de detecção de drift
+Fonte: Elaborado pelo autor (2026)
+Monitoramento Contínuo com Sliding Windows
+Em pro dução os dados chegam como fluxo (data stream), e a técnica mais usada para monitorar drift é a de janelas deslizantes (sliding windows): um conjunto de referência fixo — os dados de treinamento ou um período estável
+(baseline) — é comparado periodicamente com uma janela móvel de dados
+Monitoramento de Data Drift e Mudanças de Distribuição recentes. O tamanho da janela é um trade -off entre sensibilidade e estabilidade:
+muito pequena, reage a flutuações pontuais (falsos positivos); muito grande, dilui mudanças locais e atrasa a detecção. O ADWIN (ADaptive WINdow ing), de Bifet e Gavalda (2007), resolve o dilema ajustando o tamanho automaticamente —
+cresce quando os dados são estáveis e encolhe quando detecta mudança,
+localizando -a com precisão —, com falsos positivos controlados e atraso mínimo;
+está na biblioteca River (antiga scikit -multiflow). Na prática, o pipeline é um job agendado (cron, Airflow, Databricks Job) que compara a janela atual com a referência, registra os resultados (MLflow, Grafana) e dispara alertas ao ultrapassar thresholds; monitorar a mesma feature em múltiplas escalas (hora,
+dia, semana, mês) reduz falsos positivos e negativos.
+Estratégias de Mitigação de Drift
+Detectar drift é metade do problema; a outra é reagir, e Gama et al. (2014)
+agrupam as estratégias em três abordagens. O re-treino p eriódico é a mais direta e adotada: retreinar em intervalos fixos ou quando thresholds são ultrapassados, de forma total ou incremental (fine -tuning); é simples, mas custa computação e exige CI/CD que valide o novo modelo antes do deploy — um re -
+treino apr essado pode ser pior que o anterior. O aprendizado online atualiza o modelo a cada observação ou pequeno lote (Regressão Logística com SGD,
+Perceptron, Hoeffding Trees), com adaptação rápida e baixo custo, mas risco de
+'esquecer' padrões válidos diante de ruído ou drift abrupto — o stability -plasticity dilemma. Os ensembles adaptativos combinam modelos de períodos diferentes, ponderando mais os recentes (Dynamic Weighted Majority, Adaptive
+Random Forest), e equilibram estabilidade e adaptabilidade em concep t drift gradual e recorrente. Além dos algoritmos, práticas organizacionais são essenciais: runbooks, SLAs de resposta a alertas e rollback para versões anteriores do modelo.
+Ferramentas: Evidently AI e MLflow
+O Evidently AI é um framework open -source de referência para detecção de drift, baseado em Reports (análises descritivas com visualizações interativas,
+Monitoramento de Data Drift e Mudanças de Distribuição para exploração e comunicação com stakeholders) e Test Suites (verificações passa/falha para pipelines de CI/CD). O DataDriftPreset , usado no HANDS ON,
+aplica automaticamente o teste mais adequado a cada feature (KS para numéricas com mais de 1.000 observações, Wasserstein para amostras menores, Chi -Square para categóricas com poucas categorias, JS Divergence para alta cardinalidade), integra -se ao MLflow e já cobre o monitoramento de sistemas baseados em LLMs (RAGs, chatbots).
+O MLflow, plataforma open -source mantida pela Databricks para o ciclo de vida de ML, registra as métricas ao longo do tempo: cada execução é um 'run'
+com métricas (KS, PSI, JS), parâmetros e artefatos, formando séries temporais que revelam features em deterioração gradual e correlacionam drift com a performance do modelo; o Model Registry versiona os modelos re -treinados com transições controladas entre estágios (staging, production, archived).
+Monitoramento de Data Drift e Mudanças de Distribuição
+### Mercado, Cases E Tendências
+O monitoramento de Data Drift deixou de ser um tema puramente acadêmico para se tornar uma necessidade operacional crítica em organizações que dependem de modelos de ML em produção. A seguir, destacamos alguns casos reais e tendências que permitem aprofundar -se no tema e conectar o conteúdo teórico com o mercado de trabalho em MLOps.
+A Netflix utiliza extensivamente monitoramento de drift em seus modelos de recomendação, onde mudanças sazonais no comportamento dos usuários podem degradar rapidamente a qualidade das sugestões. Seu time de ML
+Engineering implementou um sistema de monitor amento contínuo que detecta drift em features de comportamento e dispara re -treinos automáticos quando thresholds são ultrapassados, conforme descrito em publicações no Netflix Tech
+Blog. No setor financeiro, a indústria de scoring de crédito foi pioneira na adoção do PSI como métrica padrão de estabilidade de modelos. Regulamentações como a SR 11 -7 do Federal Reserve dos EUA exigem que instituições financeiras monitorem continuamente a estabilidade de seus modelos de risco,
+tornando a detecção de drift não apenas uma boa prática, mas uma obrigação regulatória com implicações legais.
+A convergência entre monitoramento de drift para modelos tradicionais de
+ML e avaliação de qualidade para sistemas baseados em LLMs é uma das tendências mais relevantes do momen to. Ferramentas como Evidently AI e
+MLflow já expandiram seus presets para incluir métricas de avaliação de RAGs e chatbots. O conceito de data observability, que integra monitoramento de qualidade de dados, drift e performance em uma visão unificada, está se tornando padrão na indústria. A integração de Shapley values (SHAP) no monitoramento de drift permite identificar quais features específicas estão contribuindo mais para a mudança de distribuição, adicionando uma camada de interpretabilidade ao process o de monitoramento.
+Monitoramento de Data Drift e Mudanças de Distribuição
+## O Que Você Viu Nesta Aula?
+Nesta aula, mergulhamos no desafio do monitoramento de Data Drift e mudanças de distribuição em sistemas de ML em produção. Compreendemos que modelos não existem em ambientes estáticos: o mundo real muda, e os modelos precisam ser monitorados continuamente para garantir que suas predições permaneçam confiáveis ao longo do tempo. Estudamos a taxonomia completa de drift — Covariate Shift, Prior Probability Shift e Concept Drift —,
+suas causas naturais e técnica s, e os principais testes estatísticos para detecção: KS Test, Chi -Square, PSI e JS Divergence, cada um com suas propriedades matemáticas, vantagens e limitações.
+No Hands On , implementamos cada um desses testes na prática, criamos pipelines de monitoramen to com sliding windows e integramos todo o processo com ferramentas de produção como Evidently AI e MLflow . A seguir ,
+aprofundamos os fundamentos teóricos de distribution shift, exploramos as estratégias de mitigação (re -treino periódico, online learning, ensembles adaptativos) e discutimos a arquitetura de monitoramento em produção. Revise os materiais de apoio e pratique os códigos — a habilidade de monitorar e manter modelos em produção é uma das mais valorizadas em times modernos de
+MLOps.
+Monitoramento de Data Drift e Mudanças de Distribuição
+### Referência S
+HUYEN, C. Designing Machine Learning Systems: An Iterative Process for
+Production -Ready Applications . Sebastopol: O'Reilly Media, 2022. ISBN: 978 -
+1098107963.
+LISTENDATA. Population Stability Index (PSI) and Characteristic Analysis .
+Listendata, maio 2015. Disponível em:
+https://www.listendata.com/2015/05/population -stability -index.html . Acesso em:
+27 ago. 2026.
+MORENO -TORRES, J. G. et al. A Unifying View on Dataset Shift in
+Classification . Pattern Recognition, v. 45, n. 1, p. 521 -530, 2012. DOI:
+10.1016/j.patcog.2011.06.019.
+RABANSER, S.; GÜNNEMANN, S.; LIPTON, Z. Failing Loudly: An Empirical
+Study of Methods for Detecting Dataset Shift . In: ADVANCES IN NEURAL
+INFORM ATION PROCESSING SYSTEMS (NeurIPS), 32. Vancouver: NeurIPS,
+2019.
+SAMBASIVAN, N. et al. 'Everyone wants to do the model work, not the data work': Data Cascades in High -Stakes AI . In: PROCEEDINGS OF THE 2021
+CHI CONFERENCE ON HUMAN FACTORS IN COMPUTING SYST EMS. New
+York: ACM, 2021. DOI: 10.1145/3411764.3445518.
+SHIMODAIRA, H. Improving Predictive Inference under Covariate Shift by
+Weighting the Log -Likelihood Function . Journal of Statistical Planning and
+Inference, v. 90, n. 2, p. 227 -244, 2000. DOI: 10.1016 /S0378 -3758(00)00115 -4.
+Monitoramento de Data Drift e Mudanças de Distribuição
+### Palavras -Chave
+Data Drift. Monitoramento. Mudanças de Distribuição.
+Monitoramento de Data Drift e Mudanças de Distribuição

@@ -1,0 +1,236 @@
+Drift em Embeddings e Testes de Duas Amostras
+## | Aula 05 - Machine Learning Engineering
+
+## Fase 4 Drift Em Embeddings
+
+### E Testes De Duas Amostras
+Drift em Embeddings e Testes de Duas Amostras
+### Sumário
+
+### O Que Vem Por Aí? Hands On
+
+### Saiba Mais Mercado, Cases E Tendências
+
+## O Que Você Viu Nesta Aula? Referências
+Drift em Embeddings e Testes de Duas Amostras
+### O Que Vem Por Aí ?
+Imagine que um sistema de machine learning que monitora tópicos populares nas redes sociais começa a falhar justamente no momento em que acontece um grande evento mundial. Os posts sobre política disparam repentinamente e dominam as discussões online, enqu anto outros assuntos, antes frequentes, agora ficam em segundo plano. Os modelos de classificação de tópicos, treinados com dados de semanas atrás, passam a apresentar quedas de desempenho e a oferecer recomendações desatualizadas ou imprecisas. Esse cenár io hipotético, porém realista, ilustra um dos maiores desafios em sistemas de aprendizado de máquina em produção: o fenômeno do concept drift ou deriva de conceito, quando os dados
+“mudam de ideia” com o tempo e os modelos já não conseguem acompanhar as novas tendências.
+Nesta aula, exploraremos em detalhe o problema do drift em embeddings e testes de duas amostras – uma abordagem fundamental para detectar automaticamente essas mudanças sutis ou abruptas nos dados. Veremos por que os modelos de machine lear ning são sensíveis a alterações no significado ou na distribuição dos dados de entrada, como no exemplo acima, e como representações em vetores (embeddings) podem nos ajudar a identificar e reagir a essas mudanças antes que prejudiquem a performance. Você aprenderá a utilizar testes estatísticos de duas amostras para comparar distribuições, entenderá os conceitos de drift superficial vs. drift semântico e será apresentado a técnicas modernas para monitorar e adaptar modelos de ML em cenários de rápida evolu ção. Preparado (a)?
+Então vamos mergulhar nesse tópico essencial para garantir que nossos modelos continuem confiáveis mesmo em um mundo em constante mudança.
+Drift em Embeddings e Testes de Duas Amostras
+### Hands On
+Nesta seção , vamos colocar em prática os conceitos discutidos sobre detecção de drift em embeddings de textos, demonstrando como aplicá -los em um ambiente de programação. Iniciaremos com uma breve explicação sobre o que será feito nas videoaulas e os recursos utilizados. Em seguida,
+apresentaremos snippets de código em Python ilustrando etap as-chave: desde a obtenção de embeddings de texto até a aplicação de testes estatísticos de duas amostras para detectar drift. Ao final, você terá uma visão prática de como implementar monitores de data drift e poderá experimentar por conta própria,
+seguin do os links para o código completo no GitHub. Certifique -se de ter um ambiente Python configurado com as bibliotecas necessárias (por exemplo, transformers, scikit -learn, numpy e scipy) para acompanhar os exemplos.
+Código completo disponível no GitHub:
+Miyake -Diogo/9mlet -data-drift: Repositorio da disciplina de Data Drift (repositório contendo todos os códigos desta seção).
+Snippet 1 – obtenção de embeddings de texto
+Para detectar drifts em da dos não estruturados, primeiro precisamos representá -los numericamente. Conforme visto na seção teórica, isso é feito através dos embeddings, ou vetores de características que capturam o significado semântico do texto (Devlin et al., 2019). O código a segu ir ilustra como gerar embeddings usando um modelo pré -treinado de linguagem (BERT) para um conjunto de textos de exemplo. Esse processo é equivalente ao realizado durante o treinamento do modelo original e será fundamental para compararmos distribuições de dados em diferentes momentos.
+from transformers import BertTokenizer, BertModel import torch
+# Carrega modelo e tokenizador pré -treinados (BERT -base)
+tokenizer = BertTokenizer.from_pretrained('bert -base-
+uncased')
+model = BertModel.from_pretrained('bert -base-uncased')
+Drift em Embeddings e Testes de Duas Amostras
+# Exemplo de textos (dados de referência e dados novos)
+ref_texts = [
+ "The user posted about a local sports match.",
+ "The weather today is sunny with clear skies."
+]
+new_texts = [
+ "The election results shocked the nation.",
+ "Political debates are trending on social media."
+]
+# Tokeniza os textos e obtém embeddings (última camada
+oculta do BERT)
+def get_embeddings(texts):
+ inputs = tokenizer( texts, padding=True,
+truncation=True, return_tensors="pt")
+ with torch.no_grad():
+ outputs = model(**inputs)
+ # Usa o vetor de [CLS] como embedding (representação do texto inteiro)
+ return outputs.last_hidden_state[:, 0, :].numpy()
+emb_ref = get_embeddings(ref_texts)
+emb_new = get_embeddings(new_texts)
+print("Embedding de referência (shape):", emb_ref.shape)
+print("Embedding novos dados (shape):", emb_new.shape)
+Código -fonte 1 – extract_embeddings.py (Python)
+Fonte: Elaborado pelo autor (202 6)
+Após executarmos o código acima, obteremos matrizes emb_ref e emb_new contendo os vetores de embedding para cada texto da coleção de referência e da coleção recente, respectivamente. Cada l inha dessas matrizes é um vetor denso de alta dimensionalidade (a versão base do BERT gera vetores de 768 dimensões) que encapsula o conteúdo semântico de um documento ou frase. Observe como usamos um modelo pré -treinado (pre -trained) para extrair essas re presentações; essa prática reflete o que foi discutido na seção Saiba Mais,
+em que embeddings de modelos robustos (como o BERT) conseguem capturar mudanças sutis de linguagem e contexto ao longo do tempo (Devlin et al., 2019;
+Vaswani et al., 2017). Com os dados de referência e novos dados agora convertidos em embeddings numéricos, estamos prontos para analisar se houve mudança de distribuição. Em seguida, aplicaremos testes estatísticos de duas amostras para identificar evidências de drift.
+Drift em Embeddings e Testes de Duas Amostras
+Snippet 2 – Cálc ulo da Discrepância de Máxima Média (MMD):
+Um dos métodos mais poderosos para comparar distribuições de alta dimensionalidade é a Discrepância de Máxima Média (Maximum Mean
+Discrepancy – MMD) (Gretton et al., 2012). Conforme visto na teoria, o MMD é um teste de duas amostras que calcula a distância entre as distribuições de dois conjuntos de dados no espaço de reproducing kernel (no nosso caso, os espaços dos embeddings dos dados de referência e dos dados novos). O trecho de código a seguir computa o valor da estatística MMD usando um kernel Gaussiano (RBF) para nossos embeddings de exemplo. Esse valor servirá como indicador numérico do grau de diferença entre as distribuições dos embeddings. (Nota: em uma aplicação real, utilizaríamos bibliotecas especiali zadas ou amostragem permutatória para avaliar a significância estatística desse valor de MMD, mas aqui nos limitaremos ao cálculo bruto para fins ilustrativos.)
+import numpy as np from sklearn.metrics.pairwise import rbf_kernel
+# Função para calcular MMD ^2 com kernel RBF (gaussiano)
+def compute_mmd_rbf(X, Y, gamma=0.5):
+ KXX = rbf_kernel(X, X, gamma=gamma)
+ KYY = rbf_kernel(Y, Y, gamma=gamma)
+ KXY = rbf_kernel(X, Y, gamma=gamma)
+ mmd2 = KXX.mean() + KYY.mean() - 2 * KXY.mean()
+ return mmd2
+# Calcula MMD^2 entre os embeddings de referência e novos
+mmd_value = compute_mmd_rbf(emb_ref, emb_new, gamma=0.1)
+print(f"Valor de MMD^2 calculado: {mmd_value:.4f}")
+Código -fonte 2 – mmd_test.py (Python)
+Fonte: Elaborado pelo autor (2026)
+No código acima, definimos a função compute_mmd_rbf que calcula a MMD ao combinar informações intra -conjunto e inter -conjunto dos embeddings (Gretton et al., 2012). Utilizamos uma função kernel Gaussiana (RBF) com um parâmetro de largura (gamma), que determin a o grau de sensibilidade a diferenças locais entre os pontos dos dois conjuntos. O resultado impresso (mmd_value) representa a distância quadrática entre as distribuições dos embeddings dos dados de referência e dos dados recentes. Intuitivamente, quanto maior esse valor, mais discrepantes estão as distribuições, sugerindo a ocorrência de drift. Em uma
+Drift em Embeddings e Testes de Duas Amostras situação real, compararíamos mmd_value com um limiar ou calcularíamos um p-
+value (por exemplo, via simulações de permutação) para decidir se o drift é estat isticamente significativo. Assista ao s vídeos desta aula para ver a execução completa do cálculo de MMD e a interpretação dos resultados obtidos.
+Snippet 3 – Aplicando o Teste Kolmogorov -Smirnov (KS):
+Para compreender métodos mais clássicos, vamos também aplicar o Teste de
+Kolmogorov -Smirnov de duas amostras em um cenário simplificado. O teste KS verifica se há diferença significativa entre duas distribuições unidimensionais,
+comparando suas funções de distribuição acumulada (Massey, 1951). Embora nossos dados de texto sejam vetoriais (768 dimensões por embedding), podemos,
+para fins de ilustração, considerar apenas uma dimensão ou alguma estatística agregada (por exemplo, a norma do vetor). O código a s eguir realiza o teste KS na primeira dimensão dos nossos embeddings de exemplo, retornando a estatística D e o p-value. Esse p-value indica a probabilidade de observarmos uma diferença tão grande entre as distribuições caso elas fossem, na verdade, a mesma
+– um valor baixo sugere forte evidência de que as distribuições são diferentes (drift).
+from scipy.stats import ks_2samp
+# Seleciona a primeira dimensão dos embeddings de
+referência e novos ref_dim1 = emb_ref[:, 0]
+new_dim1 = emb_new[:, 0]
+# Aplica o teste KS de duas amostras nessa dimensão
+D_stat, p_value = ks_2samp(ref_dim1, new_dim1)
+print(f"Estatística D do KS: {D_stat:.3f}")
+print(f"p -value: {p_value:.3f}")
+Código -fonte 3 – ks_test_example.py (Python)
+Fonte: Elaborado pelo autor (2026)
+Ao rodar o teste de Kolmogorov -Smirnov, obtemos a estatística D (a máxima diferença observada entre as distribuições acumuladas) e o p-value associado. Por exemplo, um p -value de 0.01 indicaria apenas 1% de chance das duas amostras virem da mesma distribuição – logo, evidência considerável de drift (Massey, 1951).
+Vale notar que o teste KS, apesar de útil para detectar alterações em uma única variável contínua, sofre limitações em dados de alta dimensionalidade; no nosso
+Drift em Embeddings e Testes de Duas Amostras caso, seria necessário aplicar o teste separad amente em cada componente do embedding e ajustar a significância para múltiplas comparações (procedimento que tende a reduzir a sensibilidade). Ainda assim, ele ilustra o princípio geral dos testes de duas amostras clássicos. Conforme discutido na seção te órica, abordagens mais avançadas como a MMD ou outras técnicas multivariadas superam os testes univariados em cenários de embeddings de alta dimensão (Feldhans et al., 2021).
+Drift em Embeddings e Testes de Duas Amostras
+### Saiba Mais
+Progressão do conhecimento. Em Aprendizado de Máquina, assumimos frequentemente que os dados de produção terão características semelhantes aos dados usados para treinar nossos modelos. No entanto, a realidade demonstra que dados e comportamentos mudam com o tempo, exigindo que os modelos se adaptem para manter um bom desempenho (Lu et al., 2019). Essa mudança ao longo do tempo no padrão dos dados de entrada ou na relação entre entradas e saídas é conhecida como deriva de conceito (do inglês concept drift), e tornou -se objeto de intenso estudo nos últimos anos (Lu et al., 2019; Gama et al., 2014). Se não for detectada e tratada a tempo, a deriva pode levar a uma degradação significativa da performance do modelo em aplicações práticas (Greco et al., 2024).
+Nesta seção, exploraremos em detalhes como representações vetoriais
+(embeddings) e testes de duas amostras são utilizados para identificar e medir essa deriva em dados complexos, como textos e imagens.
+Drift superficial vs. drift semântico
+Nem toda mudança no s dados é igual. Podemos distinguir dois tipos principais de deriva em dados não estruturados como texto e áudio (Feldhans et al.,
+2021). Chamamos de drift superficial as alterações visíveis nos dados que não modificam fundamentalmente seu significado ou s ua distribuição estatística de alto nível. Por exemplo, mudanças de formatação ou estilo de linguagem, adoção de novas abreviações ou pequenas flutuações sazonais na frequência de certas palavras podem ser consideradas superficiais – o modelo pode até tole rá-las sem perda notável de desempenho.
+Já o drift semântico envolve alterações de sentido ou contexto subjacente nos dados. É o caso de palavras que mudam de significado ao longo do tempo, ou da aparição de novos tópicos e gírias que não estavam presente s no conjunto de treinamento. Um exemplo marcante é a palavra “máscara”: antes de 2020, aparecia principalmente em contextos de fantasias ou cosméticos; após a pandemia de
+COVID -19, “máscara” passou a se referir majoritariamente a máscaras de proteção facial. Aos olhos humanos, a palavra pode parecer a mesma, mas o modelo agora
+Drift em Embeddings e Testes de Duas Amostras enfrenta um termo cujo contexto foi radicalmente alterado. Esse tipo de deriva semântica é particularmente desafiador, pois muitas vezes passa despercebido pelos métodos tradicionais de acompanhamento de dados (como médias ou desvio padrão), mas se reflete nas coordenadas dos embeddings: no exemplo, o vetor da palavra “máscara” no espaço de embedding pós -2020 se distancia do vetor que ela possuía antes, aproximando -se de termos médico s e de saúde.
+Embeddings como representação de significado
+Para lidar com dados textuais (e outros dados não estruturados), convertê -los em uma representação numérica é imprescindível. Os embeddings cumprem exatamente esse papel: são vetores densos de alta dimensionalidade em que cada palavra, frase ou documento é mapeado para um ponto em um espaço vetorial contínuo (Mikolov et al., 2013). Nessas representações latentes, a proximidade geométrica reflete semelhanças semânticas: por exemplo, em um espaço de word embeddings, palavras com significado relacionado tendem a ficar próximas
+(como “rei” e “rainha” ou “cachorro” e “latido”) enquanto palavras sem relação significativa ficam distantes (Mikolov et al., 2013; Devlin et al., 2019).
+No caso de textos mais l ongos (frases, documentos), modelos como o BERT geram embeddings que capturam nuances contextuais e de significado de sentenças (Devlin et al., 2019). Isso é fundamental para detectar drift em dados textuais, pois muitas vezes o que muda não é a presença d e um caractere ou símbolo em si, mas sim o contexto e o padrão de uso de palavras e expressões ao longo do tempo. Ao acompanhar a evolução dos embeddings (por exemplo,
+recomputando periodicamente os vetores médios ou distribuições de distâncias),
+podemos q uantificar matematicamente se o “espaço semântico” dos dados está se deslocando. É essa ideia que exploramos ao comparar distribuições de embeddings de diferentes períodos.
+Por que o desempenho do modelo degrada? A deriva de conceito pode ocorrer de difere ntes maneiras. Formalmente, podemos dizer que há drift entre um período inicial (treinamento, com distribuição P_ref) e um período posterior
+(produção, com distribuição P_novo ) sempre que há mudança na distribuição
+Drift em Embeddings e Testes de Duas Amostras conjunta dos dados e seus rótulos (Gama et al., 2014). Em notação matemática simplificada: Pref(X,y)  ≠  Pnovo(X,y).
+Essa diferença pode se manifestar em pelo menos três formas (Lu et al.,
+2019): (1 ) Drift nas características (P(X)): a distribuição das variáveis de entrada muda ao longo do tempo (covariate shift ou virtual drift). Por exemplo, a proporção de postagens sobre “política” vs. “esportes” pode ter mudado radicalmente no caso da nossa rede social fictícia; (2) Drift no conceito (P(y∣X)): a relação entre as variáveis de entrada e a variável alvo muda, ou seja, o modelo passa a receber padrões de entrada que levam a saídas diferentes das originalmente aprendidas – é o caso da palavra “máscara” citada, cujo significado mudou, afetando sua classificação; (3) Drift na proporção de saída (P(y)): a distribuição das classes ou valores alvo (rótulos) se altera, por exemplo, um sistema de detecção de fraudes começando a receber muito mais transações fraudulentas do que antes.
+Em muitos cenários de produção, os rótulos verdadeiros (ground trut h)
+demoram a ser obtidos (ou podem nem existir), de modo que somente o drift do tipo
+(1), nos dados de entrada, é diretamente mensurável sem supervisão (Greco et al.,
+2024). E mesmo pequenos deslocamentos em P(X) podem indicar ou preceder alterações maiore s no comportamento do sistema e na performance preditiva do modelo. Por isso, monitorar continuamente o data drift (deriva nos dados) é uma prática fundamental em pipelines de MLOps modernos (Microsoft, 2023).
+Monitoramento com testes de duas amostras
+Como , então, detectar e quantificar formalmente o drift nos dados de entrada?
+Uma família de ferramentas amplamente utilizada é a dos testes de hipótese de duas amostras, que comparam estatisticamente dois conjuntos de dados para verificar se eles provêm da mesma distribuição (Bhattacharyya, 2019). Esses testes estabelecem uma hipótese nula ( H_0) – geralmente assumindo que as amostras possuem distribuição idêntica – contra uma hipótese alternativa ( H_1) de que há diferenças. No contexto de drift, definimos o co njunto de dados original (de referência) como uma amostra de n pontos x_i∗i=1n de P∗ref(X), e os novos dados como uma amostra y_j∗j=1m de P∗novo (X). Queremos checar se P_ref(X)=P_novo (X) ou não.
+Drift em Embeddings e Testes de Duas Amostras
+Teste de Kolmogorov -Smirnov (KS): O teste KS é um dos métodos não paramétricos mais conhecidos para comparar distribuições univariadas. Ele calcula a distância máxima entre as funções de distribuição acumulada (FDA) empíricas das duas amostras (Massey, 1951). Matematicamente, define -se a estatística D do KS como: Dn,m  =  sup x  ∣Fref(x) − Fnovo(x)∣, onde F_ref(x) e F_novo (x) são as FDAs empíricas dos dados de referência e novos, respectivamente. Intuitivamente, D mede a maior diferença vertical entre as curvas de distribuição acumulada das duas amostras. Se D for grande o suficiente – maior que um certo limiar crítico determinado pelo tamanho das amostras e o nível de significância desejado – rejeitamos H_0 e concluímos que as distribuições diferem (Massey, 1951).
+O teste KS tem a vantagem de não assumir nenhuma forma e specífica de distribuição (por isso é não paramétrico), sendo aplicável em diversos contextos.
+Entretanto, ele é mais comumente empregado para detectar diferenças unidimensionais; em situações multivariadas (como embeddings com dezenas ou centenas de dimen sões), torná -lo efetivo requer abordagens adicionais
+(Feldhans et al., 2021). Uma estratégia possível é aplicar o KS a cada dimensão do vetor separadamente e depois ajustar a significância para múltiplos testes, ou simplificar o problema medindo apenas uma estatística univariada dos vetores (por exemplo, suas normas ou projeção em um componente principal). Ainda assim,
+essas simplificações podem perder a sensibilidade a mudanças sutis na estrutura multivariada dos dados, razão pela qual abordagens mais avan çadas são preferidas para drifts complexos.
+Discrepância de Máxima Média (MMD): Para dados de alta dimensionalidade (como embeddings de textos), os métodos baseados em kernel têm ganhado destaque por sua capacidade de detectar drifts multivariados sem necessitar de redução de dimensionalidade
+(Gretton et al., 2012; Lopez -Paz & Oquab, 2017). A MMD é um desses testes: em essência, ela ma peia as amostras para um espaço de características de dimensão possivelmente infinita por meio de uma função kernel k(.,.) (por exemplo, um kernel
+Gaussiano) e compara as médias das duas distribuições nesse espaço reproduzível (reproducing kernel Hilbert s pace). A diferença de médias resultante é a estatística de teste. Formalmente, seja x,x′ amostras independentes de P_ref e y,y′ de P_novo ; a MMD é definida como (Gretton et al., 2012):
+Drift em Embeddings e Testes de Duas Amostras
+MMD2(Pref,Pnovo)  =  𝔼x,x′[ k(x,x′) ]  +  𝔼y,y′[ k(y,y′) ]  −
+  2 𝔼x,y[ k(x,y) ] , onde 𝔼 denota o valor esperado (média) calculado sobre pares de pontos de cada distribuição, e k é o kernel escolhido (por exemplo, k(u,v)= exp (−γ∣u−v∣2) para um kernel RBF).
+Em termos mais simples, a MMD mede o “distanciamento” entre as distribuições ca lculando quão próximos (em média) pontos dentro de cada conjunto estão entre si, comparado a quão próximos pontos de um conjunto estão dos pontos do outro conjunto (Gretton et al., 2012). Se as distribuições forem idênticas, a MMD tende a 0; caso contrário , ela assume valores positivos crescentes conforme o drift se acentua. A decisão estatística é tomada comparando -se o valor observado da MMD com uma distribuição crítica (derivada teoricamente ou via simulações/permutações). Estudos recentes demonstram que métodos como MMD
+(às vezes chamados de “testes de duas amostras baseados em aprendizado de máquina”) apresentam maior potência na detecção de drifts sutis em embeddings complexos do que testes como KS aplicado dimension a dimensão
+(Lopez -Paz & Oquab, 2017 ; Feldhans et al., 2021). Ferramentas práticas como a biblioteca Alibi-Detect já implementam a MMD e outros detectores de drift, facilitando seu uso em pipelines de ML em produção.
+Estado da arte e tendências
+O desafio de detectar e lidar com concept drift tem impulsionado diversas pesquisas e inovações recentes. Em 2024, por exemplo, pesquisadores propuseram o DriftLens, um framework não supervisionado de detecção de drift em tempo real que explora diretamente as distâncias entre distribuições de embedding s de modelos de Deep Learning (Greco et al., 2024). O DriftLens demonstrou ganhos de velocidade (até 5x mais rápido) e melhor acurácia na detecção de drift em dados de texto, imagens e voz, em comparação com técnicas anteriores, destacando -se por correlaci onar fortemente o valor do drift detectado com a magnitude real da mudança nos dados (Greco et al., 2024).
+No mercado, gigantes da tecnologia e startups especializadas também têm investido em soluções de monitoramento de drift. Por exemplo, a plataforma Azure
+Machine Learning da Microsoft já incorporou monitores de data drift em seu
+Drift em Embeddings e Testes de Duas Amostras ambiente de MLOps, capazes de analisar automaticamente se novos dados de produção divergem dos dados de treinamento e até disparar alertas preventivos para os engenheiros de ML (Microsoft, 2023). De maneira análoga, empresas como
+Twitter e Facebook passaram a adaptar seus sistemas de recomendação e moderação de conteúdo diante de mudanças abruptas no comportamento dos usuários – casos em que modelos precisaram ser atualizados ou ajustados quando
+“o mundo mudou” rapidamente (como durante a pandemia de COVID -19).
+Além disso, observamos uma tendência crescente de uso de aprendizado contínuo e retreinamento automatizado: modelos em produção podem ser reentreinados periodicamente ou continuamente à medida que novos dados chegam, incorporando mecanismos para detecção precoce de drift e correção proativa (Brock & Hanna, 2023). Podcasts e conferências da área de MLOps também têm destacado a importância de “viver com o drift” – ou seja, a ssumir que a mudança é inevitável e projetar sistemas de IA resilientes e adaptativos (Sculley et al., 2015). Em suma, entender e mitigar o drift deixou de ser um detalhe técnico para se tornar parte integrante da robustez e responsabilidade na aprendizage m de máquina, garantindo que modelos continuem gerando valor mesmo à medida que o contexto se transforma.
+Drift em Embeddings e Testes de Duas Amostras
+### Mercado, Cases E Tendências
+O risco do concept drift não é apenas teórico – ele se manifesta em diversos setores. Um exemplo notório ocorreu no setor financeiro durante a pandemia de
+COVID -19: modelos de detecção de fraude em cartão de crédito enfrentaram padrões de gasto completamente diferentes do usual, exigindo rápida recalibração para evitar falsos positivos e falsos negativos. De modo semelhante, empresas de mídia social como o Twitter e plataformas de streaming ajustaram seus sistemas de recomendação quando o comportamento dos usuários mudou repentina mente (por exemplo, explosão de interesse por conteúdos relacionados à pandemia em 2020).
+Esses casos práticos demonstraram a importância de monitorar continuamente os dados e atualizar modelos para lidar com drifts repentinos no ambiente real (Sculley et al., 2015). Grandes companhias já incorporaram ferramentas de detecção de drift em suas operações: a startup Evidently AI, por exemplo, desenvolveu bibliotecas open source focadas em monitoramento de data drift, permitindo que equipes identifiquem variaçõ es em features de entrada e até em embeddings de modelos de linguagem (Samuylova, 2023). Tais soluções estão sendo adotadas por empresas da área de comércio eletrônico, finanças e saúde para manter modelos preditivos alinhados às constantes mudanças de comportamento de clientes e mercados.
+Publicações e Pesquisas Recentes: A comunidade científica tem respondido rapidamente a esses desafios. Um trabalho apresentado no NeurIPS 2023 propôs o
+“Zero -shot Embedding Drift Detection”, um método leve para detectar drift em embeddings de grandes modelos de linguagem (LLMs) sem a necessidade de dados rotulados, visando mitigar ataques de prompt injection em chatbots (Damerla et al.,
+2023). Já no arXiv, Greco et al. (2024) introduziram o DriftLens, citado anteriormente , que mostrou resultados promissores para detecção de drift em tempo real a partir de representações profundas. Além disso, blogs técnicos de referência têm compartilhado experimentos comparando diferentes métodos de detecção de drift em embeddings – por e xemplo, Samuylova (2023) comparou cinco métodos
+(incluindo MMD e testes baseados em classificadores) e discutiu suas vantagens relativas. Essas publicações reforçam que não há solução única: combinar múltiplas
+Drift em Embeddings e Testes de Duas Amostras técnicas e contextos de avaliação é a chave pa ra um monitoramento efetivo de drift.
+Tendências e Perspectivas:
+A detecção de drift está se tornando parte integrante das plataformas de aprendizado de máquina comerciais. Além do já citado Azure Machine Learning da
+Microsoft, serviços de nuvem como o Am azon SageMaker e Google Cloud ML também começaram a oferecer funcionalidades de monitoramento de dados, com foco na detecção de mudanças de distribuição antes que o desempenho de modelos seja afetado.
+Organizações especializadas, como a NannyML, estão des envolvendo ferramentas específicas para analisar drifts mesmo quando os rótulos verdadeiros não estão disponíveis, usando estimativas de target drift não supervisionado.
+Segundo relatórios recentes da indústria, como o State of Model Monitoring 2023, a demanda por soluções de Machine Learning confiáveis e seguras impulsionou a adoção de sistemas de monitoramento de drift como parte do ciclo de vida de modelos em produção (Gartner, 2024). Cursos e treinamentos de MLOps agora enfatizam a necessidade de se pla nejar com antecedência para drifts inevitáveis,
+recomendando práticas como validação contínua, detection dashboards e pipelines de re -treinamento automatizados.
+Ao mesmo tempo, a pesquisa acadêmica caminha para métodos de detecção de drift cada vez mais s ofisticados, incluindo abordagens baseadas em aprendizagem profunda e detecção em streaming (Lopez -Paz & Oquab, 2017; Greco et al., 2024). Portanto, estar atento às tendências tecnológicas e ferramentas emergentes para lidar com drift – e compreender bem o s fundamentos, como os apresentados nesta aula – será cada vez mais importante para profissionais de ciência de dados e aprendizado de máquina nos próximos anos.
+Drift em Embeddings e Testes de Duas Amostras
+## O Que Você Viu Nes Ta Aula ?
+Nesta aula, você aprendeu sobre a deriva de conceito (concept drif t) e seus impactos nos modelos de machine learning em produção. Discutimos a diferença entre drift superficial e drift semântico, ilustrando como mudanças sutis ou radicais nos dados (como a alteração de significado de termos ou o surgimento de novos tópic os) podem afetar drasticamente o desempenho do modelo.
+Exploramos o papel dos embeddings como ferramenta para representar dados não estruturados e detectar drifts de maneira quantitativa, comparando distribuições de features atuais com as originais.
+Abor damos também os testes estatísticos de duas amostras (como KS e
+MMD) e entendemos como eles servem para identificar automaticamente diferenças significativas entre conjuntos de dados ao longo do tempo.
+Por fim, vimos exemplos práticos e tendências de merc ado, destacando a importância de monitorar e adaptar continuamente os modelos de IA para mantê -los confiáveis frente a mudanças no mundo real. Com esse conhecimento, você está mais preparado para antecipar -se ao drift e garantir que seus modelos de machine learning permaneçam atualizados e eficazes.
+Drift em Embeddings e Testes de Duas Amostras
+### Referências
+BHATTACHARYYA, A. Hypothesis Testing, Two -Sample Problem . 2019. In:
+SHETTY, S.; LIANG, X. (eds.). Encyclopedia of Big Data Technologies. Springer.
+Disponível em: https://doi.org/10.1007/978 -3-319-63962 -8_42 -1. Acesso em: 14 ago.
+2026.
+DEVLIN, J.; CH ANG, M. -W.; LEE, K.; TOUTANOVA, K. BERT: Pre -Training of
+Deep Bidirectional Transformers for Language Understanding . 2019. In:
+Proceedings of the 2019 Conference of the North American Chapter of the
+Association for Computational Linguistics (NAACL -HLT), p. 4171 –4186. ACL.
+Disponível em: https://doi.org/10.18653/v1/N1 9-1423 . Acesso em: 14 ago. 2026.
+FELDHANS, R.; WILKE, A.; HEINDORF, S.; SHAKER, M. H.; HAMMER, B.;
+NGOMO, A. -C. N.; HÜLLERMEIER, E. Drift Detection in Text Data with Document
+Embeddings . 2021. In: Intelligent Data Engineering and Automated Learning –
+IDEAL 2021. LNCS, v. 13113, p. 107 –118. Cham: Springer. Acesso em: 14 ago.
+2026.
+GAMA, J.; ŽLIOBAITĖ, I.; BIFET, A.; PECHENIZKIY, M.; BOUCHACHIA, A. A
+Survey on Concept Drift Adaptation . 2014. ACM Computing Surveys, v. 46, n. 4,
+art. 44. Disponível em: https://doi.org/10.1145/2523813 . Acesso em: 14 ago. 2026.
+GRECO, S.; VACCHETTI, B.; APILETTI, D.; CERQUITELLI, T. Unsupervised
+Concept Drift Detection from Deep Learning Representations in Real -Time .
+2024. arXiv prep rint, arXiv:2406.17813. Disponível em:
+https://doi.org/10.48550/arXiv.2406.17813 . Acesso em: 14 ago. 2026.
+GRETTON, A.; BORGWARDT, K. M.; RASCH, M. J.; SCHÖLKOPF, B.; SMOLA, A.
+A Kernel Two -Sample T est. 2012. Journal of Machine Learning Research, v. 13, p.
+723–773. Disponível em: https://www.jmlr.org/papers/v13/gretton12a.html . Acesso em: 14 ago. 2026.
+HAMILTON, W. L.; LESKOVEC, J.; JURA FSKY, D. Diachronic Word Embeddings
+Reveal Statistical Laws of Semantic Change . 2016. Proceedings of the 54th
+Annual Meeting of the Association for Computational Linguistics, v. 1, p. 1489 –1501.
+Disponível em: https://doi.org/10.18653/v1/P16 -1141 . Acesso em: 14 ago. 2026.
+LOPEZ -PAZ, D.; OQUAB, M. Revisiting Classifier Two -Sample Tests . 2017. In:
+5th International Conference on Learning Representations (ICLR). Disponível em:
+https://openreview.net/pdf?id=B1DI6tfB . Acesso em: 14 ago. 2026.
+LU, J.; LIU, A.; DONG, F.; GU, F.; GAMA, J.; ZHANG, G. Learning under Concept
+Drift: A Review . 2019. IEEE Transactions on Knowledge and Data Engineering, v.
+31, n. 12, p. 2346 –2363. Disponível em:
+https://doi.org/10.1109/TKDE.2018.2876857 . Acesso em: 14 ago. 2026.
+Drift em Embeddings e Testes de Duas Amostras
+MASSEY, F. J. The Kolmogorov -Smirnov Test for Goodness of Fit . 1951. Journal of the American Statistical Association, v. 46, n. 253, p. 68 –78. Disponível em:
+https://doi.org/10.1080/01621459.1951.10500769 . Acesso em: 14 ago. 2026.
+MICROSOFT. Detect Data Drift on Datasets: Azure Machine Learning
+Documentation . 2023. Microsoft Learn. Disponível em:
+https://learn.microsoft.com/azure/machine -learning/how -to-monitor -datasets. Acesso em: 14 ago. 2026.
+MIKOLOV, T.; CHEN, K.; CORRADO, G.; DEAN, J. Efficient Estimation of Word
+Representations in Vector Space . 2013. Proceedings of the 1st International
+Conference on Learning Representations (ICLR). Disponível em:
+https://arxiv.org/abs/1301.3781 . Acesso em: 14 ago. 2026.
+SCULLEY, D. et al. Hidden Technical Debt in Machine Learning Systems . 2015.
+Advances in Neural Information Processing Systems 28 (NIPS 2015), p. 2503 –2511.
+Disponí vel em: https://papers.nips.cc/paper/5656 -hidden -technical -debt-in-machine -
+learning -systems . Acesso em: 14 ago. 2026.
+VASWANI, A.; SHAZEER, N.; PARMAR, N.; USZKOREIT, J.; JONES, L.; GOMEZ,
+A. N.; KAISER, Ł.; POLOSUKHIN, I. Attention Is All You Need . 2017. Advances in
+Neural Information Processing Systems 30 (NIPS 2017), p. 5998 –6008. Disponível em: https://papers.nips.cc/paper/7181 -attention -is-all-you-need . Acesso em: 14 ago.
+2026.
+Drift em Embeddings e Testes de Duas Amostras
+### Palavras -Chave
+Data Drift. Embeddings. Testes estatísticos de duas amostras .
+Drift em Embeddings e Testes de Duas Amostras
