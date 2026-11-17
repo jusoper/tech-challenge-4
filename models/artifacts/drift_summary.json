@@ -1,0 +1,53 @@
+{
+  "psi_threshold": 0.25,
+  "drifted_features": [
+    "income",
+    "employment_years",
+    "debt_ratio"
+  ],
+  "n_drifted": 3,
+  "features": {
+    "age": {
+      "psi": 0.0,
+      "ks_statistic": 0.0,
+      "ks_p_value": 1.0,
+      "drift_detected": false
+    },
+    "income": {
+      "psi": 0.6371669261018886,
+      "ks_statistic": 0.32616666666666666,
+      "ks_p_value": 9.431690909240141e-283,
+      "drift_detected": true
+    },
+    "employment_years": {
+      "psi": 0.120110749510208,
+      "ks_statistic": 0.0805,
+      "ks_p_value": 2.5011268693834076e-17,
+      "drift_detected": true
+    },
+    "loan_amount": {
+      "psi": 0.0,
+      "ks_statistic": 0.0,
+      "ks_p_value": 1.0,
+      "drift_detected": false
+    },
+    "credit_history_score": {
+      "psi": 0.0,
+      "ks_statistic": 0.0,
+      "ks_p_value": 1.0,
+      "drift_detected": false
+    },
+    "num_credit_lines": {
+      "psi": 0.0,
+      "ks_statistic": 0.0,
+      "ks_p_value": 1.0,
+      "drift_detected": false
+    },
+    "debt_ratio": {
+      "psi": 1.6809458525126488,
+      "ks_statistic": 0.8725,
+      "ks_p_value": 0.0,
+      "drift_detected": true
+    }
+  }
+}
